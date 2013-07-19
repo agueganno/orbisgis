@@ -3,6 +3,7 @@ package org.orbisgis.legend.thematic.categorize;
 import org.junit.Test;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
@@ -262,6 +263,20 @@ public class CategorizedPointTest extends AnalyzerTest {
         assertTrue(str.getDashArray() instanceof Categorize);
         assertTrue(((SolidFill)str.getFill()).getColor() instanceof Categorize);
         assertTrue(((SolidFill)str.getFill()).getOpacity() instanceof Categorize);
+    }
+
+    @Test
+    public void testSetStrokeUom() throws Exception{
+        Style s = getStyle(CATEGORIZED_POINT);
+        PointSymbolizer ps = (PointSymbolizer) s.getRules().get(0).getCompositeSymbolizer().getChildren().get(0);
+        CategorizedPoint cp = new CategorizedPoint(ps);
+        assertTrue(cp.getStrokeUom().equals(Uom.PX));
+        assertTrue(cp.getSymbolUom().equals(Uom.PX));
+        cp.setStrokeUom(Uom.IN);
+        assertTrue(cp.getStrokeUom().equals(Uom.IN));
+        assertTrue(cp.getSymbolUom().equals(Uom.PX));
+        assertTrue(((MarkGraphic)ps.getGraphicCollection().getGraphic(0)).getStroke().getUom().equals(Uom.IN));
+
     }
 
     private PointSymbolizer getPointSymbolizer() throws Exception {
