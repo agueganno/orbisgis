@@ -60,4 +60,9 @@ public abstract class AbstractSymbolizerNode implements SymbolizerNode {
                 visitor.visitSymbolizerNode(this);
         }
 
+        @Override
+        public String getName(){
+            return this.getClass().getSimpleName();
+        }
+
 }

@@ -32,8 +32,8 @@ import java.util.List;
 import org.orbisgis.core.renderer.se.visitors.ISymbolizerVisitor;
 
 /**
- * SymbolizerNode allow to browse the styling tree
- * It's mainly used to fetch the nearest Uom definition of any element.
+ * SymbolizerNode allow to browse the styling tree. It's part of the visitor pattern
+ * implementation of the symbolizing tree.
  *
  * @author Maxence Laurent
  */
@@ -68,4 +68,10 @@ public interface SymbolizerNode{
      * @param visitor
      */
     void acceptVisitor(ISymbolizerVisitor visitor);
+
+    /**
+     * Gets a name describing this node
+     * @return A name describing this node.
+     */
+    String getName();
 }

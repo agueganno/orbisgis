@@ -529,6 +529,7 @@ public final class Rule extends AbstractSymbolizerNode {
      * Get the name of this rule.
      * @return The name of the rule.
      */
+    @Override
     public String getName() {
         return name;
     }

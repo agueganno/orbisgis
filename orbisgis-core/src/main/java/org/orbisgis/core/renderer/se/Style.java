@@ -356,6 +356,7 @@ public final class Style extends AbstractSymbolizerNode {
      * Gets the name of this Style.
      * @return
      */
+    @Override
     public String getName() {
         return name;
     }
