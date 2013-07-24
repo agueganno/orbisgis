@@ -86,6 +86,7 @@ import org.orbisgis.view.table.TableEditableElement;
 import org.orbisgis.view.toc.actions.*;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
 import org.orbisgis.view.toc.actions.cui.SimpleStyleEditor;
+import org.orbisgis.view.toc.actions.cui.advanced.AdvancedStyleEditor;
 import org.orbisgis.view.toc.ext.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -994,7 +995,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
          * style.
          */
         public void onAdvancedEditor(){
-                try {
+//                try {
                         Style[] styles = mapContext.getSelectedStyles();
                         if(styles.length == 1){
                                 Style style = styles[0];
@@ -1008,18 +1009,20 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                             JOptionPane.showMessageDialog(null,I18N.tr("Advanced Editor can't be loaded"));
                                     }
 
-                                    LegendUIController controller = new LegendUIController(style);
+                                    AdvancedStyleEditor ase = new AdvancedStyleEditor(style);
 
-                                    if (UIFactory.showDialog((UIPanel)controller.getMainPanel())) {
-                                            layer.setStyle(index,controller.getEditedFeatureTypeStyle());
+//                                    LegendUIController controller = new LegendUIController(style);
+//
+                                    if (UIFactory.showDialog(ase)) {
+//                                            layer.setStyle(index,controller.getEditedFeatureTypeStyle());
                                     }
                                 }else{
                                    LOGGER.info("This functionality is not supported."); 
                                 }
                         }
-		} catch (SeExceptions.InvalidStyle ex) {
-			LOGGER.error(I18N.tr("Error while editing the legend"), ex);
-		}
+//		} catch (SeExceptions.InvalidStyle ex) {
+//			LOGGER.error(I18N.tr("Error while editing the legend"), ex);
+//		}
         }
 
         /**
