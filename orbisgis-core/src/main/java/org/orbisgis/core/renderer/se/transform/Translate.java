@@ -45,6 +45,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * Represents a translation in an euclidean plane. As it can be represented with
@@ -52,6 +53,9 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * @author Maxence Laurent
  */
 public class Translate extends AbstractSymbolizerNode implements Transformation {
+
+        public static final String X = I18n.marktr("X");
+        public static final String Y = I18n.marktr("Y");
 
         private RealParameter x;
         private RealParameter y;
@@ -75,7 +79,7 @@ public class Translate extends AbstractSymbolizerNode implements Transformation 
         /**
          * Create a new <code>Translate</code>, using the informations contained in 
          * <code>t</code>
-         * @param t
+         * @param t The original JaXB object.
          * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
          */
         public Translate(TranslateType t) throws InvalidStyle {
@@ -160,7 +164,7 @@ public class Translate extends AbstractSymbolizerNode implements Transformation 
 
         /**
          * Set the translation about the Y-axis
-         * @param y 
+         * @param y The new y-displacement
          */
         public final void setY(RealParameter y) {
                 this.y = y;
@@ -172,7 +176,7 @@ public class Translate extends AbstractSymbolizerNode implements Transformation 
 
         /**
          * Set the translation about the X-axis
-         * @param y 
+         * @param x The new x-displacement
          */
         public final void setX(RealParameter x) {
                 this.x = x;
@@ -185,5 +189,45 @@ public class Translate extends AbstractSymbolizerNode implements Transformation 
         @Override
         public String toString() {
                 return "Translate";
+        }
+
+        @Override
+        public List<String> getRequiredPropertyNames() {
+            return new ArrayList<String>();
+        }
+
+        @Override
+        public List<String> getOptionalPropertyNames() {
+            ArrayList<String> ret = new ArrayList<String>();
+            ret.add(X);
+            ret.add(Y);
+            return ret;
+        }
+
+        @Override
+        public SymbolizerNode getProperty(String name) {
+            if(X.equals(name)){
+                return x;
+            } else if(Y.equals(name)){
+                return y;
+            }
+            return null;
+        }
+
+        @Override
+        public void setProperty(String prop, SymbolizerNode value) {
+            if(X.equals(prop)){
+                setX((RealParameter) value);
+            } else if(Y.equals(prop)){
+                setY((RealParameter) value);
+            }
+        }
+
+        @Override
+        public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+            if(getPropertyNames().contains(name)){
+                return RealParameter.class;
+            }
+            return null;
         }
 }

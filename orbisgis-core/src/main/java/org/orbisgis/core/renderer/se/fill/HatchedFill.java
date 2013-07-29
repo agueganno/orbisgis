@@ -43,6 +43,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.xnap.commons.i18n.I18n;
 
 import javax.xml.bind.JAXBElement;
 import java.awt.*;
@@ -68,6 +69,10 @@ import java.util.Map;
  * @author Maxence Laurent, Alexis Guéganno
  */
 public final class HatchedFill extends Fill implements StrokeNode {
+    public static final String ANGLE = I18n.marktr("Angle");
+    public static final String DISTANCE = I18n.marktr("Distance");
+    public static final String OFFSET = I18n.marktr("Offset");
+    public static final String STROKE = I18n.marktr("Stroke");
 
     //Useful constants.
     private static final double EPSILON = 0.01; // todo Eval, and use an external EPSILON value.
@@ -160,8 +165,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
      * Static method that draw hatches within provided shp
      * 
      * @param g2  the g2 to write on
-     * @param sds the spatial data source
-     * @param fidfeature if within sds
+     * @param map
      * @param shp the shape to hatch
      * @param selected is the feature selected ? will emphasis hatches
      * @param mt the well known map transform
@@ -409,8 +413,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
 
     /**
      * Hatched fill cannot be converted to a native java fill
-     * @param fid
-     * @param sds
+     * @param map
      * @param selected
      * @param mt
      * @return null
@@ -557,5 +560,60 @@ public final class HatchedFill extends Fill implements StrokeNode {
         return ls;
     }
 
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(STROKE);
+        ret.add(DISTANCE);
+        ret.add(OFFSET);
+        return ret;
+    }
 
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(ANGLE);
+        return ret;
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(STROKE.equals(name)){
+            return getStroke();
+        } else if(ANGLE.equals(name)){
+            return angle;
+        } else if(DISTANCE.equals(name)){
+            return distance;
+        } else if(OFFSET.equals(name)){
+            return offset;
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(STROKE.equals(prop)){
+            setStroke((Stroke) value);
+        } else if(ANGLE.equals(prop)){
+            setAngle((RealParameter) value);
+        } else if(DISTANCE.equals(prop)){
+            setDistance((RealParameter) value);
+        } else if(OFFSET.equals(prop)){
+            setOffset((RealParameter) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(STROKE.equals(name)){
+            return Stroke.class;
+        } else if(ANGLE.equals(name)){
+            return RealParameter.class;
+        } else if(DISTANCE.equals(name)){
+            return RealParameter.class;
+        } else if(OFFSET.equals(name)){
+            return RealParameter.class;
+        }
+        return null;
+    }
 }

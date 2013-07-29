@@ -55,6 +55,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * A {@code GraphicStroke} is used essentially to repeat a a graphic along a line. It is dependant 
@@ -67,6 +68,10 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * @author Maxence Laurent, Alexis Guéganno
  */
 public final class GraphicStroke extends Stroke implements GraphicNode, UomNode {
+    public static final String GRAPHICS = I18n.marktr("Graphics");
+    public static final String LENGTH =I18n.marktr("Length");
+    public static final String ORIENTATION =I18n.marktr("Orientation");
+    public static final String POSITION =I18n.marktr("Position");
 
     public static final double MIN_LENGTH = 1; // In pixel !
 
@@ -400,6 +405,57 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
             s.setRelativePosition(relativePosition.getJAXBParameterValueType());
         }
         return s;
+    }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        ArrayList<String> s = new ArrayList<String>();
+        s.add(POSITION);
+        return s;
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        ArrayList<String> s = new ArrayList<String>();
+        s.add(GRAPHICS);
+        s.add(LENGTH);
+        s.add(ORIENTATION);
+        return s;
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(GRAPHICS.equals(name)){
+            return length;
+        } else if(LENGTH.equals(name)){
+            return length;
+        } else if(POSITION.equals(name)){
+            return relativePosition;
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(GRAPHICS.equals(prop)){
+            setGraphicCollection((GraphicCollection) value);
+        } else if(LENGTH.equals(prop)){
+            setLength((RealParameter) value);
+        } else if(POSITION.equals(prop)){
+            setRelativePosition((RealParameter) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(GRAPHICS.equals(name)){
+            return GraphicCollection.class;
+        } else if(LENGTH.equals(name)){
+            return RealParameter.class;
+        } else if(POSITION.equals(name)){
+            return RealParameter.class;
+        }
+        return null;
     }
 
 

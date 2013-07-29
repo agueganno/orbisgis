@@ -29,14 +29,21 @@
 package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.PropertiesCollectionNode;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.fill.Fill;
+import org.orbisgis.core.renderer.se.graphic.AxisScale;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.orbisgis.core.renderer.se.transform.Transform;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * Transformation of continuous values by a function defined on a number of nodes. 
@@ -54,9 +61,14 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  *
  */
 public abstract class Interpolate<ToType extends SeParameter, FallbackType extends ToType>  
-                extends AbstractSymbolizerNode implements SeParameter {
+                extends AbstractSymbolizerNode implements SeParameter, PropertiesCollectionNode {
 
-        private InterpolationMode mode;
+    public static final String LOOKUP_VALUE = I18n.marktr("Lookup value");
+    public static final String FALLBACK = I18n.marktr("Fallback value");
+    public static final String POINTS = I18n.marktr("Interpolation points");
+
+
+    private InterpolationMode mode;
         private RealParameter lookupValue;
         private FallbackType fallbackValue;
         private List<InterpolationPoint<ToType>> iPoints;
@@ -284,4 +296,79 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
         protected double linearInterpolation(double d1, double d2, double x, double v1, double v2) {
                 return v1 + (v2 - v1) * (x - d1) / (d2 - d1);
         }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(LOOKUP_VALUE);
+        ret.add(FALLBACK);
+        return ret;
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(LOOKUP_VALUE.equals(name)){
+            return getLookupValue();
+        } else if(FALLBACK.equals(name)){
+            return getFallbackValue();
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(LOOKUP_VALUE.equals(prop)){
+            setLookupValue((RealParameter) value);
+        } else if(FALLBACK.equals(prop)){
+            setFallbackValue((FallbackType) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(LOOKUP_VALUE.equals(name)){
+            return RealParameter.class;
+        } else if(FALLBACK.equals(name)){
+            return getFallbackValue().getClass();
+        }
+        return null;
+    }
+
+    @Override
+    public List<String> getPropertiesNames() {
+        List<String> ret = new ArrayList<String>();
+        ret.add(POINTS);
+        return ret;
+    }
+
+    @Override
+    public Collection<SymbolizerNode> getProperties(String name) {
+        if(POINTS.equals(name)){
+            return new ArrayList<SymbolizerNode>(iPoints);
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperties(String name, Collection<SymbolizerNode> properties) {
+        if(POINTS.equals(name)){
+            iPoints = new ArrayList<InterpolationPoint<ToType>>();
+            for(SymbolizerNode sn : properties){
+                iPoints.add((InterpolationPoint<ToType>) sn);
+            }
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertiesClass(String name) {
+        if(POINTS.equals(name)){
+            return InterpolationPoint.class;
+        }
+        return null;
+    }
 }

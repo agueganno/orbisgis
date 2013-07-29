@@ -66,7 +66,9 @@ import java.util.Random;
  * @author Alexis Guéganno
  */
 public final class DotMapFill extends Fill implements GraphicNode {
-
+    public static final String MARK = I18n.marktr("Mark");
+    public static final String QUANTITY = I18n.marktr("Quantity per mark");
+    public static final String TOTAL = I18n.marktr("Total Quantity");
     private static final Logger LOGGER = Logger.getLogger(DotMapFill.class);
     private static final I18n I18N = I18nFactory.getI18n(DotMapFill.class);
     
@@ -268,5 +270,51 @@ public final class DotMapFill extends Fill implements GraphicNode {
     public JAXBElement<DotMapFillType> getJAXBElement() {
         ObjectFactory of = new ObjectFactory();
         return of.createDotMapFill(this.getJAXBType());
+    }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        return getPropertyNames();
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(MARK.equals(name)){
+            return getGraphicCollection();
+        } else if(QUANTITY.equals(name)){
+            return quantityPerMark;
+        } else if(TOTAL.equals(name)){
+            return totalQuantity;
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(MARK.equals(prop)){
+            setGraphicCollection((GraphicCollection) value);
+        } else if(QUANTITY.equals(prop)){
+            setQuantityPerMark((RealParameter) value);
+        } if(TOTAL.equals(prop)){
+            setTotalQuantity((RealParameter) value);
+        }  else {
+            throw new IllegalArgumentException("Unknown property name: "+prop);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(MARK.equals(name)){
+            return GraphicCollection.class;
+        } else if(QUANTITY.equals(name) || TOTAL.equals(name)){
+            return RealParameter.class;
+        } else {
+            throw new IllegalArgumentException("Unknown property name: "+name);
+        }
     }
 }

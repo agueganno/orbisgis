@@ -68,7 +68,7 @@ public class LegendUIStrokeAnnotationGraphicPanel extends LegendUIComponent {
 
         graphic = new LegendUICompositeGraphicPanel(controller, this, anno.getGraphic());
 
-        relativePosition = new LegendUIMetaRealPanel("Position", controller, this, anno.getRelativePosition(), false) {
+        relativePosition = new LegendUIMetaRealPanel("POSITION", controller, this, anno.getRelativePosition(), false) {
 
             @Override
             public void realChanged(RealParameter newReal) {

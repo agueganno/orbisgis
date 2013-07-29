@@ -55,6 +55,7 @@ import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * Rules are used to group rendering instructions by feature-property conditions and map scales.
@@ -66,6 +67,8 @@ import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
  * @author Maxence Laurent
  */
 public final class Rule extends AbstractSymbolizerNode {
+
+    public static final String SYMBOLS = I18n.marktr("Symbols");
 
     /**
      * The name set to every rule, if not set externally.
@@ -549,5 +552,39 @@ public final class Rule extends AbstractSymbolizerNode {
             return ls;
     }
 
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(SYMBOLS);
+        return ret;
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(SYMBOLS.equals(name)){
+            return getCompositeSymbolizer();
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(SYMBOLS.equals(prop)){
+            setCompositeSymbolizer((CompositeSymbolizer) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(SYMBOLS.equals(name)){
+            return CompositeSymbolizer.class;
+        }
+        return null;
+    }
 
 }

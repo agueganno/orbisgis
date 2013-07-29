@@ -30,6 +30,8 @@ package org.orbisgis.core.renderer.se;
 
 import org.orbisgis.core.renderer.se.visitors.ISymbolizerVisitor;
 
+import java.util.List;
+
 /**
  * Base of all SymbolizerNodes concrete implementations.
  * @author Alexis Guéganno
@@ -63,6 +65,13 @@ public abstract class AbstractSymbolizerNode implements SymbolizerNode {
         @Override
         public String getName(){
             return this.getClass().getSimpleName();
+        }
+
+        @Override
+        public List<String> getPropertyNames() {
+            List<String> ret = getRequiredPropertyNames();
+            ret.addAll(getOptionalPropertyNames());
+            return ret;
         }
 
 }

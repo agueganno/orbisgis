@@ -33,8 +33,9 @@ import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
+
 import net.opengis.se._2_0.core.FontType;
 import net.opengis.se._2_0.core.StyledTextType;
 import org.gdms.data.values.Value;
@@ -50,6 +51,7 @@ import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
@@ -59,6 +61,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * This class embed all the informations needed to represent text of any kind on a map.
@@ -73,6 +76,14 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
  * @author Maxence Laurent, Alexis Guéganno
  */
 public final class StyledText extends AbstractSymbolizerNode implements UomNode, FillNode, StrokeNode {
+    public static final String TEXT = I18n.marktr("Text");
+    public static final String FONT_FAMILY =I18n.marktr("Font");
+    public static final String FONT_WEIGHT =I18n.marktr("Weight");
+    public static final String FONT_SIZE = I18n.marktr("Size");
+    public static final String FONT_STYLE = I18n.marktr("Style");
+    public static final String STROKE = I18n.marktr("Stroke");
+    public static final String FILL = I18n.marktr("Fill");
+    public static final String HALO = I18n.marktr("Halo");
     private StringParameter text;
     private StringParameter fontFamily;
     private StringParameter fontWeight;
@@ -677,5 +688,90 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
             ls.add(halo);
         }
         return ls;
+    }
+
+    @Override
+    public java.util.List<String> getRequiredPropertyNames() {
+        ArrayList<String> s = new ArrayList<String>();
+        s.add(TEXT);
+        return s;
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        ArrayList<String> s = new ArrayList<String>();
+        s.add(FONT_FAMILY);
+        s.add(FONT_SIZE);
+        s.add(FONT_STYLE);
+        s.add(FONT_WEIGHT);
+        s.add(STROKE);
+        s.add(FILL);
+        s.add(HALO);
+        return s;
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(TEXT.equals(name)){
+            return getText();
+        } else if(FONT_FAMILY.equals(name)){
+            return getFontFamily();
+        } else if(FONT_SIZE.equals(name)){
+            return getFontSize();
+        } else if(FONT_STYLE.equals(name)){
+            return getFontSize();
+        } else if(FONT_WEIGHT.equals(name)){
+            return getFontWeight();
+        } else if(STROKE.equals(name)){
+            return getStroke();
+        } else if(FILL.equals(name)){
+            return getFill();
+        } else if(HALO.equals(name)){
+            return getHalo();
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String name, SymbolizerNode value) {
+        if(TEXT.equals(name)){
+            setText((StringParameter) value);
+        } else if(FONT_FAMILY.equals(name)){
+            setFontFamily((StringParameter) value);
+        } else if(FONT_SIZE.equals(name)){
+            setFontSize((RealParameter) value);
+        }else if(FONT_STYLE.equals(name)){
+            setFontSize((RealParameter) value);
+        } else if(FONT_WEIGHT.equals(name)){
+            setFontWeight((StringParameter) value);
+        } else if(STROKE.equals(name)){
+            setStroke((Stroke) value);
+        } else if(FILL.equals(name)){
+            setFill((Fill) value);
+        } else if(HALO.equals(name)){
+            setHalo((Halo) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(TEXT.equals(name)){
+            return StringParameter.class;
+        } else if(FONT_FAMILY.equals(name)){
+            return StringParameter.class;
+        } else if(FONT_SIZE.equals(name)){
+            return RealParameter.class;
+        } else if(FONT_STYLE.equals(name)){
+            return RealParameter.class;
+        } else if(FONT_WEIGHT.equals(name)){
+            return RealParameter.class;
+        } else if(STROKE.equals(name)){
+            return Stroke.class;
+        } else if(FILL.equals(name)){
+            return Fill.class;
+        } else if(HALO.equals(name)){
+            return Halo.class;
+        }
+        return null;
     }
 }

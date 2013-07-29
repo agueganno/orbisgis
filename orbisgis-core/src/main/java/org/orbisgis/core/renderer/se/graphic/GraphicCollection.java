@@ -41,6 +41,7 @@ import org.apache.log4j.Logger;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.PropertiesCollectionNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
@@ -54,7 +55,8 @@ import org.xnap.commons.i18n.I18nFactory;
  * It is a set of graphic symbols, as defined in SE.
  * @author Maxence Laurent
  */
-public final class GraphicCollection extends AbstractSymbolizerNode implements UomNode {
+public final class GraphicCollection extends AbstractSymbolizerNode implements UomNode, PropertiesCollectionNode {
+    private static final String COLLECTION = I18n.marktr("Graphic collection");
 
     private static final Logger LOGGER = Logger.getLogger(GraphicCollection.class);
     private static final I18n I18N = I18nFactory.getI18n(GraphicCollection.class);
@@ -269,8 +271,7 @@ public final class GraphicCollection extends AbstractSymbolizerNode implements U
     /**
      *
      * @param g2
-     * @param sds
-     * @param fid
+     * @param map
      * @param selected
      * @param mt
      * @throws ParameterException
@@ -292,6 +293,30 @@ public final class GraphicCollection extends AbstractSymbolizerNode implements U
         List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
         ls.addAll(graphics);
         return ls;
+    }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        return null;
     }
 
     /**
@@ -347,4 +372,33 @@ public final class GraphicCollection extends AbstractSymbolizerNode implements U
             }
     }
 
+    @Override
+    public List<String> getPropertiesNames() {
+        List<String> ret = new ArrayList<String>();
+        ret.add(COLLECTION);
+        return ret;
+    }
+
+    @Override
+    public Collection<SymbolizerNode> getProperties(String name) {
+        if(COLLECTION.equals(name)){
+            return new ArrayList<SymbolizerNode>(graphics);
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperties(String name, Collection<SymbolizerNode> properties) {
+        if(COLLECTION.equals(name)){
+            graphics = new ArrayList<Graphic>(properties.size());
+            for(SymbolizerNode sn : properties){
+                graphics.add((Graphic)sn);
+            }
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertiesClass(String name) {
+        return COLLECTION.equals(name) ? Graphic.class : null;
+    }
 }

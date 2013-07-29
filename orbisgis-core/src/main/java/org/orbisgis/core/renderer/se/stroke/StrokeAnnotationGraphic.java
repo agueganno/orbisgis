@@ -48,7 +48,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * </p>
  * <p>It is dependant upon three parameters :
  * <ul><li>Graphic : the icon to render, as a {@link GraphicCollection}. Compulsory parameter</li>
- * <li>RelativePosition : Position between the start and the end of the line geometry. It is 
+ * <li>RelativePosition : POSITION between the start and the end of the line geometry. It is
  * a {@link RealaParameter} that must be in the [0,1] interval. If not set, defaulted to 0</li>
  * <li>RelativeOrientation : The orientation of the graphic against the line. Must
  * be one of the {@link RelativeOrientation} value.</li>

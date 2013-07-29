@@ -29,6 +29,7 @@
 package org.orbisgis.core.renderer.se;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.CompositeSymbolizerType;
@@ -36,6 +37,7 @@ import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.SymbolizerType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * This is the entry point of the <code>Symbolizer</code>'s structure in a <code>Rule</code>
@@ -43,7 +45,8 @@ import org.orbisgis.core.renderer.se.common.Uom;
  * and that is not directly associated to any rendering or representation hint.
  * @author Maxence Laurent
  */
-public final class CompositeSymbolizer extends AbstractSymbolizerNode implements UomNode {
+public final class CompositeSymbolizer extends AbstractSymbolizerNode implements UomNode, PropertiesCollectionNode {
+        public static final String SYMBOLS = I18n.marktr("Symbols");
 
         private ArrayList<Symbolizer> symbolizers;
         
@@ -204,4 +207,62 @@ public final class CompositeSymbolizer extends AbstractSymbolizerNode implements
                 return ls;
         }
 
+        @Override
+        public List<String> getRequiredPropertyNames() {
+            return new ArrayList<String>();
+        }
+
+        @Override
+        public List<String> getOptionalPropertyNames() {
+            return new ArrayList<String>();
+        }
+
+        @Override
+        public SymbolizerNode getProperty(String name) {
+            return null;
+        }
+
+        @Override
+        public void setProperty(String prop, SymbolizerNode value) {
+        }
+
+        @Override
+        public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+            return null;
+        }
+
+        @Override
+        public List<String> getPropertiesNames() {
+            List<String> ret = new ArrayList<String>();
+            ret.add(SYMBOLS);
+            return ret;
+        }
+
+        @Override
+        public Collection<SymbolizerNode> getProperties(String name) {
+            if(SYMBOLS.equals(name)){
+                List<SymbolizerNode> sns = new ArrayList<SymbolizerNode>();
+                sns.addAll(getSymbolizerList());
+                return sns;
+            }
+            return null;
+        }
+
+        @Override
+        public void setProperties(String name, Collection<SymbolizerNode> properties) {
+            if(SYMBOLS.equals(name)){
+                symbolizers = new ArrayList<Symbolizer>();
+                for(SymbolizerNode sn : properties){
+                    symbolizers.add((Symbolizer) sn);
+                }
+            }
+        }
+
+        @Override
+        public Class<? extends SymbolizerNode> getPropertiesClass(String name) {
+            if(SYMBOLS.equals(name)){
+                return Symbolizer.class;
+            }
+            return null;
+        }
 }

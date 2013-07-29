@@ -46,6 +46,7 @@ import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * This class contains the common elements shared by <code>PointSymbolizer</code>,<code>LineSymbolizer</code>
@@ -59,6 +60,7 @@ import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
  * @author Maxence Laurent, Alexis Guéganno
  */
 public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
+        public static final String GEOMETRY = I18n.marktr("Geometry");
         private static final Logger LOGGER = Logger.getLogger(VectorSymbolizer.class);
         private Uom uom;
         private GeometryAttribute theGeom;
@@ -72,7 +74,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         }
 
         /**
-         * Build a VectorSymbolizer from the inpur JAXB type.
+         * Build a VectorSymbolizer from the input JaXB type.
          * @param st
          * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
          */

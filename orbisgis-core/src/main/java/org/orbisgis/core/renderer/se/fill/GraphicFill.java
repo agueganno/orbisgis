@@ -41,6 +41,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.xnap.commons.i18n.I18n;
 
 import javax.xml.bind.JAXBElement;
 import java.awt.*;
@@ -61,6 +62,10 @@ import java.util.Map;
  * @author Alexis Guéganno, Maxence Laurent
  */
 public final class GraphicFill extends Fill {
+
+    public static final String GAP_X = I18n.marktr("X Gap");
+    public static final String GRAPHICS = I18n.marktr("Graphics");
+    public static final String GAP_Y = I18n.marktr("Y Gap");
 
     private GraphicCollection graphic;
     /**
@@ -157,7 +162,6 @@ public final class GraphicFill extends Fill {
 
     /**
      * Get the gap, upon X direction, between two symbols.
-     * @param gap 
      */
     public RealParameter getGapX() {
         return gapX;
@@ -165,7 +169,6 @@ public final class GraphicFill extends Fill {
 
     /**
      * Get the gap, upon Y direction, between two symbols.
-     * @param gap 
      */
     public RealParameter getGapY() {
         return gapY;
@@ -188,8 +191,7 @@ public final class GraphicFill extends Fill {
     /**
      * Create a new TexturePaint according to this GraphicFill
      * 
-     * @param ds DataSet
-     * @param fid feature id
+     * @param map
      * @return a TexturePain ready to be used
      * @throws ParameterException
      * @throws IOException
@@ -303,5 +305,55 @@ public final class GraphicFill extends Fill {
     public JAXBElement<GraphicFillType> getJAXBElement() {
         ObjectFactory of = new ObjectFactory();
         return of.createGraphicFill(this.getJAXBType());
+    }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(GRAPHICS);
+        return ret;
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(GAP_X);
+        ret.add(GAP_Y);
+        return ret;
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(GRAPHICS.equals(name)){
+            return getGraphic();
+        } else if(GAP_Y.equals(name)){
+            return getGapY();
+        } else if(GAP_X.equals(name)){
+            return getGapX();
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(GRAPHICS.equals(prop)){
+            setGraphic((GraphicCollection) value);
+        } else if(GAP_Y.equals(prop)){
+            setGapY((RealParameter) value);
+        } else if(GAP_X.equals(prop)){
+            setGapX((RealParameter) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(GRAPHICS.equals(name)){
+            return GraphicCollection.class;
+        } else if(GAP_Y.equals(name)){
+            return RealParameter.class;
+        } else if(GAP_X.equals(name)){
+            return RealParameter.class;
+        }
+        return null;
     }
 }

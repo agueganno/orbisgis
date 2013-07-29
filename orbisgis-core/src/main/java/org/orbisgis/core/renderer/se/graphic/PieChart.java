@@ -36,6 +36,7 @@ import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -45,6 +46,7 @@ import net.opengis.se._2_0.thematic.PieSubtypeType;
 import net.opengis.se._2_0.thematic.SliceType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.PropertiesCollectionNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -60,6 +62,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
 import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * A PieChart is a way to render statistical informations directly in the map.
@@ -85,7 +88,12 @@ import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
  * @author Alexis Guéganno, Maxence Laurent
  */
 public final class PieChart extends Graphic implements StrokeNode, UomNode,
-        TransformNode {
+        TransformNode, PropertiesCollectionNode {
+    public static final String HOLE_RADIUS = I18n.marktr("Radius of the hole");
+    public static final String RADIUS = I18n.marktr("Radius");
+    public static final String STROKE = I18n.marktr("Stroke");
+    public static final String TRANSFORM = I18n.marktr("Transform");
+    public static final String SLICES = I18n.marktr("Slices");
 
     private ArrayList<SliceListener> listeners;
     private static final double DEFAULT_RADIUS_PX = 30;
@@ -637,5 +645,95 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
 
         ObjectFactory of = new ObjectFactory();
         return of.createPieChart(p);
+    }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        return ret;
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(HOLE_RADIUS);
+        ret.add(TRANSFORM);
+        ret.add(RADIUS);
+        ret.add(STROKE);
+        return ret;
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(HOLE_RADIUS.equals(name)){
+            return getHoleRadius();
+        } else if(TRANSFORM.equals(name)){
+            return transform;
+        } else if(RADIUS.equals(name)){
+            return getRadius();
+        } else if(STROKE.equals(name)){
+            return getStroke();
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(HOLE_RADIUS.equals(prop)){
+            setHoleRadius((RealParameter) value);
+        } else if(TRANSFORM.equals(prop)){
+            setTransform((Transform) value);
+        } else if(RADIUS.equals(prop)){
+            setRadius((RealParameter) value);
+        } else if(STROKE.equals(prop)){
+            setStroke((Stroke) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(HOLE_RADIUS.equals(name)){
+            return RealParameter.class;
+        } else if(TRANSFORM.equals(name)){
+            return Transform.class;
+        } else if(RADIUS.equals(name)){
+            return RealParameter.class;
+        } else if(STROKE.equals(name)){
+            return Stroke.class;
+        }
+        return null;
+    }
+
+    @Override
+    public List<String> getPropertiesNames() {
+        List<String> ret = new ArrayList<String>();
+        ret.add(SLICES);
+        return ret;
+    }
+
+    @Override
+    public Collection<SymbolizerNode> getProperties(String name) {
+        if(SLICES.equals(name)){
+            return new ArrayList<SymbolizerNode>(slices);
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperties(String name, Collection<SymbolizerNode> properties) {
+        if(SLICES.equals(name)){
+            slices = new ArrayList<Slice>();
+            for(SymbolizerNode sn : properties){
+                slices.add((Slice) sn);
+            }
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertiesClass(String name) {
+        if(SLICES.equals(name)){
+            return Slice.class;
+        }
+        return null;
     }
 }

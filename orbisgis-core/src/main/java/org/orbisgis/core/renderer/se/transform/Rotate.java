@@ -45,6 +45,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * {@code Rotate} is a transformation that performs a rotation of the affected
@@ -57,6 +58,9 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * @author Maxence Laurent
  */
 public final class Rotate extends AbstractSymbolizerNode implements Transformation {
+    public static final String Y = I18n.marktr("Y");
+    public static final String X = I18n.marktr("X");
+    public static final String ROTATION = I18n.marktr("Rotation");
 
         private RealParameter x;
         private RealParameter y;
@@ -251,5 +255,48 @@ public final class Rotate extends AbstractSymbolizerNode implements Transformati
         @Override
         public String toString() {
                 return "Rotate";
+        }
+
+        @Override
+        public List<String> getRequiredPropertyNames() {
+            ArrayList<String> ret = new ArrayList<String>();
+            ret.add(ROTATION);
+            return ret;
+        }
+
+        @Override
+        public List<String> getOptionalPropertyNames() {
+            ArrayList<String> ret = new ArrayList<String>();
+            ret.add(X);
+            ret.add(Y);
+            return ret;
+        }
+
+        @Override
+        public SymbolizerNode getProperty(String name) {
+            if(ROTATION.equals(name)){
+                return rotation;
+            } else if(X.equals(name)){
+                return x;
+            } else if(Y.equals(name)){
+                return y;
+            }
+            return null;
+        }
+
+        @Override
+        public void setProperty(String prop, SymbolizerNode value) {
+            if(ROTATION.equals(prop)){
+                setRotation((RealParameter)value);
+            } else if(X.equals(prop)){
+                setX((RealParameter)value);
+            } else if(Y.equals(prop)){
+                setY((RealParameter)value);
+            }
+        }
+
+        @Override
+        public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+            return getPropertyNames().equals(name) ? RealParameter.class : null;
         }
 }

@@ -75,6 +75,11 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public final class PenStroke extends Stroke implements FillNode {
 
+    public static final String FILL = I18n.marktr("Fill");
+    public static final String WIDTH = I18n.marktr("Width");
+    public static final String DASH_ARRAY = I18n.marktr("Dash array");
+    public static final String DASH_OFFSET= I18n.marktr("Dash offset");
+
     private static final I18n I18N = I18nFactory.getI18n(PenStroke.class);
     private static final double DEFAULT_WIDTH_PX = 1.0;
     public static final double DEFAULT_WIDTH = .25;
@@ -721,5 +726,63 @@ public final class PenStroke extends Stroke implements FillNode {
         }
 
         return s;
+    }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        ArrayList<String> s = new ArrayList<String>();
+        s.add(FILL);
+        s.add(WIDTH);
+        s.add(DASH_ARRAY);
+        s.add(DASH_OFFSET);
+        return s;
+
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(FILL.equals(name)){
+            return fill;
+        } else if(WIDTH.equals(name)){
+            return width;
+        } else if(DASH_ARRAY.equals(name)){
+            return dashArray;
+        } else if(DASH_OFFSET.equals(name)){
+            return dashOffset;
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String name, SymbolizerNode value) {
+        if(FILL.equals(name)){
+            setFill((Fill) value);
+        } else if(WIDTH.equals(name)){
+            setWidth((RealParameter) value);
+        } else if(DASH_ARRAY.equals(name)){
+            setDashArray((StringParameter) value);
+        } else if(DASH_OFFSET.equals(name)){
+            setDashOffset((RealParameter) value);
+        }
+
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(FILL.equals(name)){
+            return Fill.class;
+        } else if(WIDTH.equals(name)){
+            return RealParameter.class;
+        } else if(DASH_ARRAY.equals(name)){
+            return StringParameter.class;
+        } else if(DASH_OFFSET.equals(name)){
+            return RealParameter.class;
+        }
+        throw new UnsupportedOperationException("getPropertyClass not implemented yet in Category");
     }
 }

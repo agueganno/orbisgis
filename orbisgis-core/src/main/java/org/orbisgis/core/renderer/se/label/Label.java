@@ -31,6 +31,8 @@ package org.orbisgis.core.renderer.se.label;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.LabelType;
@@ -42,10 +44,12 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * Labels are used to provide text-label contents. A textSymbolizer must contain
@@ -55,6 +59,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
  * @author Maxence Laurent, Alexis Guéganno
  */
 public abstract class Label extends AbstractSymbolizerNode implements UomNode {
+    public static final String LABEL = I18n.marktr("Label");
     private Uom uom;
     private StyledText label;
     private HorizontalAlignment hAlign;
@@ -214,7 +219,7 @@ public abstract class Label extends AbstractSymbolizerNode implements UomNode {
 
     /**
      * Create a new {@code Label} built from a generic JAXB object.
-     * @param t
+     * @param l
      * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
      */
     protected Label(JAXBElement<? extends LabelType> l) throws InvalidStyle {
@@ -347,5 +352,41 @@ public abstract class Label extends AbstractSymbolizerNode implements UomNode {
      * A {@code JAXBElement} that contains a {@code LabelType} specialization.
      */
     public abstract JAXBElement<? extends LabelType> getJAXBElement();
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(LABEL);
+        return ret;
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        return ret;
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(LABEL.equals(name)){
+            return getLabel();
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(LABEL.equals(prop)){
+           setLabel((StyledText) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(LABEL.equals(name)){
+            return StyledText.class;
+        }
+        return null;
+    }
 
 }

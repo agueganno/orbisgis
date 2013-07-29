@@ -30,6 +30,7 @@ package org.orbisgis.core.renderer.se;
 import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.raster.RasterSymbolizerType;
@@ -47,6 +48,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.raster.Channel;
 import org.orbisgis.core.renderer.se.raster.ContrastEnhancement;
 import org.orbisgis.core.renderer.se.raster.OverlapBehavior;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * @ todo implements almost all...
@@ -54,6 +56,11 @@ import org.orbisgis.core.renderer.se.raster.OverlapBehavior;
  * @author Maxence Laurent, Erwan Bocher
  */
 public class RasterSymbolizer extends Symbolizer implements UomNode {
+
+    public static final String OPACITY = I18n.marktr("Opacity");
+    public static final String INTERPOLATE = I18n.marktr("Color interpolation");
+    public static final String CATEGORIZE = I18n.marktr("Categorize");
+    public static final String OUTLINE = I18n.marktr("Outline");
 
     private RealParameter opacity;
     private Channel redChannel;
@@ -254,5 +261,61 @@ public class RasterSymbolizer extends Symbolizer implements UomNode {
     @Override
     public final Uom getUom() {
         return uom == null ? Uom.PX : uom;
+    }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(CATEGORIZE);
+        ret.add(OUTLINE);
+        ret.add(OPACITY);
+        ret.add(INTERPOLATE);
+        return ret;
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(INTERPOLATE.equals(name)){
+            return getInterpolatedColorMap();
+        } else if(CATEGORIZE.equals(name)){
+            return getCategorizedColorMap();
+        } else if(OUTLINE.equals(name)){
+            return getOutline();
+        } else if(OPACITY.equals(name)){
+            return getOpacity();
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(INTERPOLATE.equals(prop)){
+            setInterpolatedColorMap((Interpolate2Color) value);
+        } else if(CATEGORIZE.equals(prop)){
+            setCategorizedColorMap((Categorize2Color) value);
+        } else if(OUTLINE.equals(prop)){
+            setOutline((AreaSymbolizer) value);
+        } else if(OPACITY.equals(prop)){
+            setOpacity((RealParameter) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(INTERPOLATE.equals(name)){
+            return Interpolate2Color.class;
+        } else if(CATEGORIZE.equals(name)){
+            return Categorize2Color.class;
+        } else if(OUTLINE.equals(name)){
+            return AreaSymbolizer.class;
+        } else if(OPACITY.equals(name)){
+            return RealParameter.class;
+        }
+        return null;
     }
 }

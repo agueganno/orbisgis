@@ -54,6 +54,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * {@code TextSymbolizer} instances are used to style text labels. In addition to
@@ -66,6 +67,8 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  */
 public final class TextSymbolizer extends VectorSymbolizer {
 
+        public static final String LABEL = I18n.marktr("Line Label");
+        public static final String OFFSET = I18n.marktr("Perpendicular offset");
         private RealParameter perpendicularOffset;
         private Label label;
 
@@ -213,5 +216,46 @@ public final class TextSymbolizer extends VectorSymbolizer {
                         ls.add(label);
                 }
                 return ls;
+        }
+
+        @Override
+        public List<String> getRequiredPropertyNames() {
+            ArrayList<String> s = new ArrayList<String>();
+            s.add(LABEL);
+            return s;
+        }
+
+        @Override
+        public List<String> getOptionalPropertyNames() {
+            return new ArrayList<String>();
+        }
+
+        @Override
+        public SymbolizerNode getProperty(String name) {
+            if(LABEL.equals(name)){
+                return getLabel();
+            } else if(OFFSET.equals(name)){
+                return getPerpendicularOffset();
+            }
+            return null;
+        }
+
+        @Override
+        public void setProperty(String prop, SymbolizerNode value) {
+            if(LABEL.equals(prop)){
+                setLabel((Label) value);
+            } else if(OFFSET.equals(name)){
+                setPerpendicularOffset((RealParameter) value);
+            }
+        }
+
+        @Override
+        public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+            if(LABEL.equals(name)){
+                return Label.class;
+            } else if(OFFSET.equals(name)){
+                return RealParameter.class;
+            }
+            return null;
         }
 }

@@ -70,7 +70,8 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Alexis Guéganno, Maxence Laurent
  */
 public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode {
-
+        public static final String OFFSET = I18n.marktr("Perpendicular offset");
+        public static final String STROKE = I18n.marktr("Stroke");
         private RealParameter perpendicularOffset;
         private Stroke stroke;
         private static final I18n I18N = I18nFactory.getI18n(LineSymbolizer.class);
@@ -225,4 +226,54 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
                 }
                 return ls;
         }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(STROKE);
+        return ret;
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(OFFSET);
+        ret.add(GEOMETRY);
+        return ret;
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(STROKE.equals(name)){
+            return getStroke();
+        } else if(OFFSET.equals(name)){
+            return getPerpendicularOffset();
+        } else if(GEOMETRY.equals(name)){
+            return getGeometryAttribute();
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(STROKE.equals(prop)){
+            setStroke((Stroke)value);
+        } else if(OFFSET.equals(prop)){
+            setPerpendicularOffset((RealParameter) value);
+        } else if(GEOMETRY.equals(prop)){
+            setGeometryAttribute((GeometryAttribute) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(STROKE.equals(name)){
+            return Stroke.class;
+        } else if(OFFSET.equals(name)){
+            return RealParameter.class;
+        } else if(GEOMETRY.equals(name)){
+            return GeometryAttribute.class;
+        }
+        return null;
+    }
 }

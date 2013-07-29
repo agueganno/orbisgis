@@ -77,6 +77,8 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Alexis Guéganno, Maxence Laurent
  */
 public final class PointSymbolizer extends VectorSymbolizer implements GraphicNode {
+
+    public static final String GRAPHICS = I18n.marktr("Graphics");
     private static final I18n I18N = I18nFactory.getI18n(PointSymbolizer.class);
     private static final Logger LOGGER = Logger.getLogger(PointSymbolizer.class);
     private static final String MODE_VERTEX = "vertex";
@@ -220,5 +222,48 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
         }
         ls.add(graphic);
         return ls;
+    }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(GRAPHICS);
+        return ret;
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(GEOMETRY);
+        return ret;
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(GEOMETRY.equals(name)){
+            return getGeometryAttribute();
+        } else if(GRAPHICS.equals(name)){
+            return getGraphicCollection();
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(GEOMETRY.equals(prop)){
+            setGeometryAttribute((GeometryAttribute) value);
+        } else if(GRAPHICS.equals(prop)){
+            setGraphicCollection((GraphicCollection)value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(GEOMETRY.equals(name)){
+            return GeometryAttribute.class;
+        } else if(GRAPHICS.equals(name)){
+            return GraphicCollection.class;
+        }
+        return null;
     }
 }

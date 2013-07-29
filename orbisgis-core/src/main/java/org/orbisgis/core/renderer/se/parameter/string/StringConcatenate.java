@@ -36,11 +36,13 @@ import net.opengis.se._2_0.core.ParameterValueType;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.PropertiesCollectionNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * Implementation of the {@code Concatenate} SE function. This function takes at
@@ -51,7 +53,10 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
  * processing of its content.
  * @author Alexis Guéganno
  */
-public class StringConcatenate extends AbstractSymbolizerNode implements SeParameter,StringParameter, Iterable<StringParameter> {
+public class StringConcatenate extends AbstractSymbolizerNode implements SeParameter,StringParameter,
+            Iterable<StringParameter>, PropertiesCollectionNode {
+
+        public static final String INPUTS = I18n.marktr("Input Strings");
 
         private List<StringParameter> inputStrings;
 
@@ -73,7 +78,7 @@ public class StringConcatenate extends AbstractSymbolizerNode implements SeParam
         /**
          * Build a new {@code StringConcatenate} instance from the given 
          * {@code JAXBElement<ConcatenateType>} instance.
-         * @param concatenate
+         * @param concat
          * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
          */
 
@@ -247,4 +252,60 @@ public class StringConcatenate extends AbstractSymbolizerNode implements SeParam
             return ls;
         }
 
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        return null;
+    }
+
+    @Override
+    public List<String> getPropertiesNames() {
+        List<String> ret = new ArrayList<String>();
+        ret.add(INPUTS);
+        return ret;
+    }
+
+    @Override
+    public Collection<SymbolizerNode> getProperties(String name) {
+        if(INPUTS.equals(name)){
+            return new ArrayList<SymbolizerNode>(inputStrings);
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperties(String name, Collection<SymbolizerNode> properties) {
+        if(INPUTS.equals(name)){
+            inputStrings = new ArrayList<StringParameter>(properties.size());
+            for(SymbolizerNode sn : properties){
+                inputStrings.add((StringParameter) sn);
+            }
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertiesClass(String name) {
+        if(INPUTS.equals(name)){
+            return StringParameter.class;
+        }
+        return null;
+    }
 }

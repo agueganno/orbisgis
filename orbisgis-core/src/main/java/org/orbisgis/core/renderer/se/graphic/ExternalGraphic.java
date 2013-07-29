@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
+
+import antlr.NoViableAltException;
 import net.opengis.se._2_0.core.ExternalGraphicType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import org.gdms.data.values.Value;
@@ -47,11 +49,13 @@ import org.orbisgis.core.renderer.se.ViewBoxNode;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
+import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.transform.Transform;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * An external graphic is an image such as JPG, PNG, SVG.
@@ -78,6 +82,11 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  */
 public final class ExternalGraphic extends Graphic implements UomNode, TransformNode,
         ViewBoxNode {
+    public static final String SOURCE = I18n.marktr("Source");
+    public static final String VIEWBOX = I18n.marktr("ViewBox");
+    public static final String OPACITY = I18n.marktr("Opacity");
+    public static final String HALO = I18n.marktr("Halo");
+    public static final String TRANSFORM = I18n.marktr("Transform");
 
     private ExternalGraphicSource source;
     private ViewBox viewBox;
@@ -460,5 +469,73 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
 
         ObjectFactory of = new ObjectFactory();
         return of.createExternalGraphic(e);
+    }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(SOURCE);
+        return ret;
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(VIEWBOX);
+        ret.add(TRANSFORM);
+        ret.add(OPACITY);
+        ret.add(HALO);
+        return ret;
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(SOURCE.equals(name)){
+            return getSource();
+        } else if(VIEWBOX.equals(name)){
+            return viewBox;
+        } else if(TRANSFORM.equals(name)){
+            return transform;
+        } else if(OPACITY.equals(name)){
+            return opacity;
+        } else if(HALO.equals(name)){
+            return halo;
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(SOURCE.equals(prop)){
+            try {
+                setSource((ExternalGraphicSource) value);
+            } catch (IOException e) {
+                throw new IllegalStateException("Can't reach the source");
+            }
+        } else if(VIEWBOX.equals(prop)){
+            setViewBox((ViewBox) value);
+        } else if(TRANSFORM.equals(prop)){
+            setTransform((Transform) value);
+        } else if(OPACITY.equals(prop)){
+            setOpacity((RealParameter) value);
+        } else if(HALO.equals(prop)){
+            setHalo((Halo) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(SOURCE.equals(name)){
+            return ExternalGraphicSource.class;
+        } else if(VIEWBOX.equals(name)){
+            return ViewBox.class;
+        } else if(TRANSFORM.equals(name)){
+            return Transform.class;
+        } else if(OPACITY.equals(name)){
+            return RealParameter.class;
+        } else if(HALO.equals(name)){
+            return Halo.class;
+        }
+        return null;
     }
 }

@@ -44,20 +44,22 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.label.LineLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.xnap.commons.i18n.I18n;
 
 /**
- * {@code TexteStroke} is used to render text labels along a line. It is useful 
- * to add informations to the {@code CompoundStroke} elements.
+ * {@code TextStroke} is used to render text labels along a line. It is useful
+ * to add information to the {@code CompoundStroke} elements.
  * It is dependant on a {@link LineLabel}, to store the text to render, and the styling
  * details used for the rendering.
  * @author Maxence Laurent, Alexis Guéganno
  */
 public final class TextStroke extends Stroke {
+        public static final String LINE_LABEL = I18n.marktr("Line Label");
 
         private LineLabel lineLabel;
 
         /**
-         * Builds a new {@code TexteStroke} with an inner default {@link LineLabel}.
+         * Builds a new {@code TextStroke} with an inner default {@link LineLabel}.
          */
         public TextStroke() {
                 setLineLabel(new LineLabel());
@@ -152,4 +154,39 @@ public final class TextStroke extends Stroke {
                 return bounds.getWidth();
         }
 
+
+        @Override
+        public List<String> getRequiredPropertyNames() {
+            ArrayList<String> s = new ArrayList<String>();
+            s.add(LINE_LABEL);
+            return s;
+        }
+
+        @Override
+        public List<String> getOptionalPropertyNames() {
+            return new ArrayList<String>();
+        }
+
+        @Override
+        public SymbolizerNode getProperty(String name) {
+            if(LINE_LABEL.equals(name)){
+                return lineLabel;
+            }
+            return null;
+        }
+
+        @Override
+        public void setProperty(String prop, SymbolizerNode value) {
+            if(LINE_LABEL.equals(prop)){
+                setLineLabel((LineLabel) value);
+            }
+        }
+
+        @Override
+        public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+            if(LINE_LABEL.equals(name)){
+                return LineLabel.class;
+            }
+            return null;
+        }
 }

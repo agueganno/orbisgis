@@ -40,6 +40,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * An {@code ExclusionZone} where the forbidden area is defined as a circle. It is 
@@ -49,6 +50,8 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * @author Maxence Laurent
  */
 public final class ExclusionRadius extends ExclusionZone {
+
+        public static final String RADIUS = I18n.marktr("Radius");
 
         private RealParameter radius;
 
@@ -124,5 +127,34 @@ public final class ExclusionRadius extends ExclusionZone {
                         ls.add(radius);
                 }
                 return ls;
+        }
+
+        @Override
+        public List<String> getRequiredPropertyNames() {
+            ArrayList<String> ret = new ArrayList<String>();
+            ret.add(RADIUS);
+            return ret;
+        }
+
+        @Override
+        public List<String> getOptionalPropertyNames() {
+            return new ArrayList<String>();
+        }
+
+        @Override
+        public SymbolizerNode getProperty(String name) {
+            return RADIUS.equals(name) ? getRadius() : null;
+        }
+
+        @Override
+        public void setProperty(String prop, SymbolizerNode value) {
+            if(RADIUS.equals(prop)){
+                setRadius((RealParameter) value);
+            }
+        }
+
+        @Override
+        public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+            return RADIUS.equals(name) ? RealParameter.class : null;
         }
 }

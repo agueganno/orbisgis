@@ -156,8 +156,7 @@ public abstract class ValueReference extends AbstractSymbolizerNode implements S
      * Get the GDMS {@code Value} associated to this reference in the given
      * {@code map}. The value returned by {@link ValueReference#getColumnName()}
      * is used as the key.
-     * @param sds
-     * @param fid
+     * @param map
      * @return
      * @throws ParameterException
      * If the value returned by {@link ValueReference#getColumnName()} is not
@@ -184,10 +183,32 @@ public abstract class ValueReference extends AbstractSymbolizerNode implements S
 		return of.createValueReference(fieldName);
 	}
 
-        @Override
-        public List<SymbolizerNode> getChildren() {
-                return new ArrayList<SymbolizerNode>();
-        }
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        return new ArrayList<SymbolizerNode>();
+    }
 
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        return new ArrayList<String>();
+    }
 
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        return null;
+    }
 }

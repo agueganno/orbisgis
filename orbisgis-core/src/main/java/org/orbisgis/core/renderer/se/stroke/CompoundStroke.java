@@ -32,6 +32,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -39,6 +40,7 @@ import net.opengis.se._2_0.core.CompoundStrokeType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.PropertiesCollectionNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
@@ -48,6 +50,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * A {@code CompoundStroke} allows to combine multiple strokes. This way, it becomes possible 
@@ -59,7 +62,11 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * <li>A list of {@link StrokeAnnotationGraphic} used to decorate the line</li></ul>
  * @author Maxence Laurent, Alexis Guéganno
  */
-public final class CompoundStroke extends Stroke implements UomNode {
+public final class CompoundStroke extends Stroke implements UomNode, PropertiesCollectionNode {
+
+    public static final String PRE_GAP = I18n.marktr("Pre-gap");
+    public static final String POST_GAP = I18n.marktr("Post-gap");
+    public static final String ELEMENTS = I18n.marktr("Elements");
 
     private RealParameter preGap;
     private RealParameter postGap;
@@ -145,7 +152,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
      * The PostGap is used to determine how far from the end of the line the plotting must be stopped.</p>
      * <p>Note that PostGap is considered to be a positive real number. If a negative value is given, 
      * it will be set to O.
-     * @param preGap 
+     * @param postGap
      */
     public void setPostGap(RealParameter postGap) {
         this.postGap = postGap;
@@ -621,5 +628,82 @@ public final class CompoundStroke extends Stroke implements UomNode {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(PRE_GAP);
+        ret.add(POST_GAP);
+        return ret;
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(POST_GAP.equals(name)){
+            return getPostGap();
+        } else if(PRE_GAP.equals(name)){
+            return getPreGap();
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(POST_GAP.equals(prop)){
+            setPostGap((RealParameter) value);
+        } else if(PRE_GAP.equals(prop)){
+            setPreGap((RealParameter) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(POST_GAP.equals(name)){
+            return RealParameter.class;
+        } else if(PRE_GAP.equals(name)){
+            return RealParameter.class;
+        }
+        return null;
+    }
+
+    @Override
+    public List<String> getPropertiesNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(ELEMENTS);
+        return ret;
+    }
+
+    @Override
+    public Collection<SymbolizerNode> getProperties(String name) {
+        if(ELEMENTS.equals(name)){
+            ArrayList<SymbolizerNode> ret = new ArrayList<SymbolizerNode>();
+            ret.addAll(getElements());
+            return ret;
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperties(String name, Collection<SymbolizerNode> properties) {
+        if(ELEMENTS.equals(name)){
+            elements = new ArrayList<CompoundStrokeElement>(properties.size());
+            for(SymbolizerNode sn : properties){
+                elements.add((CompoundStrokeElement) sn);
+            }
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertiesClass(String name) {
+        if(ELEMENTS.equals(name)){
+            return CompoundStrokeElement.class;
+        }
+        return null;
     }
 }

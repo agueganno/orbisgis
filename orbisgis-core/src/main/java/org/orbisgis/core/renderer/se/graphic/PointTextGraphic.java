@@ -51,6 +51,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * A {@code PointTextGraphic} is used to paint a text label using a given translation. It is consequently
@@ -61,6 +62,9 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * @author Alexis Guéganno
  */
 public final class PointTextGraphic extends Graphic implements UomNode {
+        public static final String Y = I18n.marktr("Y");
+        public static final String X = I18n.marktr("X");
+        public static final String POINT_LABEL = I18n.marktr("Point label");
 
         private Uom uom;
         private PointLabel pointLabel;
@@ -251,5 +255,55 @@ public final class PointTextGraphic extends Graphic implements UomNode {
                         ls.add(y);
                 }
                 return ls;
+        }
+
+        @Override
+        public List<String> getRequiredPropertyNames() {
+            return new ArrayList<String>();
+        }
+
+        @Override
+        public List<String> getOptionalPropertyNames() {
+            ArrayList<String> s = new ArrayList<String>();
+            s.add(POINT_LABEL);
+            s.add(X);
+            s.add(Y);
+            return s;
+        }
+
+        @Override
+        public SymbolizerNode getProperty(String name) {
+            if(POINT_LABEL.equals(name)){
+                return pointLabel;
+            } else if(X.equals(name)){
+                return x;
+            } else if(Y.equals(name)){
+                return y;
+            }
+            return null;
+        }
+
+        @Override
+        public void setProperty(String prop, SymbolizerNode value) {
+            if(POINT_LABEL.equals(prop)){
+                setPointLabel((PointLabel) value);
+            } else if(X.equals(prop)){
+                setX((RealParameter) value);
+            } if(Y.equals(prop)){
+                setY((RealParameter) value);
+            }  else {
+                throw new IllegalArgumentException("Unknown property name: "+prop);
+            }
+        }
+
+        @Override
+        public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+            if(POINT_LABEL.equals(name)){
+                return PointLabel.class;
+            } else if(X.equals(name) || Y.equals(name)){
+                return RealParameter.class;
+            } else {
+                throw new IllegalArgumentException("Unknown property name: "+name);
+            }
         }
 }

@@ -38,6 +38,7 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -47,11 +48,8 @@ import net.opengis.se._2_0.thematic.CategoryType;
 import net.opengis.se._2_0.thematic.ObjectFactory;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.FillNode;
+import org.orbisgis.core.renderer.se.*;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.StrokeNode;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
@@ -61,6 +59,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * {@code AxisChart} references all the supported types of chart that uses axis
@@ -83,7 +82,15 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  * @todo Implements drawGraphic
  */
 public final class AxisChart extends Graphic implements UomNode, FillNode,
-        StrokeNode, TransformNode {
+        StrokeNode, TransformNode, PropertiesCollectionNode {
+    public static final String NORMALIZE = I18n.marktr("Normalize to");
+    public static final String AXIS_SCALE = I18n.marktr("Axis scale");
+    public static final String WIDTH = I18n.marktr("Category width");
+    public static final String GAP = I18n.marktr("Category gap");
+    public static final String STROKE = I18n.marktr("Stroke");
+    public static final String FILL = I18n.marktr("Fill");
+    public static final String TRANSFORM = I18n.marktr("Transform");
+    public static final String CATEGORIES = I18n.marktr("Categories");
 
         private List<CategoryListener> listeners;
         private Uom uom;
@@ -938,5 +945,117 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                 }
                 ls.addAll(categories);
                 return ls;
+        }
+
+        @Override
+        public List<String> getRequiredPropertyNames() {
+            ArrayList<String> ret = new ArrayList<String>();
+            ret.add(WIDTH);
+            return ret;
+        }
+
+        @Override
+        public List<String> getOptionalPropertyNames() {
+            ArrayList<String> ret = new ArrayList<String>();
+            ret.add(NORMALIZE);
+            ret.add(TRANSFORM);
+            ret.add(AXIS_SCALE);
+            ret.add(STROKE);
+            ret.add(FILL);
+            ret.add(WIDTH);
+            ret.add(GAP);
+            return ret;
+        }
+
+        @Override
+        public SymbolizerNode getProperty(String name) {
+            if(NORMALIZE.equals(name)){
+                return getNormalizeTo();
+            } else if(TRANSFORM.equals(name)){
+                return transform;
+            } else if(AXIS_SCALE.equals(name)){
+                return getAxisScale();
+            } else if(STROKE.equals(name)){
+                return getStroke();
+            } else if(WIDTH.equals(name)){
+                return getCategoryWidth();
+            } else if(GAP.equals(name)){
+                return getCategoryGap();
+            } else if(FILL.equals(name)){
+                return getFill();
+            }
+            return null;
+        }
+
+        @Override
+        public void setProperty(String prop, SymbolizerNode value) {
+            if(NORMALIZE.equals(prop)){
+                setNormalizeTo((RealParameter) value);
+            } else if(TRANSFORM.equals(prop)){
+                setTransform((Transform) value);
+            } else if(AXIS_SCALE.equals(prop)){
+                setAxisScale((AxisScale) value);
+            } else if(STROKE.equals(prop)){
+                setStroke((Stroke) value);
+            } else if(WIDTH.equals(prop)){
+                setCategoryWidth((RealParameter) value);
+            } else if(GAP.equals(prop)){
+                setCategoryGap((RealParameter) value);
+            } else if(FILL.equals(prop)){
+                setFill((Fill) value);
+            }
+        }
+
+        @Override
+        public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+            if(NORMALIZE.equals(name)){
+                return RealParameter.class;
+            } else if(TRANSFORM.equals(name)){
+                return Transform.class;
+            } else if(AXIS_SCALE.equals(name)){
+                return AxisScale.class;
+            } else if(STROKE.equals(name)){
+                return Stroke.class;
+            } else if(WIDTH.equals(name)){
+                return RealParameter.class;
+            } else if(GAP.equals(name)){
+                return RealParameter.class;
+            } else if(FILL.equals(name)){
+                return Fill.class;
+            }
+            return null;
+        }
+
+        @Override
+        public List<String> getPropertiesNames() {
+            List<String> ret = new ArrayList<String>();
+            ret.add(CATEGORIES);
+            return ret;
+        }
+
+        @Override
+        public Collection<SymbolizerNode> getProperties(String name) {
+            if(CATEGORIES.equals(name)){
+                return new ArrayList<SymbolizerNode>(categories);
+            }
+            return null;
+        }
+
+        @Override
+        public void setProperties(String name, Collection<SymbolizerNode> properties) {
+            if(CATEGORIES.equals(name)){
+                categories = new ArrayList<Category>();
+                for(SymbolizerNode sn : properties){
+                    categories.add((Category) sn);
+                }
+            }
+        }
+
+        @Override
+        public Class<? extends SymbolizerNode> getPropertiesClass(String name) {
+            if(CATEGORIES.equals(name)){
+                return Category.class;
+            }
+            return null;
         }
 }

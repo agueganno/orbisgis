@@ -64,6 +64,9 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Alexis Guéganno
  */
 public final class Halo extends AbstractSymbolizerNode implements  UomNode, FillNode {
+    public static final String FILL = I18n.marktr("Fill");
+    public static final String RADIUS = I18n.marktr("Radius");
+
 
     private static final Logger LOGGER = Logger.getLogger(Halo.class);
     private static final I18n I18N = I18nFactory.getI18n(Halo.class);
@@ -172,8 +175,7 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
 
     /**
      * Return the halo radius in pixel
-     * @param sds
-     * @param fid
+     * @param map
      * @param mt
      * @return
      * @throws ParameterException
@@ -186,8 +188,7 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
      * Draw this {@code Halo} in {@code g2}. Basically compute an offseted shape
      * and fill the difference with the original one.
      * @param g2
-     * @param sds
-     * @param fid
+     * @param map
      * @param selected
      * @param shp
      * @param mt
@@ -217,10 +218,7 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
      * MapTransform.
      * @param g2
      * The {@code Graphics} where we are going to draw.
-     * @param sds
-     * Our DataSet
-     * @param fid
-     * The index of the current feature in sds.
+     * @param map
      * @param selected
      * @param shp
      * The original Shape
@@ -305,4 +303,45 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
             return new SolidFill(Color.WHITE, 1);
     }
 
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(FILL);
+        ret.add(RADIUS);
+        return ret;
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(FILL.equals(name)){
+            return getFill();
+        } else if(RADIUS.equals(name)){
+            return getRadius();
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(FILL.equals(prop)){
+            setFill((Fill) value);
+        } else if(RADIUS.equals(prop)){
+            setRadius((RealParameter) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(FILL.equals(name)){
+            return Fill.class;
+        } else if(RADIUS.equals(name)){
+            return RealParameter.class;
+        }
+        return null;
+    }
 }

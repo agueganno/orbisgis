@@ -45,6 +45,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * {@code Scale} is used to apply an homothetic transformation on a Graphic. It
@@ -55,6 +56,8 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * @author Maxence Laurent, Alexis Guéganno
  */
 public final class Scale extends AbstractSymbolizerNode implements Transformation {
+    public static final String Y = I18n.marktr("Y");
+    public static final String X = I18n.marktr("X");
 
     private RealParameter x;
     private RealParameter y;
@@ -211,6 +214,43 @@ public final class Scale extends AbstractSymbolizerNode implements Transformatio
     @Override
     public String toString() {
         return "Scale";
+    }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(X);
+        ret.add(Y);
+        return ret;
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(X.equals(name)){
+            return x;
+        } else if(Y.equals(name)){
+            return y;
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(X.equals(prop)){
+            setX((RealParameter)value);
+        } else if(Y.equals(prop)){
+            setY((RealParameter)value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        return getPropertyNames().contains(name) ? RealParameter.class : null;
     }
 
 

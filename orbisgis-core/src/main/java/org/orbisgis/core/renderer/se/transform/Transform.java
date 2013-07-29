@@ -31,17 +31,20 @@ package org.orbisgis.core.renderer.se.transform;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import net.opengis.se._2_0.core.*;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.PropertiesCollectionNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.xnap.commons.i18n.I18n;
 
 /**
  *
@@ -49,7 +52,9 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  *
  * @author Maxence Laurent, Alexis Guéganno
  */
-public class Transform extends AbstractSymbolizerNode implements UomNode {
+public class Transform extends AbstractSymbolizerNode implements UomNode, PropertiesCollectionNode {
+
+        public static final String TRANSFORMATIONS = I18n.marktr("Transformations");
 
         private Uom uom;
         private AffineTransform consolidated;
@@ -176,8 +181,7 @@ public class Transform extends AbstractSymbolizerNode implements UomNode {
          * representation of the combination of its inner {@code Transformation}
          * instances.
          * This method must be called after each modification of one of its transformations !
-         * @param sds
-         * @param fid
+         * @param map
          * @param forGeometries
          * @param mt
          * @param width
@@ -268,7 +272,31 @@ public class Transform extends AbstractSymbolizerNode implements UomNode {
                 return ls;
         }
 
-        @Override
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        return null;
+    }
+
+    @Override
         public Uom getUom() {
                 if (uom != null) {
                         return uom;
@@ -288,4 +316,33 @@ public class Transform extends AbstractSymbolizerNode implements UomNode {
         public void setUom(Uom uom) {
                 this.uom = uom;
         }
+
+    @Override
+    public List<String> getPropertiesNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(TRANSFORMATIONS);
+        return ret;
+    }
+
+    @Override
+    public Collection<SymbolizerNode> getProperties(String name) {
+        if(TRANSFORMATIONS.equals(name)){
+            ArrayList<SymbolizerNode> ret = new ArrayList<SymbolizerNode>();
+            ret.addAll(transformations);
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperties(String name, Collection<SymbolizerNode> properties) {
+        throw new UnsupportedOperationException("setProperties not implemented yet in Transform");
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertiesClass(String name) {
+        if(TRANSFORMATIONS.equals(name)){
+            return Transformation.class;
+        }
+        return null;
+    }
 }

@@ -50,6 +50,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * A label located at a single point. In addition to all the {@code Label} characteristics,
@@ -60,6 +61,9 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * @author Alexis Guéganno, Maxence Laurent
  */
 public final class PointLabel extends Label {
+
+    public static final String ROTATION = I18n.marktr("Rotation");
+    public static final String EXCLUSION_ZONE = I18n.marktr("Exclusion zone");
 
     private RealParameter rotation;
     private ExclusionZone exclusionZone;
@@ -229,19 +233,69 @@ public final class PointLabel extends Label {
         return pl;
     }
 
-        @Override
-        public List<SymbolizerNode> getChildren() {
-                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
-                if (getLabel() != null) {
-                        ls.add(getLabel());
-                }
-                if (exclusionZone != null) {
-                        ls.add(exclusionZone);
-                }
-                if (rotation != null) {
-                        ls.add(rotation);
-                }
-                return ls;
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        if (getLabel() != null) {
+            ls.add(getLabel());
         }
+        if (exclusionZone != null) {
+            ls.add(exclusionZone);
+        }
+        if (rotation != null) {
+            ls.add(rotation);
+        }
+        return ls;
+    }
 
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(LABEL);
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(EXCLUSION_ZONE);
+        ret.add(ROTATION);
+        return ret;
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(EXCLUSION_ZONE.equals(name)){
+            return getExclusionZone();
+        } else if(LABEL.equals(name)){
+            return getLabel();
+        } else if(ROTATION.equals(name)){
+            return getRotation();
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(EXCLUSION_ZONE.equals(prop)){
+            setExclusionZone((ExclusionZone) value);
+        } else if(LABEL.equals(prop)){
+            setLabel((StyledText) value);
+        } else if(ROTATION.equals(prop)){
+            setRotation((RealParameter) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(EXCLUSION_ZONE.equals(name)){
+            return ExclusionZone.class;
+        } else if(LABEL.equals(name)){
+            return StyledText.class;
+        } else if(ROTATION.equals(name)){
+            return RealParameter.class;
+        }
+        return null;
+    }
 }

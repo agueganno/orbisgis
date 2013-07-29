@@ -28,13 +28,22 @@
  */
 package org.orbisgis.core.renderer.se.parameter;
 
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.xnap.commons.i18n.I18n;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * <code>InterpolationPoint</code> are used to map a <code>Type</code> instance (the <b>value</b> to 
  * a <code>double</code> (the <b>data</b>.
  * @author Alexis Guéganno
  * @param <Type> 
  */
-public class InterpolationPoint<Type extends SeParameter> implements Comparable {
+public class InterpolationPoint<Type extends SeParameter> extends AbstractSymbolizerNode implements Comparable {
+
+    public static final String VALUE = I18n.marktr("Value");
 
     private double d;
     private Type v = null;
@@ -114,4 +123,42 @@ public class InterpolationPoint<Type extends SeParameter> implements Comparable 
         return false;
     }
 
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ret = new ArrayList<SymbolizerNode>();
+        ret.add(getValue());
+        return ret;
+    }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        List<String> ret = new ArrayList<String>();
+        ret.add(VALUE);
+        return ret;
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(VALUE.equals(name)){
+            return getValue();
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(VALUE.equals(prop)){
+            setValue((Type)value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        return getValue().getClass();
+    }
 }

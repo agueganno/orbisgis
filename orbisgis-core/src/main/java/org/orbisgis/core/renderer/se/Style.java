@@ -34,6 +34,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -52,6 +53,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * Usable representation of SE styles. This is the upper node of the symbology
@@ -60,8 +62,8 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
  * @author Maxence Laurent
  * @author Alexis Guéganno
  */
-public final class Style extends AbstractSymbolizerNode {
-
+public final class Style extends AbstractSymbolizerNode implements PropertiesCollectionNode {
+    public static final String RULES = I18n.marktr("Rules");
     public static final String PROP_VISIBLE = "visible";
     private static final String DEFAULT_NAME = "Unnamed Style";
     private static final Logger LOGGER = Logger.getLogger(Style.class);
@@ -76,8 +78,8 @@ public final class Style extends AbstractSymbolizerNode {
      * Create a new {@code Style} associated to the given {@code ILayer}. If the
      * given boolean is tru, a default {@code Rule} will be added to the Style.
      * If not, the {@code Style} will be let empty.
-     * @param layer
-     * @param addDefaultRule
+     * @param layer The embedding layer
+     * @param addDefaultRule If true, a rule will be added. If false, the new style will be let empty.
      */
     public Style(ILayer layer, boolean addDefaultRule) {
         rules = new ArrayList<Rule>();
@@ -271,7 +273,6 @@ public final class Style extends AbstractSymbolizerNode {
      *
      * @param mt
      * @param layerSymbolizers
-     * @param overlaySymbolizers
      *
      * @param rules
      * @param fallbackRules
@@ -359,6 +360,30 @@ public final class Style extends AbstractSymbolizerNode {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        return null;
     }
 
     /**
@@ -513,5 +538,39 @@ public final class Style extends AbstractSymbolizerNode {
     */
     public void removePropertyChangeListener(String prop,PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(prop,listener);
-    }    
+    }
+
+    @Override
+    public List<String> getPropertiesNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(RULES);
+        return ret;
+    }
+
+    @Override
+    public Collection<SymbolizerNode> getProperties(String name) {
+        List<SymbolizerNode> ret = new ArrayList<SymbolizerNode>();
+        if(RULES.equals(name)){
+            ret.addAll(getRules());
+        }
+        return ret;
+    }
+
+    @Override
+    public void setProperties(String name, Collection<SymbolizerNode> properties) {
+        if(RULES.equals(name)){
+            rules = new ArrayList<Rule>(properties.size());
+            for(SymbolizerNode sn : properties){
+                rules.add((Rule)sn);
+            }
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertiesClass(String name) {
+        if(RULES.equals(name)){
+            return Rule.class;
+        }
+        return null;
+    }
 }

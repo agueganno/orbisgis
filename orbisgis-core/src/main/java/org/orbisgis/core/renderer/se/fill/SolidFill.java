@@ -50,6 +50,7 @@ import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * A solid fill fills a shape with a solid color (+opacity)
@@ -57,6 +58,8 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * @author Maxence Laurent
  */
 public final class SolidFill extends Fill {
+    public static final String COLOR = I18n.marktr("Color");
+    public static final String OPACITY = I18n.marktr("Opacity");
 
 	private ColorParameter color;
 	private RealParameter opacity;
@@ -167,10 +170,9 @@ public final class SolidFill extends Fill {
 
         /**
         * Return a Java Color according to this SE Solid Fill
-        * @param fid
-        * @param sds
-        * @param selected
-        * @param mt
+        * @param map The input features
+        * @param selected If true, the current feature has been selected
+        * @param mt The current MapTransform
         * @return A java.awt.Color
         * @throws ParameterException
         */
@@ -247,4 +249,47 @@ public final class SolidFill extends Fill {
 		ObjectFactory of = new ObjectFactory();
 		return of.createSolidFill(this.getJAXBType());
 	}
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        return ret;
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(COLOR);
+        ret.add(OPACITY);
+        return ret;
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(COLOR.equals(name)){
+            return getColor();
+        } else if(OPACITY.equals(name)){
+            return opacity;
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(COLOR.equals(prop)){
+            setColor((ColorParameter) value);
+        } else if(OPACITY.equals(prop)){
+            setOpacity((RealParameter) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(COLOR.equals(name)){
+            return ColorParameter.class;
+        } else if(OPACITY.equals(name)){
+            return RealParameter.class;
+        }
+        return null;
+    }
 }

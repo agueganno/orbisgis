@@ -65,6 +65,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * This class intends to make the link between an online image and the current symbolizing tree. It can be used for
@@ -77,6 +78,8 @@ import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
  * @author Alexis Guéganno
  */
 public class VariableOnlineResource extends AbstractSymbolizerNode implements ExternalGraphicSource, MarkGraphicSource {
+
+    public static final String URL = I18n.marktr("URL");
 
     private StringParameter url;
     private Map<URL,PlanarImage> imageCache = new HashMap<URL,PlanarImage>();
@@ -522,5 +525,40 @@ public class VariableOnlineResource extends AbstractSymbolizerNode implements Ex
         List<SymbolizerNode> ret = new ArrayList<SymbolizerNode>();
         ret.add(url);
         return ret;
+    }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        List<String> ret = new ArrayList<String>();
+        ret.add(URL);
+        return ret;
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(URL.equals(name)){
+            return getUrl();
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(URL.equals(prop)){
+            setUrl((StringParameter) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(URL.equals(name)){
+            return StringParameter.class;
+        }
+        return null;
     }
 }

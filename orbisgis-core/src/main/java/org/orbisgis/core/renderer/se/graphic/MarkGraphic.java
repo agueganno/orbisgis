@@ -49,6 +49,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
+import org.xnap.commons.i18n.I18n;
 
 import javax.xml.bind.JAXBElement;
 import java.awt.*;
@@ -87,6 +88,15 @@ import java.util.Map;
  */
 public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
         ViewBoxNode, UomNode, TransformNode {
+
+    public static final String TRANSFORM = I18n.marktr("Transform");
+    public static final String STROKE = I18n.marktr("Stroke");
+    public static final String FILL = I18n.marktr("Fill");
+    public static final String VIEWBOX = I18n.marktr("ViewBox");
+    public static final String HALO = I18n.marktr("Halo");
+    public static final String INDEX = I18n.marktr("Mark index");
+    public static final String RESOURCE = I18n.marktr("Online Resource");
+    public static final String OFFSET = I18n.marktr("Perpendicular offset");
 
         /**
          * The default size used to build {@code MarkGraphic} instances.
@@ -632,5 +642,89 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
             ls.add(onlineResource);
         }
         return ls;
+    }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(STROKE);
+        ret.add(FILL);
+        ret.add(VIEWBOX);
+        ret.add(TRANSFORM);
+        ret.add(HALO);
+        ret.add(INDEX);
+        ret.add(RESOURCE);
+        ret.add(OFFSET);
+        return ret;
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(STROKE.equals(name)){
+            return getStroke();
+        } else if(VIEWBOX.equals(name)){
+            return viewBox;
+        } else if(TRANSFORM.equals(name)){
+            return transform;
+        } else if(FILL.equals(name)){
+            return getFill();
+        } else if(HALO.equals(name)){
+            return halo;
+        } else if(INDEX.equals(name)){
+            return markIndex;
+        } else if(RESOURCE.equals(name)){
+            return getOnlineResource();
+        } else if(OFFSET.equals(name)){
+            return getPerpendicularOffset();
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(STROKE.equals(prop)){
+            setStroke((Stroke) value);
+        } else if(VIEWBOX.equals(prop)){
+            setViewBox((ViewBox) value);
+        } else if(TRANSFORM.equals(prop)){
+            setTransform((Transform) value);
+        } else if(FILL.equals(prop)){
+            setFill((Fill) value);
+        } else if(HALO.equals(prop)){
+            setHalo((Halo) value);
+        } else if(INDEX.equals(prop)){
+            setMarkIndex((RealParameter) value);
+        } else if(RESOURCE.equals(prop)){
+            setOnlineResource((VariableOnlineResource) value);
+        } else if(OFFSET.equals(prop)){
+            setPerpendicularOffset((RealParameter) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(STROKE.equals(name)){
+            return ExternalGraphicSource.class;
+        } else if(VIEWBOX.equals(name)){
+            return ViewBox.class;
+        } else if(TRANSFORM.equals(name)){
+            return Transform.class;
+        } else if(FILL.equals(name)){
+            return RealParameter.class;
+        } else if(HALO.equals(name)){
+            return Halo.class;
+        } else if(INDEX.equals(name)){
+            return RealParameter.class;
+        } else if(RESOURCE.equals(name)){
+            return VariableOnlineResource.class;
+        } else if(OFFSET.equals(name)){
+            return RealParameter.class;
+        }
+        return null;
     }
 }

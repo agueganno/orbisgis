@@ -37,6 +37,7 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * {@code Slice}s are used in {@code PieChart}s instances to determine the size
@@ -50,8 +51,12 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * @author Alexis Guéganno
  */
 public class Slice extends AbstractSymbolizerNode implements FillNode {
+    public static final String VALUE = I18n.marktr("Value");
+    public static final String FILL = I18n.marktr("Fill");
+    public static final String GAP = I18n.marktr("Gap");
 
-        private String name;
+
+    private String name;
         private RealParameter value;
         private Fill fill;
         private RealParameter gap;
@@ -164,5 +169,55 @@ public class Slice extends AbstractSymbolizerNode implements FillNode {
                         ls.add(gap);
                 }
                 return ls;
+        }
+
+        @Override
+        public List<String> getRequiredPropertyNames() {
+            ArrayList<String> ret = new ArrayList<String>();
+            ret.add(FILL);
+            ret.add(VALUE);
+            return ret;
+        }
+
+        @Override
+        public List<String> getOptionalPropertyNames() {
+            ArrayList<String> ret = new ArrayList<String>();
+            ret.add(GAP);
+            return ret;
+        }
+
+        @Override
+        public SymbolizerNode getProperty(String name) {
+            if(FILL.equals(name)){
+                return getFill();
+            } else if(VALUE.equals(name)){
+                return value;
+            } else if(GAP.equals(name)){
+                return gap;
+            }
+            return null;
+        }
+
+        @Override
+        public void setProperty(String prop, SymbolizerNode value) {
+            if(FILL.equals(prop)){
+                setFill((Fill)value);
+            } else if(VALUE.equals(prop)){
+                setValue((RealParameter)value);
+            } else if(GAP.equals(prop)){
+                setGap((RealParameter)value);
+            }
+        }
+
+        @Override
+        public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+            if(FILL.equals(name)){
+                return Fill.class;
+            } else if(VALUE.equals(name)){
+                return RealParameter.class;
+            } else if(GAP.equals(name)){
+                return RealParameter.class;
+            }
+            return null;
         }
 }

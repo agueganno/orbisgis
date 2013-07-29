@@ -55,6 +55,9 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public abstract class Recode<ToType extends SeParameter, FallbackType extends ToType> extends AbstractSymbolizerNode
                 implements SeParameter {
+
+    public static final String LOOKUP_VALUE = I18n.marktr("Lookup value");
+    public static final String FALLBACK = I18n.marktr("Fallback value");
     private static final I18n I18N = I18nFactory.getI18n(Recode.class);
     private static final Logger LOGGER = Logger.getLogger(Recode.class);
     
@@ -326,6 +329,47 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
                 ls.add(e.getValue());
         }
         return ls;
+    }
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(LOOKUP_VALUE);
+        ret.add(FALLBACK);
+        return ret;
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(LOOKUP_VALUE.equals(name)){
+            return getLookupValue();
+        } else if(FALLBACK.equals(name)){
+            return getFallbackValue();
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(LOOKUP_VALUE.equals(prop)){
+            setLookupValue((StringParameter) value);
+        } else if(FALLBACK.equals(prop)){
+            setFallbackValue((FallbackType) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(LOOKUP_VALUE.equals(name)){
+            return StringParameter.class;
+        } else if(FALLBACK.equals(name)){
+            return getFallbackValue().getClass();
+        }
+        return null;
     }
 
 

@@ -70,6 +70,11 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, StrokeNode {
 
+        public static final String TRANSLATE = I18n.marktr("Translate");
+        public static final String OFFSET = I18n.marktr("Perpendicular offset");
+        public static final String STROKE = I18n.marktr("Stroke");
+        public static final String FILL = I18n.marktr("Fill");
+
         private Translate translate;
         private RealParameter perpendicularOffset;
         private Stroke stroke;
@@ -160,7 +165,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
         /**
          * Get the geometric transformation that must be applied to the geometries.
-         * @param transform 
+         * @param translate
          */
         public void setTranslate(Translate translate) {
                 this.translate = translate;
@@ -275,23 +280,86 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
         @Override
         public List<SymbolizerNode> getChildren() {
-                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>(4);
-                if(this.getGeometryAttribute()!=null){
-                    ls.add(this.getGeometryAttribute());
-                }
-                if (translate != null) {
-                        ls.add(translate);
-                }
-                if (fill != null) {
-                        ls.add(fill);
-                }
-                if (perpendicularOffset != null) {
-                        ls.add(perpendicularOffset);
-                }
-                if (stroke != null) {
-                        ls.add(stroke);
-                }
-                return ls;
+            List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>(4);
+            if(this.getGeometryAttribute()!=null){
+                ls.add(this.getGeometryAttribute());
+            }
+            if (translate != null) {
+                    ls.add(translate);
+            }
+            if (fill != null) {
+                    ls.add(fill);
+            }
+            if (perpendicularOffset != null) {
+                    ls.add(perpendicularOffset);
+            }
+            if (stroke != null) {
+                    ls.add(stroke);
+            }
+            return ls;
+        }
+
+        @Override
+        public List<String> getRequiredPropertyNames() {
+            return new ArrayList<String>();
+        }
+
+        @Override
+        public List<String> getOptionalPropertyNames() {
+            ArrayList<String> ret = new ArrayList<String>();
+            ret.add(GEOMETRY);
+            ret.add(STROKE);
+            ret.add(FILL);
+            ret.add(TRANSLATE);
+            ret.add(OFFSET);
+            return ret;
+        }
+
+        @Override
+        public SymbolizerNode getProperty(String name) {
+            if(STROKE.equals(name)){
+                return getStroke();
+            } else if(OFFSET.equals(name)){
+                return getPerpendicularOffset();
+            } else if(GEOMETRY.equals(name)){
+                return getGeometryAttribute();
+            } else if(FILL.equals(name)){
+                return getFill();
+            } else if(TRANSLATE.equals(name)){
+                return getFill();
+            }
+            return null;
+        }
+
+        @Override
+        public void setProperty(String prop, SymbolizerNode value) {
+            if(STROKE.equals(prop)){
+                setStroke((Stroke) value);
+            } else if(OFFSET.equals(prop)){
+                setPerpendicularOffset((RealParameter) value);
+            } else if(GEOMETRY.equals(prop)){
+                setGeometryAttribute((GeometryAttribute) value);
+            } else if(FILL.equals(prop)){
+                setFill((Fill) value);
+            } else if(TRANSLATE.equals(prop)){
+                setTranslate((Translate) value);
+            }
+        }
+
+        @Override
+        public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+            if(STROKE.equals(name)){
+                return Stroke.class;
+            } else if(OFFSET.equals(name)){
+                return RealParameter.class;
+            } else if(GEOMETRY.equals(name)){
+                return GeometryAttribute.class;
+            } else if(FILL.equals(name)){
+                return Fill.class;
+            } else if(TRANSLATE.equals(name)){
+                return Translate.class;
+            }
+            return null;
         }
 
 }

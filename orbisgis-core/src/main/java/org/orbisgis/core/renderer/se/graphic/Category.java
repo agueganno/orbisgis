@@ -41,6 +41,7 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * A {@code Category} is a part of an {@link AxisChart}. It embeds a value, and
@@ -56,14 +57,18 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
  * @todo add support for stacked bar (means category fill / stroke are mandatory) and others are forbiden
  */
 public final class Category  extends AbstractSymbolizerNode implements FillNode, StrokeNode, GraphicNode {
+    public static final String VALUE = I18n.marktr("Value");
+    public static final String FILL = I18n.marktr("Fill");
+    public static final String STROKE = I18n.marktr("Stroke");
+    public static final String GRAPHIC = I18n.marktr("Graphics");
 
         private RealParameter measure;
 
-        /* in order to draw bars, optionnal */
+        /* in order to draw bars, optional */
         private Fill fill;
         private Stroke stroke;
 
-        /* In order to draw points, optionnal */
+        /* In order to draw points, optional */
         private GraphicCollection graphic;
         private String name;
 
@@ -152,7 +157,66 @@ public final class Category  extends AbstractSymbolizerNode implements FillNode,
                 return name;
         }
 
-        /**
+        @Override
+        public List<String> getRequiredPropertyNames() {
+            ArrayList<String> s = new ArrayList<String>();
+            s.add(VALUE);
+            return s;
+
+        }
+
+        @Override
+        public List<String> getOptionalPropertyNames() {
+            ArrayList<String> s = new ArrayList<String>();
+            s.add(STROKE);
+            s.add(FILL);
+            s.add(GRAPHIC);
+            return s;
+        }
+
+        @Override
+        public SymbolizerNode getProperty(String name) {
+            if(VALUE.equals(name)){
+                return measure;
+            } else if(STROKE.equals(name)){
+                return stroke;
+            } else if(FILL.equals(name)){
+                return fill;
+            } else if(GRAPHIC.equals(name)){
+                return graphic;
+            }
+            return null;
+        }
+
+        @Override
+        public void setProperty(String name, SymbolizerNode value) {
+            if(VALUE.equals(name)){
+                setMeasure((RealParameter) value);
+            } else if(STROKE.equals(name)){
+                setStroke((Stroke) value);
+            } else if(FILL.equals(name)){
+                setFill((Fill) value);
+            } else if(GRAPHIC.equals(name)){
+                setGraphicCollection((GraphicCollection) value);
+            }
+
+        }
+
+        @Override
+        public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+            if(VALUE.equals(name)){
+                return RealParameter.class;
+            } else if(STROKE.equals(name)){
+                return Stroke.class;
+            } else if(FILL.equals(name)){
+                return Fill.class;
+            } else if(GRAPHIC.equals(name)){
+                return GraphicCollection.class;
+            }
+            throw new UnsupportedOperationException("getPropertyClass not implemented yet in Category");
+        }
+
+    /**
          * The measure associated to this {@code Category}.
          * @return
          * A {@link RealParameter}. That means this {@code Category} can

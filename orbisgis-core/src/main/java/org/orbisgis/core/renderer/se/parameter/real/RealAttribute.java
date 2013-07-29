@@ -50,7 +50,6 @@ public class RealAttribute extends ValueReference implements RealParameter {
 
     /**
      * Create a new instance of {@code RealAttribute}, with an empty associated field name.
-     * @param fieldName 
      */
     public RealAttribute() {
         ctx = RealParameterContext.REAL_CONTEXT;
@@ -59,7 +58,7 @@ public class RealAttribute extends ValueReference implements RealParameter {
     /**
      * Create a new instance of {@code RealAttribute}, setting the fieldName of the column where
      * the values will be searched.
-     * @param fieldName 
+     * @param fieldName The associated field name.
      */
     public RealAttribute(String fieldName) {
         super(fieldName);
@@ -68,8 +67,8 @@ public class RealAttribute extends ValueReference implements RealParameter {
 
     /**
      * Create a new instance of {@code RealAttribute}, using a {@code JAXBElement} to retrieve
-     * all the needed informations.
-     * @param fieldName 
+     * all the needed information.
+     * @param expr The original JaXB object.
      */
     public RealAttribute(ValueReferenceType expr) throws InvalidStyle {
         super(expr);

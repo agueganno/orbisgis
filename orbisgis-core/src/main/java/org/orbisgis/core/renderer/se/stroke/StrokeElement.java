@@ -37,6 +37,7 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * A {@code StrokeElement} is used to draw a "sub-stroke" of a render pattern. 
@@ -58,6 +59,10 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * @author Maxence Laurent
  */
 public final class StrokeElement extends CompoundStrokeElement implements StrokeNode {
+        public static final String LENGTH=I18n.marktr("Length");
+        public static final String PRE_GAP=I18n.marktr("Pre gap");
+        public static final String POST_GAP=I18n.marktr("Post gap");
+        public static final String STROKE=I18n.marktr("Stroke");
 
         private RealParameter length;
         private RealParameter preGap;
@@ -238,4 +243,61 @@ public final class StrokeElement extends CompoundStrokeElement implements Stroke
         public String toString() {
                 return this.stroke.getClass().getSimpleName();
         }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        ArrayList<String> s = new ArrayList<String>();
+        s.add(STROKE);
+        return s;
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        ArrayList<String> s = new ArrayList<String>();
+        s.add(LENGTH);
+        s.add(PRE_GAP);
+        s.add(POST_GAP);
+        return s;
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(LENGTH.equals(name)){
+            return length;
+        } else if(PRE_GAP.equals(name)){
+            return preGap;
+        } else if(POST_GAP.equals(name)){
+            return postGap;
+        } else if(STROKE.equals(name)){
+            return stroke;
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(LENGTH.equals(prop)){
+            setLength((RealParameter) value);
+        } else if(PRE_GAP.equals(prop)){
+            setPreGap((RealParameter) value);
+        } else if(POST_GAP.equals(prop)){
+            setPostGap((RealParameter) value);
+        } else if(STROKE.equals(prop)){
+            setStroke((Stroke) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(LENGTH.equals(name)){
+            return RealParameter.class;
+        } else if(PRE_GAP.equals(name)){
+            return RealParameter.class;
+        } else if(POST_GAP.equals(name)){
+            return RealParameter.class;
+        } else if(STROKE.equals(name)){
+            return Stroke.class;
+        }
+        return null;
+    }
 }

@@ -100,6 +100,9 @@ import org.xnap.commons.i18n.I18nFactory;
 public abstract class Categorize<ToType extends SeParameter, FallbackType extends ToType>
                 extends AbstractSymbolizerNode implements SeParameter, LiteralListener {
 
+    public static final String LOOKUP_VALUE = I18n.marktr("Lookup value");
+    public static final String FALLBACK = I18n.marktr("Fallback value");
+
     private static final String SD_FACTOR_KEY = "SdFactor";
     private static final String METHOD_KEY = "method";
     private static final Logger LOGGER = Logger.getLogger(Categorize.class);
@@ -753,6 +756,47 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         for (CategorizeListener l : listeners) {
             l.thresholdResorted();
         }
+    }
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(LOOKUP_VALUE);
+        ret.add(FALLBACK);
+        return ret;
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(LOOKUP_VALUE.equals(name)){
+            return getLookupValue();
+        } else if(FALLBACK.equals(name)){
+            return getFallbackValue();
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(LOOKUP_VALUE.equals(prop)){
+            setLookupValue((RealParameter) value);
+        } else if(FALLBACK.equals(prop)){
+            setFallbackValue((FallbackType) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(LOOKUP_VALUE.equals(name)){
+            return RealParameter.class;
+        } else if(FALLBACK.equals(name)){
+            return getFallbackValue().getClass();
+        }
+        return null;
     }
 
 }

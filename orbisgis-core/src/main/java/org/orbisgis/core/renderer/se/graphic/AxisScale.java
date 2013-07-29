@@ -38,8 +38,12 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.xnap.commons.i18n.I18n;
 
 public final class AxisScale extends AbstractSymbolizerNode {
+
+    public static final String LENGTH = I18n.marktr("Length");
+    public static final String MEASURE = I18n.marktr("Measure");
 
     public static final double DEFAULT_LENGTH = 40;
     public static final double DEFAULT_MEASURE = 40;
@@ -67,7 +71,7 @@ public final class AxisScale extends AbstractSymbolizerNode {
     }
 
     /**
-     * Measure is the value that will be represented by a AxisLenght length
+     * Measure is the value that will be represented by a AxisLength length
      * Cannot be null !
      * @param value not null
      */
@@ -119,6 +123,44 @@ public final class AxisScale extends AbstractSymbolizerNode {
             ls.add(measure);
         }
         return ls;
+    }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        return getPropertyNames();
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(LENGTH.equals(name)){
+            return axisLength;
+        } else if(MEASURE.equals(name)){
+            return measure;
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String name, SymbolizerNode value) {
+        if(MEASURE.equals(name)){
+            setMeasure((RealParameter) value);
+        } else if(LENGTH.equals(name)){
+            setAxisLength((RealParameter) value);
+        }
+
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(MEASURE.equals(name) || LENGTH.equals(name)){
+            return RealParameter.class;
+        }
+        throw new UnsupportedOperationException("getPropertyClass not implemented yet in Category");
     }
     
 }

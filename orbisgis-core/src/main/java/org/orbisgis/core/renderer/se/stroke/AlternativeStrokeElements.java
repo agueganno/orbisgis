@@ -29,20 +29,24 @@
 package org.orbisgis.core.renderer.se.stroke;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import net.opengis.se._2_0.core.AlternativeStrokeElementsType;
 import net.opengis.se._2_0.core.StrokeElementType;
+import org.orbisgis.core.renderer.se.PropertiesCollectionNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * {@code AlternativeStrokeElements} provides the option for the rendering system to 
  * choose from different {@code StrokeElement} definitions.</p>
- * <p>Instances of this class contains a list of {@code StrokElement} that is used
+ * <p>Instances of this class contains a list of {@code StrokeElement} that is used
  * to provide the said options.
  * @author Maxence Laurent
  */
-public class AlternativeStrokeElements extends CompoundStrokeElement {
+public class AlternativeStrokeElements extends CompoundStrokeElement implements PropertiesCollectionNode {
+        public static final String ELEMENTS = I18n.marktr("Elements");
 
         private List<StrokeElement> elements;
 
@@ -54,14 +58,14 @@ public class AlternativeStrokeElements extends CompoundStrokeElement {
         }
 
         /**
-         * Buld a new {@code AlternativeStrokeElement}, using the informations 
-         * stored in the JAXB {@code AlternativeStrokeElementType}.
-         * @param aset
+         * Build a new {@code AlternativeStrokeElement}, using the information
+         * stored in the JaXB {@code AlternativeStrokeElementType}.
+         * @param as The input JaXB object
          * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
          */
-        public AlternativeStrokeElements(AlternativeStrokeElementsType aset) throws InvalidStyle {
+        public AlternativeStrokeElements(AlternativeStrokeElementsType as) throws InvalidStyle {
                 this();
-                for (StrokeElementType se : aset.getStrokeElement()) {
+                for (StrokeElementType se : as.getStrokeElement()) {
                         StrokeElement strokeElement = new StrokeElement(se);
                         strokeElement.setParent(this);
                         elements.add(strokeElement);
@@ -102,9 +106,67 @@ public class AlternativeStrokeElements extends CompoundStrokeElement {
 
         /**
          * Set the elements registered in this {@code AlternativeStrokeElement}.
-         * @param elements 
+         * @param elements  The new elements of this alternative.
          */
         public void setElements(ArrayList<StrokeElement> elements) {
                 this.elements = elements;
+        }
+
+        @Override
+        public List<String> getRequiredPropertyNames() {
+            return new ArrayList<String>();
+        }
+
+        @Override
+        public List<String> getOptionalPropertyNames() {
+            return new ArrayList<String>();
+        }
+
+        @Override
+        public SymbolizerNode getProperty(String name) {
+            return null;
+        }
+
+        @Override
+        public void setProperty(String prop, SymbolizerNode value) {
+        }
+
+        @Override
+        public void setProperties(String prop, Collection<SymbolizerNode> value) {
+            if(ELEMENTS.equals(prop)){
+                ArrayList<StrokeElement> elements = new ArrayList<StrokeElement>();
+                for(SymbolizerNode sn : value){
+                    elements.add((StrokeElement) sn);
+                }
+                setElements(elements);
+            }
+        }
+
+        @Override
+        public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+            return CompoundStrokeElement.class;
+        }
+
+        @Override
+        public List<String> getPropertiesNames() {
+            List<String> ret = new ArrayList<String>();
+            ret.add(ELEMENTS);
+            return ret;
+        }
+
+        @Override
+        public Collection<SymbolizerNode> getProperties(String name) {
+            if(ELEMENTS.equals(name)){
+                return new ArrayList<SymbolizerNode>(getElements());
+            }
+            return null;
+        }
+
+        @Override
+        public Class<? extends SymbolizerNode> getPropertiesClass(String name) {
+            if(ELEMENTS.equals(name)){
+                return StrokeElement.class;
+            }
+            return null;
         }
 }

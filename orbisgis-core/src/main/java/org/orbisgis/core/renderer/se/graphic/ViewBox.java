@@ -43,6 +43,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * {@code ViewBox} supplies a simple and convenient method to change the view box of a graphic,
@@ -51,15 +52,17 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * <ul><li>X : the width of the box.</li>
  * <li>Y : the height of the box.</li></ul>
  * If only one of these two is given, they are considered to be equal.</p>
- * <p>The main difference between this class and {@link Scale} is that a {@code Scale}
- * will use a reference graphic, that already has a size, and process an affine transformation
- * on it, while here the size of the graphic will be defined directly using its height
- * and width.</p>
+ * <p>The main difference between this class and {@link org.orbisgis.core.renderer.se.transform.Scale}
+ * is that a {@code Scale} will use a reference graphic, that already has a size, and process
+ * an affine transformation on it, while here the size of the graphic will be defined
+ * directly using its height and width.</p>
  * <p>The values given for the height and the width can be negative. If that
  * happens, the coordinate of the rendered graphic will be flipped.
  * @author Alexis Guéganno, Maxence Laurent
  */
 public final class ViewBox extends  AbstractSymbolizerNode {
+        public static final String Y = I18n.marktr("Y");
+        public static final String X = I18n.marktr("X");
         private RealParameter x;
         private RealParameter y;
 
@@ -153,8 +156,11 @@ public final class ViewBox extends  AbstractSymbolizerNode {
 
         /**
          * Return the final dimension described by this view box, in [px].
-         * @param ds map
-         * @param ratio required final ratio (if either width or height isn't defined)
+         * @param map The attribute map
+         * @param height The original height
+         * @param width The original width
+         * @param scale the wanted scale
+         * @param dpi the expected dpi
          * @return
          * @throws ParameterException
          */
@@ -236,5 +242,53 @@ public final class ViewBox extends  AbstractSymbolizerNode {
                         ls.add(x);
                 }
                 return ls;
+        }
+
+        @Override
+        public List<String> getRequiredPropertyNames() {
+            return new ArrayList<String>();
+        }
+
+        @Override
+        public List<String> getOptionalPropertyNames() {
+            ArrayList<String> s = new ArrayList<String>();
+            s.add(X);
+            s.add(Y);
+            return s;
+        }
+
+        @Override
+        public SymbolizerNode getProperty(String name) {
+            if(X.equals(name)){
+                return x;
+            } else if(Y.equals(name)){
+                return y;
+            }
+            return null;
+        }
+
+        @Override
+        public void setProperty(String prop, SymbolizerNode value) {
+            if(value == null || value instanceof RealParameter){
+                if(X.equals(prop)){
+                    setWidth((RealParameter) value);
+                } if(Y.equals(prop)){
+                    setHeight((RealParameter) value);
+                }  else {
+                    throw new IllegalArgumentException("Unknown property name: "+prop);
+                }
+
+            } else {
+                throw new IllegalArgumentException("Illegal property type: "+value.getClass().getSimpleName());
+            }
+        }
+
+        @Override
+        public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+            if(getPropertyNames().contains(name)){
+                return RealParameter.class;
+            } else {
+                throw new IllegalArgumentException("Unknown property name: "+name);
+            }
         }
 }

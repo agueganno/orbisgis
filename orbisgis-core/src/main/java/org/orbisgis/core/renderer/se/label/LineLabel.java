@@ -48,9 +48,10 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.xnap.commons.i18n.I18n;
 
 /**
- * A {@code LineLabel} is a text of some kinf associated to a Line (polygon or not).
+ * A {@code LineLabel} is a text of some kind associated to a Line (polygon or not).
  * @author Alexis Guéganno, Maxence Laurent
  * @todo implements
  */

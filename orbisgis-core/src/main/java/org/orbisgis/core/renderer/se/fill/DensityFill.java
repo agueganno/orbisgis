@@ -42,6 +42,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.xnap.commons.i18n.I18n;
 
 import javax.xml.bind.JAXBElement;
 import java.awt.*;
@@ -62,6 +63,11 @@ import java.util.Map;
  * @author Alexis Guéganno, Maxence Laurent
  */
 public final class DensityFill extends Fill implements GraphicNode {
+
+    public static final String COVERAGE = I18n.marktr("Coverage percentage");
+    public static final String GRAPHICS = I18n.marktr("Graphics");
+    public static final String HATCHES = I18n.marktr("Hatches");
+    public static final String ORIENTATION = I18n.marktr("Orientation");
 
     private boolean isHatched;
     private PenStroke hatches;
@@ -342,5 +348,62 @@ public final class DensityFill extends Fill implements GraphicNode {
     public JAXBElement<DensityFillType> getJAXBElement() {
         ObjectFactory of = new ObjectFactory();
         return of.createDensityFill(this.getJAXBType());
+    }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(COVERAGE);
+        return ret;
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(HATCHES);
+        ret.add(ORIENTATION);
+        ret.add(GRAPHICS);
+        return ret;
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(GRAPHICS.equals(name)){
+            return getGraphicCollection();
+        } else if(HATCHES.equals(name)){
+            return getHatches();
+        } else if(ORIENTATION.equals(name)){
+            return getHatchesOrientation();
+        } else if(COVERAGE.equals(name)){
+            return getPercentageCovered();
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(GRAPHICS.equals(prop)){
+            setGraphicCollection((GraphicCollection) value);
+        } else if(HATCHES.equals(prop)){
+            setHatches((PenStroke) value);
+        } else if(ORIENTATION.equals(prop)){
+            setHatchesOrientation((RealParameter) value);
+        } else if(COVERAGE.equals(prop)){
+            setPercentageCovered((RealParameter) value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        if(GRAPHICS.equals(name)){
+            return GraphicCollection.class;
+        } else if(HATCHES.equals(name)){
+            return PenStroke.class;
+        } else if(ORIENTATION.equals(name)){
+            return RealParameter.class;
+        } else if(COVERAGE.equals(name)){
+            return RealParameter.class;
+        }
+        return null;
     }
 }

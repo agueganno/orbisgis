@@ -591,4 +591,28 @@ public class OnlineResource extends AbstractSymbolizerNode implements ExternalGr
         List<SymbolizerNode> ret = new ArrayList<SymbolizerNode>();
         return ret;
     }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        return null;
+    }
 }

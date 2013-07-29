@@ -36,11 +36,13 @@ import net.opengis.se._2_0.core.ParameterValueType;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.PropertiesCollectionNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * Defines a function on real numbers. A function is defined with a operation and
@@ -54,7 +56,9 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
  *   * Neperian logarithm - <code>LN</code>
  * @author Maxence Laurent, Alexis Guéganno
  */
-public class RealFunction extends AbstractSymbolizerNode implements SeParameter, RealParameter {
+public class RealFunction extends AbstractSymbolizerNode implements SeParameter, RealParameter, PropertiesCollectionNode {
+
+    public static final String OPERANDS = I18n.marktr("Operands");
 
     public enum Operators {
         ADD, MUL, DIV, SUB, SQRT, LOG, LN
@@ -87,7 +91,7 @@ public class RealFunction extends AbstractSymbolizerNode implements SeParameter,
 
     /**
      * Build a <code>RealFunction</code> from a <code>FunctionType</code> instance.
-     * As the <code>FunctionType</code>'s tree can contain informations to build both
+     * As the <code>FunctionType</code>'s tree can contain information to build both
      * the operation and the operands, this constructor will naturally try to build them
      * all.
      * @param fcn
@@ -290,6 +294,63 @@ public class RealFunction extends AbstractSymbolizerNode implements SeParameter,
         List<SymbolizerNode> ls =new ArrayList<SymbolizerNode>();
         ls.addAll(operands);
         return ls;
+    }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        return null;
+    }
+
+    @Override
+    public List<String> getPropertiesNames() {
+        List<String> ret = new ArrayList<String>();
+        ret.add(OPERANDS);
+        return ret;
+    }
+
+    @Override
+    public Collection<SymbolizerNode> getProperties(String name) {
+        if(OPERANDS.equals(name)){
+            return new ArrayList<SymbolizerNode>(operands);
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperties(String name, Collection<SymbolizerNode> properties) {
+        if(OPERANDS.equals(name)){
+            operands = new ArrayList<RealParameter>();
+            for(SymbolizerNode sn : properties){
+                operands.add((RealParameter) sn);
+            }
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertiesClass(String name) {
+        if(OPERANDS.equals(name)){
+            return RealParameter.class;
+        }
+        return null;
     }
 
 

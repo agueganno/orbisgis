@@ -30,6 +30,8 @@ package org.orbisgis.core.renderer.se;
 
 import java.util.List;
 import org.orbisgis.core.renderer.se.visitors.ISymbolizerVisitor;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * SymbolizerNode allow to browse the styling tree. It's part of the visitor pattern
@@ -39,15 +41,17 @@ import org.orbisgis.core.renderer.se.visitors.ISymbolizerVisitor;
  */
 public interface SymbolizerNode{
 
+    public static final I18n I18N = I18nFactory.getI18n(SymbolizerNode.class);
+
     /**
      * get the parent of this current <code>SymbolizerNode</code>
-     * @return 
+     * @return The symbolizer node owning this one, if any.
      */
     SymbolizerNode getParent();
 
     /**
      * Set the parent of this <code>SymbolizerNode</code>
-     * @param node 
+     * @param node The new parent of this node.
      */
     void setParent(SymbolizerNode node);
 
@@ -59,13 +63,13 @@ public interface SymbolizerNode{
     /**
      * Get all the {@code SymbolizerNode} instances that are direct children
      * of this.
-     * @return
+     * @return The children of this node in a list.
      */
     List<SymbolizerNode> getChildren();
 
     /**
      * Accepts the visit of {@code visitor}.
-     * @param visitor
+     * @param visitor The visitor that want to inspect this node.
      */
     void acceptVisitor(ISymbolizerVisitor visitor);
 
@@ -74,4 +78,51 @@ public interface SymbolizerNode{
      * @return A name describing this node.
      */
     String getName();
+
+    /**
+     * Gets the names of all the properties this node supports.
+     * @return The names of the properties in a list of String.
+     */
+    List<String> getPropertyNames();
+
+    /**
+     * Gets the names of all the required properties this node needs.
+     * @return The names of the required properties in a list of String.
+     */
+    List<String> getRequiredPropertyNames();
+
+    /**
+     * Gets the names of all the properties that can be null and that are
+     * supported by this node.
+     * @return The names of the optional properties in a list of String.
+     */
+    List<String> getOptionalPropertyNames();
+
+    /**
+     * Gets the properties associated to the given name stored in this
+     * node.
+     * @param name The name of the property.
+     * @return The associated SymbolizerNode instances in a List. The
+     * list may be empty if the property is optional.
+     */
+    SymbolizerNode getProperty(String name);
+
+    /**
+     * Replace the properties associated to prop with the given value.
+     * @param prop The name of the property.
+     * @param value The new list of properties. Shall not be null, shall not
+     *              be empty if the property is required.
+     * @throws IllegalArgumentException If value provide elements that can't be used for prop.
+     */
+    void setProperty(String prop, SymbolizerNode value);
+
+    /**
+     * Gets the extension point associated to the given property name.
+     * @param name The property name
+     * @return The highest level class that can be used for this property.
+     */
+    Class<? extends SymbolizerNode> getPropertyClass(String name);
+
+
+
 }

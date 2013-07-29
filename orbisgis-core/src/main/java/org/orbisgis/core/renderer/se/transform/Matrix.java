@@ -45,11 +45,12 @@ import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * Affine Transformation based on RealParameters
  * Warning: conversion to pixel unit will give strange behavior !
- * <p> The matrix as the following form :</p>
+ * <p> The matrix has the following form :</p>
  * <p>{@code [A C E]}<br/>
  * {@code|B D F|}<br/>
  * {@code[0 0 1]}<br/></p>
@@ -60,12 +61,19 @@ import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
  */
 public final class Matrix extends AbstractSymbolizerNode implements Transformation {
 
-        private static final double DEF_A = 1.0;
-        private static final double DEF_B = 0.0;
-        private static final double DEF_C = 0.0;
-        private static final double DEF_D = 1.0;
-        private static final double DEF_E = 0.0;
-        private static final double DEF_F = 0.0;
+        public static final String A = I18n.marktr("A");
+        public static final String B = I18n.marktr("B");
+        public static final String C = I18n.marktr("C");
+        public static final String D = I18n.marktr("D");
+        public static final String E = I18n.marktr("E");
+        public static final String F = I18n.marktr("F");
+
+        public static final double DEF_A = 1.0;
+        public static final double DEF_B = 0.0;
+        public static final double DEF_C = 0.0;
+        public static final double DEF_D = 1.0;
+        public static final double DEF_E = 0.0;
+        public static final double DEF_F = 0.0;
         private RealParameter a;
         private RealParameter b;
         private RealParameter c;
@@ -88,12 +96,12 @@ public final class Matrix extends AbstractSymbolizerNode implements Transformati
 
         /**
          * Create a new <code>Matrix</code> from <code>double</code> values.
-         * @param a
-         * @param b
-         * @param c
-         * @param d
-         * @param e
-         * @param f 
+         * @param a The a parameter as a double instance.
+         * @param b The b parameter as a double instance.
+         * @param c The c parameter as a double instance.
+         * @param d The d parameter as a double instance.
+         * @param e The e parameter as a double instance.
+         * @param f The f parameter as a double instance.
          */
         public Matrix(double a, double b, double c, double d, double e, double f) {
                 setA(new RealLiteral(a));
@@ -107,12 +115,12 @@ public final class Matrix extends AbstractSymbolizerNode implements Transformati
         /**
          * Create a new <code>Matrix</code> from <code>RealParameter</code> instances. 
          * <code>null</code> values will be transformed to <code>new RealLiteral(0.0)</code>
-         * @param a
-         * @param b
-         * @param c
-         * @param d
-         * @param e
-         * @param f
+         * @param a The a parameter as a RealParameter instance.
+         * @param b The b parameter as a RealParameter instance.
+         * @param c The c parameter as a RealParameter instance.
+         * @param d The d parameter as a RealParameter instance.
+         * @param e The e parameter as a RealParameter instance.
+         * @param f The f parameter as a RealParameter instance.
          */
         public Matrix(RealParameter a, RealParameter b, RealParameter c,
                 RealParameter d, RealParameter e, RealParameter f) {
@@ -448,5 +456,68 @@ public final class Matrix extends AbstractSymbolizerNode implements Transformati
         @Override
         public String toString() {
                 return "Matrix";
+        }
+
+        @Override
+        public List<String> getRequiredPropertyNames() {
+            ArrayList<String> ret = new ArrayList<String>();
+            return ret;
+        }
+
+        @Override
+        public List<String> getOptionalPropertyNames() {
+            ArrayList<String> ret = new ArrayList<String>();
+            ret.add(A);
+            ret.add(B);
+            ret.add(C);
+            ret.add(D);
+            ret.add(E);
+            ret.add(F);
+            return ret;
+        }
+
+        @Override
+        public SymbolizerNode getProperty(String name) {
+            if(A.equals(name)){
+                return a;
+            } else if(B.equals(name)){
+                return b;
+            } else if(C.equals(name)){
+                return c;
+            } else if(D.equals(name)){
+                return d;
+            } else if(E.equals(name)){
+                return e;
+            } else if(F.equals(name)){
+                return f;
+            }
+            return null;
+        }
+
+        @Override
+        public void setProperty(String prop, SymbolizerNode value) {
+            if(A.equals(prop)){
+                setA((RealParameter) value);
+            } else if(B.equals(prop)){
+                setB((RealParameter) value);
+            } else if(C.equals(prop)){
+                setC((RealParameter) value);
+            } else if(D.equals(prop)){
+                setD((RealParameter) value);
+            } else if(E.equals(prop)){
+                setE((RealParameter) value);
+            } else if(F.equals(prop)){
+                setF((RealParameter) value);
+            }
+        }
+
+
+
+        @Override
+        public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+            if(getPropertyNames().contains(name)){
+                return RealParameter.class;
+            }
+            return null;
         }
 }

@@ -4,9 +4,9 @@
  * manipulate and create vector and raster spatial information.
  *
  * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * team of the IRSTV Institute <http://www.irstv.fr/> NEGATIVE_PATTERNNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * NEGATIVE_PATTERNopyright (NEGATIVE_PATTERN) 2007-2012 IRSTV (FR NEGATIVE_PATTERNNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -16,8 +16,8 @@
  * version.
  *
  * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * WARRANTY; without even the implied warranty of MERNEGATIVE_PATTERNHANTAFORMATTING_PATTERNILITY or FITNESS FOR
+ * A PARTINEGATIVE_PATTERNULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
@@ -46,6 +46,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * This class is used to embed {@code DecimalFormat} in a {@code
@@ -58,7 +59,9 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  */
 public class Number2String extends AbstractSymbolizerNode implements SeParameter, StringParameter {
 
-        //We're currently forced to keep some duplicated informations about the
+    public static final String NUMERIC_VALUE = I18n.marktr("Numeric value");
+
+        //We're currently forced to keep some duplicated information about the
         //content of the formatting pattern. Indeed, it's not possible to
         //easily retrieve the default and negative patterns using directly
         //formatter.
@@ -291,5 +294,41 @@ public class Number2String extends AbstractSymbolizerNode implements SeParameter
                 List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
                 ls.add(numericValue);
                 return ls;
+        }
+        @Override
+        public List<String> getRequiredPropertyNames() {
+            ArrayList<String> ret = new ArrayList<String>();
+            ret.add(NUMERIC_VALUE);
+            return ret;
+        }
+
+        @Override
+        public List<String> getOptionalPropertyNames() {
+            return new ArrayList<String>();
+        }
+
+        @Override
+        public SymbolizerNode getProperty(String name) {
+            if(NUMERIC_VALUE.equals(name)){
+                return getNumericValue();
+            }
+            return null;
+        }
+
+        @Override
+        public void setProperty(String prop, SymbolizerNode value) {
+            if(NUMERIC_VALUE.equals(prop)){
+                setNumericValue((RealParameter) value);
+            }
+        }
+
+
+
+        @Override
+        public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+            if(getPropertyNames().contains(name)){
+                return RealParameter.class;
+            }
+            return null;
         }
 }

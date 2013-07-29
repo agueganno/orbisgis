@@ -40,6 +40,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.xnap.commons.i18n.I18n;
 
 /**
  * An {@code ExclusionZone} where the forbidden area is defined as a rectangle. It is 
@@ -48,6 +49,8 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * @author Alexis Guéganno, Maxence Laurent
  */
 public final class ExclusionRectangle extends ExclusionZone {
+    public static final String Y = I18n.marktr("Y");
+    public static final String X = I18n.marktr("X");
 
     private RealParameter x;
     private RealParameter y;
@@ -90,7 +93,7 @@ public final class ExclusionRectangle extends ExclusionZone {
 
     /**
      * Set the x-length of the rectangle.
-     * @param x 
+     * @param x The new width
      */
     public void setX(RealParameter x) {
         this.x = x;
@@ -111,7 +114,7 @@ public final class ExclusionRectangle extends ExclusionZone {
 
     /**
      * Set the y-length of the rectangle.
-     * @param x 
+     * @param y the new height
      */
     public void setY(RealParameter y) {
         this.y = y;
@@ -152,6 +155,43 @@ public final class ExclusionRectangle extends ExclusionZone {
                 ls.add(y);
         }
         return ls;
+    }
+
+    @Override
+    public List<String> getRequiredPropertyNames() {
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(X);
+        ret.add(Y);
+        return ret;
+    }
+
+    @Override
+    public List<String> getOptionalPropertyNames() {
+        return new ArrayList<String>();
+    }
+
+    @Override
+    public SymbolizerNode getProperty(String name) {
+        if(X.equals(name)){
+            return x;
+        } else if(Y.equals(name)){
+            return y;
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(String prop, SymbolizerNode value) {
+        if(X.equals(prop)){
+            setX((RealParameter)value);
+        } else if(Y.equals(prop)){
+            setY((RealParameter)value);
+        }
+    }
+
+    @Override
+    public Class<? extends SymbolizerNode> getPropertyClass(String name) {
+        return getPropertyNames().equals(name) ? RealParameter.class : null;
     }
 
 }
