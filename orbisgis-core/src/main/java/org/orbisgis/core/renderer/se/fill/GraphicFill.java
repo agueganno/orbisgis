@@ -37,6 +37,7 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
+import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -83,6 +84,8 @@ public final class GraphicFill extends Fill {
     public GraphicFill() {
         this.setGapX(null);
         this.setGapY(null);
+        this.graphic= new GraphicCollection();
+        graphic.addGraphic(new MarkGraphic());
     }
 
     /**
