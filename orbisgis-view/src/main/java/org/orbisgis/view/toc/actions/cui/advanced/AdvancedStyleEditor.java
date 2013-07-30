@@ -24,7 +24,7 @@ public class AdvancedStyleEditor extends JPanel implements UIPanel{
     private static final I18n I18N = I18nFactory.getI18n(AdvancedStyleEditor.class);
     private JPanel right;
     private JTree tree;
-    private AdvancedEditorPanelFactory factory = new AdvancedEditorPanelFactory();
+    private AdvancedEditorPanelFactory factory;
 
     /**
      * Builds an advanced editor that will handle {@code st}.
@@ -45,6 +45,7 @@ public class AdvancedStyleEditor extends JPanel implements UIPanel{
         tree.setMinimumSize(minimumSize);
         add(split);
         this.setPreferredSize(new Dimension(640, 420));
+        factory = new AdvancedEditorPanelFactory(tree);
     }
 
     /**
