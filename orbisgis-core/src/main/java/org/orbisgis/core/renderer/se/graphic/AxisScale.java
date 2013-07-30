@@ -127,7 +127,10 @@ public final class AxisScale extends AbstractSymbolizerNode {
 
     @Override
     public List<String> getRequiredPropertyNames() {
-        return getPropertyNames();
+        ArrayList<String> strings = new ArrayList<String>();
+        strings.add(LENGTH);
+        strings.add(MEASURE);
+        return strings;
     }
 
     @Override

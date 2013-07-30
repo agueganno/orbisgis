@@ -191,7 +191,7 @@ public final class ExclusionRectangle extends ExclusionZone {
 
     @Override
     public Class<? extends SymbolizerNode> getPropertyClass(String name) {
-        return getPropertyNames().equals(name) ? RealParameter.class : null;
+        return getPropertyNames().contains(name) ? RealParameter.class : null;
     }
 
 }

@@ -274,7 +274,11 @@ public final class DotMapFill extends Fill implements GraphicNode {
 
     @Override
     public List<String> getRequiredPropertyNames() {
-        return getPropertyNames();
+        ArrayList<String> strings = new ArrayList<String>();
+        strings.add(MARK);
+        strings.add(QUANTITY);
+        strings.add(TOTAL);
+        return strings;
     }
 
     @Override
@@ -302,8 +306,6 @@ public final class DotMapFill extends Fill implements GraphicNode {
             setQuantityPerMark((RealParameter) value);
         } if(TOTAL.equals(prop)){
             setTotalQuantity((RealParameter) value);
-        }  else {
-            throw new IllegalArgumentException("Unknown property name: "+prop);
         }
     }
 
