@@ -70,7 +70,6 @@ import org.xnap.commons.i18n.I18n;
 public final class GraphicStroke extends Stroke implements GraphicNode, UomNode {
     public static final String GRAPHICS = I18n.marktr("Graphics");
     public static final String LENGTH =I18n.marktr("Length");
-    public static final String ORIENTATION =I18n.marktr("Orientation");
     public static final String POSITION =I18n.marktr("Position");
 
     public static final double MIN_LENGTH = 1; // In pixel !
@@ -419,7 +418,6 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
         ArrayList<String> s = new ArrayList<String>();
         s.add(GRAPHICS);
         s.add(LENGTH);
-        s.add(ORIENTATION);
         return s;
     }
 
