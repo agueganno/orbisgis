@@ -123,10 +123,11 @@ public class AdvancedEditorPanelFactory {
 
     private List<JPanel> getCombos(SymbolizerNode sn) {
         List<String> req = sn.getPropertyNames();
+        List<String> optional = sn.getOptionalPropertyNames();
         List<JPanel> ret = new LinkedList<JPanel>();
         for(int i=0; i<req.size(); i++){
             String name = req.get(i);
-            JComboBox combo = getComboForProperty(sn, name);
+            JComboBox combo = getComboForProperty(sn, name, optional.contains(name));
             JPanel jp = new JPanel();
             jp.add(new JLabel(I18N.tr(name)));
             jp.add(combo);
@@ -135,7 +136,7 @@ public class AdvancedEditorPanelFactory {
         return ret;
     }
 
-    private JComboBox getComboForProperty(SymbolizerNode sn, String name) {
+    private JComboBox getComboForProperty(SymbolizerNode sn, String name, boolean optional) {
         Class<? extends SymbolizerNode> propertyClass = sn.getPropertyClass(name);
         List<ContainerItem<Class<? extends SymbolizerNode>>> cips =
                 new ArrayList<ContainerItem<Class<? extends SymbolizerNode>>>();
@@ -227,6 +228,9 @@ public class AdvancedEditorPanelFactory {
         } else if(propertyClass.equals(Rule.class)){
             cips.add(new ContainerItem<Class<? extends SymbolizerNode>>(Rule.class, I18N.tr("Rule")));
         }
+        if(optional){
+            cips.add(new ContainerItem<Class<? extends SymbolizerNode>>(SymbolizerNode.class, I18N.tr("None")));
+        }
         JComboBox ret = new JComboBox();
         int ind = -1;
         int c = 0;
@@ -261,9 +265,13 @@ public class AdvancedEditorPanelFactory {
                     (ContainerItem<Class<? extends SymbolizerNode>>) ((JComboBox)actionEvent.getSource()).getSelectedItem();
             Class<? extends SymbolizerNode> key = ci.getKey();
             try {
-                Constructor<? extends SymbolizerNode> c = key.getConstructor();
-                SymbolizerNode created = c.newInstance();
-                model.setProperty(parent, created, property);
+                if(key.equals(SymbolizerNode.class)){
+                    model.setProperty(parent, null, property);
+                } else {
+                    Constructor<? extends SymbolizerNode> c = key.getConstructor();
+                    SymbolizerNode created = c.newInstance();
+                    model.setProperty(parent, created, property);
+                }
             } catch (NoSuchMethodException e) {
                 LOGGER.error("Can't' find a default constructor for type "+key);
             } catch (InvocationTargetException e) {

@@ -80,14 +80,18 @@ public class AdvancedTreeModel extends AbstractTreeModel {
         if(prev != null){
             index = par.getChildren().indexOf(prev);
             par.setProperty(property, ch);
-            TreeModelEvent tmc = new TreeModelEvent(this,
-                    getPathForNode(par),
-                    new int[]{index},
-                    new Object[]{ch});
             if(ch != null){
+                TreeModelEvent tmc = new TreeModelEvent(this,
+                        getPathForNode(par),
+                        new int[]{index},
+                        new Object[]{ch});
                 //This is a replacement
                 fireStructureChanged(tmc);
             } else {
+                TreeModelEvent tmc = new TreeModelEvent(this,
+                        getPathForNode(par),
+                        new int[]{index},
+                        new Object[]{prev});
                 //This is a deletion
                 fireNodeRemoved(tmc);
             }
