@@ -37,6 +37,7 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.Recode;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
 /**
@@ -46,6 +47,14 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 public class Recode2Real extends Recode<RealParameter, RealLiteral> implements RealParameter {
 
         private RealParameterContext ctx;
+
+        /**
+         * Build a new Recode2Real instance with default value {@code 1.0} and
+         * the lookup value set to the literal {@link Recode#LOOKUP_LITERAL}.
+         */
+        public Recode2Real(){
+            this(new RealLiteral(1.0), new StringLiteral("lookup"));
+        }
 
         /**
          * Creates a new instance of <code>Recode2Real</code>. The default result value

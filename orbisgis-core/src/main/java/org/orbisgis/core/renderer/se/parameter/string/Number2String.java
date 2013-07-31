@@ -30,6 +30,7 @@ package org.orbisgis.core.renderer.se.parameter.string;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.xnap.commons.i18n.I18n;
 
@@ -82,9 +84,29 @@ public class Number2String extends AbstractSymbolizerNode implements SeParameter
         private DecimalFormat formatter;
 
         /**
-         * Build a new Number2String, accorgind to the {@code FormatnumberType}
+         * Default constructor. Builds a Number2String using the default DecimalFormat instance
+         * using the current locale.
+         */
+        public Number2String(){
+            numericValue = new RealLiteral(100.0);
+            formatter = (DecimalFormat) NumberFormat.getNumberInstance();
+            formattingPattern = formatter.toPattern();
+            groupingSeparator = new String(new char[]{formatter.getDecimalFormatSymbols().getGroupingSeparator()});
+            decimalPoint = new String(new char[]{formatter.getDecimalFormatSymbols().getDecimalSeparator()});
+            String patternSep = new String(new char[]{formatter.getDecimalFormatSymbols().getPatternSeparator()});
+            String pattern = formatter.toPattern();
+            String[] split = pattern.split(patternSep);
+            if(split.length > 0){
+                formattingPattern = split[0];
+            }
+            if(split.length > 1){
+                negativePattern = split[1];
+            }
+        }
+        /**
+         * Build a new Number2String, according to the {@code FormatNumberType}
          * given in argument.
-         * @param fnt
+         * @param fnt  The input JaXB object
          * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
          */
         public Number2String(FormatNumberType fnt) throws InvalidStyle {
@@ -117,7 +139,7 @@ public class Number2String extends AbstractSymbolizerNode implements SeParameter
         /**
          * Build a new {@code Number2String}, using the given {@code
          * JAXBElement<FormatNumberType>} instance given in argument.
-         * @param je
+         * @param je  The input JaXB object
          * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
          */
         public Number2String(JAXBElement<FormatNumberType> je) throws InvalidStyle {
@@ -163,7 +185,7 @@ public class Number2String extends AbstractSymbolizerNode implements SeParameter
          * Get the character that must be used to separate the integer and the
          * fraction part of the numbers that will be represented with this
          * function.
-         * @return
+         * @return The character used as the decimal point
          */
         public String getDecimalPoint() {
                 return decimalPoint;
@@ -173,7 +195,7 @@ public class Number2String extends AbstractSymbolizerNode implements SeParameter
          * Set the character that must be used to separate the integer and the
          * fraction part of the numbers that will be represented with this
          * function.
-         * @param decimalPt
+         * @param decimalPt The new decimal point
          */
         public void setDecimalPoint(String decimalPt) {
                 if(decimalPt.length() > 1){
@@ -222,7 +244,7 @@ public class Number2String extends AbstractSymbolizerNode implements SeParameter
         /**
          * Get the character that is used to separate the groups of digits in
          * the numbers this class will format.
-         * @return
+         * @return The grouping separator
          */
         public String getGroupingSeparator() {
                 return groupingSeparator;
@@ -231,18 +253,17 @@ public class Number2String extends AbstractSymbolizerNode implements SeParameter
         /**
          * Set the character that must be used to separate the groups of digits
          * in the numbers this class will format.
-         * @param groupingseparator
-         * Shall be a String made of only one character.
+         * @param sep The new grouping separator         * Shall be a String made of only one character.
          */
-        public void setGroupingSeparator(String groupingseparator) {
-                if(groupingseparator.length() != 1){
+        public void setGroupingSeparator(String sep) {
+                if(sep.length() != 1){
                         throw new IllegalArgumentException("The input you give must not be exactly"
                                 + "one charater long - blank characters are characters too !");
                 }
                 DecimalFormatSymbols dfs = formatter.getDecimalFormatSymbols();
-                dfs.setGroupingSeparator(groupingseparator.charAt(0));
+                dfs.setGroupingSeparator(sep.charAt(0));
                 formatter.setDecimalFormatSymbols(dfs);
-                this.groupingSeparator = groupingseparator;
+                this.groupingSeparator = sep;
         }
 
         /**

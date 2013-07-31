@@ -56,6 +56,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public abstract class Recode<ToType extends SeParameter, FallbackType extends ToType> extends AbstractSymbolizerNode
                 implements SeParameter {
 
+    public static final String LOOKUP_LITERAL = "lookup";
     public static final String LOOKUP_VALUE = I18n.marktr("Lookup value");
     public static final String FALLBACK = I18n.marktr("Fallback value");
     private static final I18n I18N = I18nFactory.getI18n(Recode.class);
@@ -73,9 +74,10 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
     }
 
     /**
-     *
-     * @param fallbackValue
-     * @param lookupValue
+     * Builds a new, empty, Recode instance where the fallback is {@code
+     * fallbackValue} and the input value is {@code lookupValue}.
+     * @param fallbackValue The fallback for this Recode.
+     * @param lookupValue The lookup value for this Recode.
      */
     public Recode(FallbackType fallbackValue, StringParameter lookupValue) {
         setFallbackValue(fallbackValue);

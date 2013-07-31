@@ -50,6 +50,14 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
         private RealParameterContext ctx;
 
         /**
+         * Builds a new trivial Categorize2Real where the first class value, the default
+         * value and the input value are equal to 1.0.
+         */
+        public Categorize2Real(){
+            this(new RealLiteral(1.0), new RealLiteral(1.0), new RealLiteral(1.0));
+        }
+
+        /**
          * Build a new {@code Categorize2Real} with the given parameters. Built using 
          * {@link Categorize#Categorize(org.orbisgis.core.renderer.se.parameter.SeParameter, 
          * org.orbisgis.core.renderer.se.parameter.SeParameter, 

@@ -51,7 +51,15 @@ public final class Recode2String extends Recode<StringParameter, StringLiteral> 
         private String[] restriction = new String[]{};
         private static final Logger LOGGER = Logger.getLogger(Recode2String.class);
         private static final I18n I18N = I18nFactory.getI18n(Recode2String.class);
-        
+
+        /**
+         * Build a new Recode2String instance with default value {@code "value"} and
+         * the lookup value set to the literal {@code "lookup"}.
+         */
+        public Recode2String(){
+            this(new StringLiteral("value"), new StringLiteral(LOOKUP_LITERAL));
+        }
+
         /**
          * Creates a new instance of <code>Recode2String</code>. The default result value
          * will be <code>fallback</code>, and the values that need to be processed

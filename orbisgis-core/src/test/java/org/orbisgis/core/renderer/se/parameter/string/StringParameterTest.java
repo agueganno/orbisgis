@@ -268,6 +268,12 @@ public class StringParameterTest extends AbstractTest {
                 assertTrue(conc.getChildren().size() == 2);
         }
 
+        @Test
+        public void testNUmber2StringDefaultConstructor() throws Exception {
+            Number2String ns = new Number2String();
+            assertTrue(ns.getFormattingPattern().length() > 0);
+        }
+
         private StringConcatenate getConcatenate() throws Exception {
                 String xml = "src/test/resources/org/orbisgis/core/renderer/se/concatenateString.se";
                 Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();

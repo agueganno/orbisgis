@@ -50,11 +50,16 @@ public class StringAttribute extends ValueReference implements StringParameter{
     private String[] restriction;
 
     /**
+     * Builds a new StringAttribute without associated field.
+     */
+    public StringAttribute(){
+        super();
+    }
+
+    /**
      * Creates a new {@code StringAttribute}, that will searches its values in a column named
      * filedName.
      * @param fieldName
-     * @param ds
-     * @throws DriverException
      */
     public StringAttribute(String fieldName) {
         super(fieldName);
@@ -62,8 +67,8 @@ public class StringAttribute extends ValueReference implements StringParameter{
 
     /**
      * Create a new instance of {@code StringAttribute}, using a {@code JAXBElement} to retrieve
-     * all the needed informations.
-     * @param fieldName 
+     * all the needed information.
+     * @param expr the input JaXB object
      */
     public StringAttribute(JAXBElement<String> expr) throws InvalidStyle {
         super(expr);

@@ -48,16 +48,23 @@ import org.orbisgis.core.renderer.se.parameter.ValueReference;
 public class ColorAttribute extends ValueReference implements ColorParameter {
 
     /**
-     * Instanciates the attribute with the name of the column where to search.
-     * @param fieldName 
+     * Builds a new ColorAttribute without associated field.
+     */
+    public ColorAttribute(){
+        super();
+    }
+
+    /**
+     * Builds the attribute with the name of the column where to search.
+     * @param fieldName The field name
      */
     public ColorAttribute(String fieldName) {
         super(fieldName);
     }
 
     /**
-     * Build a <code>colorAttribute</code> from its JAXB representation.
-     * @param expr
+     * Build a <code>colorAttribute</code> from its JaXB representation.
+     * @param expr The input JaXB object
      * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
      */
     public ColorAttribute(JAXBElement<String> expr) throws InvalidStyle {

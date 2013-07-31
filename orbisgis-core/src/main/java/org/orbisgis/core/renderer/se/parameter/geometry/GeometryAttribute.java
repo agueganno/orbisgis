@@ -46,6 +46,13 @@ import org.orbisgis.core.renderer.se.parameter.ValueReference;
 public class GeometryAttribute extends ValueReference {
 
     /**
+     * Builds a new, empty, GeometryAttribute.
+     */
+    public GeometryAttribute(){
+        super();
+    }
+
+    /**
      * Build a new {@code GeometryAttribute} using the JAXB {@code 
      * GeometryType} given in argument.
      * @param geom
@@ -74,8 +81,7 @@ public class GeometryAttribute extends ValueReference {
     /**
      * Retrieve the geometry registered in the {@code SpatialDataSetDecorator}
      * at index {@code fid}.
-     * @param sds
-     * @param fid
+     * @param map
      * @return
      * @throws ParameterException
      */

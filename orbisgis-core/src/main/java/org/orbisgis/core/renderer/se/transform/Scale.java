@@ -43,6 +43,7 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.xnap.commons.i18n.I18n;
@@ -61,6 +62,13 @@ public final class Scale extends AbstractSymbolizerNode implements Transformatio
 
     private RealParameter x;
     private RealParameter y;
+
+    /**
+     * Builds a new Scale that is identity.
+     */
+    public Scale(){
+        this(new RealLiteral(1.0),new RealLiteral(1.0));
+    }
 
     /**
      * Build a new {@code Scale} with the given horizontal and vertical factors.

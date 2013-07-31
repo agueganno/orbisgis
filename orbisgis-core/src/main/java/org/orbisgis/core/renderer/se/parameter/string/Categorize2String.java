@@ -49,6 +49,14 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  */
 public final class Categorize2String extends Categorize<StringParameter, StringLiteral> implements StringParameter {
 
+    /**
+     * Builds a new trivial Categorize2String where the first class value and the default
+     * value are equal to {@code "value"} and the input value is equal to 1.0.
+     */
+    public Categorize2String(){
+        this(new StringLiteral("value"), new StringLiteral("value"), new RealLiteral(1.0));
+    }
+
     private String[] restriction = new String[]{};
 
         /**

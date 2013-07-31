@@ -50,13 +50,22 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 public final class Interpolate2Color extends Interpolate<ColorParameter, ColorLiteral> implements ColorParameter {
 
         /**
-         * Create a new <code>Interpolate2Color</code> instance, without any 
+         * Create a new <code>Interpolate2Color</code> instance, without any
          * <code>InterpolationPoint&lt;ColorParameter></code> associated with it.
          * They will have to be added before any call to <code>getColor</code>.
-         * @param fallback 
+         */
+        public Interpolate2Color() {
+            this(new ColorLiteral(Color.BLACK));
+        }
+
+        /**
+         * Create a new <code>Interpolate2Color</code> instance, without any
+         * <code>InterpolationPoint&lt;ColorParameter></code> associated with it.
+         * They will have to be added before any call to <code>getColor</code>.
+         * @param fallback
          */
         public Interpolate2Color(ColorLiteral fallback) {
-                super(fallback);
+            super(fallback);
         }
 
         /**
@@ -98,7 +107,7 @@ public final class Interpolate2Color extends Interpolate<ColorParameter, ColorLi
          * <code>fid</code> in <code>sds</code>. The resulting color is obtained by
          * using the value from the <code>DataSet</code>, the 
          * interpolation points and the interpolation method.
-         * @param ds
+         * @param sds
          * @param fid
          * @return
          * The interpolated <code>Color</code>
@@ -129,8 +138,7 @@ public final class Interpolate2Color extends Interpolate<ColorParameter, ColorLi
          * stored in {@code map}. The resulting color is obtained by
          * using the value from the <code>DataSet</code>, the
          * interpolation points and the interpolation method.
-         * @param ds
-         * @param fid
+         * @param map
          * @return
          * The interpolated <code>Color</code>
          */

@@ -43,6 +43,7 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.xnap.commons.i18n.I18n;
@@ -65,6 +66,13 @@ public final class Rotate extends AbstractSymbolizerNode implements Transformati
         private RealParameter x;
         private RealParameter y;
         private RealParameter rotation;
+
+        /**
+         * Builds a new Rotate that does nothing.
+         */
+        public Rotate(){
+            this(new RealLiteral(0.0));
+        }
 
         /**
          * Build a new {@code Rotate} with angle value set to {@code rotation}.

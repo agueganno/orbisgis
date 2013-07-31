@@ -52,6 +52,14 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 public class Categorize2Color extends Categorize<ColorParameter, ColorLiteral> implements ColorParameter {
 
         /**
+         * Builds a new trivial Categorize2Color where the first class value and the default
+         * value are equal to {@link Color#BLACK} and the input value is equal to 1.0.
+         */
+        public Categorize2Color(){
+            this(new ColorLiteral(Color.BLACK), new ColorLiteral(Color.BLACK), new RealLiteral(1.0));
+        }
+
+        /**
          * Build a new {@code Categorize2Color} with the given parameters. Built using 
          * {@link Categorize#Categorize(org.orbisgis.core.renderer.se.parameter.SeParameter, 
          * org.orbisgis.core.renderer.se.parameter.SeParameter, 

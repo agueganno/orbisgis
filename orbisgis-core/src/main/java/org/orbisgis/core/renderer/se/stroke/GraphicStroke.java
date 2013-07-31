@@ -123,7 +123,6 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
         super();
         this.graphic = new GraphicCollection();
         MarkGraphic mg = new MarkGraphic();
-        mg.setTo3mmCircle();
         graphic.addGraphic(mg);
     }
 

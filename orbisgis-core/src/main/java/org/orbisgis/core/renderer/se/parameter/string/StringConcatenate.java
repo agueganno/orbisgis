@@ -46,7 +46,7 @@ import org.xnap.commons.i18n.I18n;
 
 /**
  * Implementation of the {@code Concatenate} SE function. This function takes at
- * least to String in input, and simply concatenates them. it is consequently
+ * least two String in input, and simply concatenates them. it is consequently
  * only dependant on a list of {@code StringParameter} instances.</p>
  * <p>This class embedded a set of {@code StringParameter} instances, and can
  * be seen as a simplified list. It implements {@code Iterable} to ease the
@@ -59,6 +59,29 @@ public class StringConcatenate extends AbstractSymbolizerNode implements SeParam
         public static final String INPUTS = I18n.marktr("Input Strings");
 
         private List<StringParameter> inputStrings;
+
+        /**
+         * Default constructor. Builds a StringConcatenate instance with two StringLiteral.
+         */
+        public StringConcatenate(){
+            List<StringParameter> inp = new ArrayList<StringParameter>();
+            inp.add(new StringLiteral("Geo"));
+            inp.add(new StringLiteral("graphy"));
+            inputStrings = inp;
+        }
+
+        /**
+         * Builds a StringConcatenate with the given input.
+         * @param input A list of StringParameter instance
+         * @throws IllegalArgumentException if input is null or does not contain two parameters or more.
+         */
+        public StringConcatenate(List<StringParameter> input){
+            if(input == null || input.size() < 2){
+                throw new IllegalArgumentException("You shall provide a list with at least" +
+                        "two StringParameter instances to build a StringConcatenate");
+            }
+            inputStrings = new ArrayList<StringParameter>(input);
+        }
 
         /**
          * Build a new {@code StringConcatenate} instance from the given JAXB
@@ -81,7 +104,6 @@ public class StringConcatenate extends AbstractSymbolizerNode implements SeParam
          * @param concat
          * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
          */
-
         public StringConcatenate(JAXBElement<ConcatenateType> concat) throws InvalidStyle {
                 this(concat.getValue());
         }

@@ -48,6 +48,15 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
  */
 public class Recode2Color extends Recode<ColorParameter, ColorLiteral> implements ColorParameter {
 
+
+        /**
+         * Build a new Recode2Color instance with default value {@link Color#BLACK} and
+         * the lookup value set to the literal {@link Recode#LOOKUP_LITERAL}.
+         */
+        public Recode2Color(){
+            this(new ColorLiteral(Color.BLACK), new StringLiteral(LOOKUP_VALUE));
+        }
+
         /**
          * Creates a new instance of <code>Recode2Color</code>. The default result value
          * will be <code>fallback</code>, and the values that need to be processed

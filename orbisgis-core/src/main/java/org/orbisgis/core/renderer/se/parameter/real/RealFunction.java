@@ -69,6 +69,13 @@ public class RealFunction extends AbstractSymbolizerNode implements SeParameter,
     private ArrayList<RealParameter> operands;
 
     /**
+     * Builds a RealFunction with the ADD operator but without operands.
+     */
+    public RealFunction(){
+        this(Operators.ADD);
+    }
+
+    /**
      * Builds an empty <code>RealFunction</code>, where only the operation
      * is defined.
      * @param operator

@@ -50,6 +50,16 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
         private RealParameterContext ctx;
 
         /**
+         * Builds a new <code>Interpolate2Real</code> instance, without any
+         * <code>InterpolationPoint&lt;RealParameter></code> associated with it.
+         * They will have to be added before any call to <code>getValue</code>.
+        */
+        public Interpolate2Real(){
+            super(new RealLiteral(1.0));
+            ctx = RealParameterContext.REAL_CONTEXT;
+        }
+
+        /**
          * Create a new <code>Interpolate2Real</code> instance, without any 
          * <code>InterpolationPoint&lt;RealParameter></code> associated with it.
          * They will have to be added before any call to <code>getValue</code>.
