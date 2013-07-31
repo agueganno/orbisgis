@@ -4,8 +4,11 @@ import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.view.components.resourceTree.AbstractTreeModel;
 
-import javax.swing.*;
+import javax.swing.JTree;
+import javax.swing.event.TreeModelEvent;
 import javax.swing.tree.TreePath;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The tree model used in the advanced style editor. {@link SymbolizerNode} instances are
@@ -20,12 +23,12 @@ public class AdvancedTreeModel extends AbstractTreeModel {
      * Builds a new {@code AdvancedTreeModel} instance associated to the given
      * tree and which root will be the given {@link Style}, wrapped in a
      * {@link NodeWrapper}.
-     * @param tree
-     * @param sym
+     * @param tree The associated JTree.
+     * @param style The original Style.
      */
-    public AdvancedTreeModel(JTree tree, Style sym){
+    public AdvancedTreeModel(JTree tree, Style style){
         super(tree);
-        wrappedStyle = new NodeWrapper(sym);
+        wrappedStyle = new NodeWrapper(style);
     }
 
     @Override
@@ -59,5 +62,78 @@ public class AdvancedTreeModel extends AbstractTreeModel {
     @Override
     public int getIndexOfChild(Object o, Object o2) {
         return ((NodeWrapper) o).getNode().getChildren().indexOf(((NodeWrapper) o2).getNode());
+    }
+
+    /**
+     * Replace property named {@code property} in {@code par} with {@code ch}.
+     * @param par The container node
+     * @param ch The new value for {@code property}
+     * @param property The name of the property.
+     */
+    public void setProperty(SymbolizerNode par, SymbolizerNode ch, String property){
+        //now null, now not null, never null.
+        SymbolizerNode prev = par.getProperty(property);
+        System.out.println("Previous: "+(prev == null ? "null" : prev.getName()));
+        System.out.println("New: "+(ch == null ? "null" : ch.getName()));
+        System.out.println("Number of listeners: ");
+        int index;
+        if(prev != null){
+            index = par.getChildren().indexOf(prev);
+            par.setProperty(property, ch);
+            TreeModelEvent tmc = new TreeModelEvent(this,
+                    getPathForNode(par),
+                    new int[]{index},
+                    new Object[]{ch});
+            if(ch != null){
+                //This is a replacement
+                fireStructureChanged(tmc);
+            } else {
+                //This is a deletion
+                fireNodeRemoved(tmc);
+            }
+        } else {
+            //this is an insertion
+            par.setProperty(property, ch);
+            index = par.getChildren().indexOf(ch);
+            TreeModelEvent tme = new TreeModelEvent(
+                    this,
+                    getPathForNode(par),
+                    new int[]{index},
+                    new Object[]{ch}
+            );
+            fireNodeInserted(tme);
+        }
+        fireEvent();
+    }
+
+    /**
+     * Builds the path of NodeWrapper instances from the styling tree root to SymbolizerNode
+     * @param sn The ending node of the path.
+     * @return The path as an array of {@link NodeWrapper} instances.
+     */
+    public NodeWrapper[] getPathForNode(SymbolizerNode sn){
+        List<SymbolizerNode> par = getParents(sn,new ArrayList<SymbolizerNode>());
+        int s = par.size();
+        NodeWrapper[] nws = new NodeWrapper[par.size()];
+        for(int i=0; i<s; i++){
+            nws[s-i-1] = new NodeWrapper(par.get(i));
+        }
+        return nws;
+    }
+
+    /**
+     * Recursively retrieve the parents of sn and put them in {@code list}.
+     * @param sn The child.
+     * @param list The list we'll feed.
+     * @return The parents path in a list.
+     */
+    public List<SymbolizerNode> getParents(SymbolizerNode sn, List<SymbolizerNode> list){
+        list.add(sn);
+        if(sn.getParent()==null){
+            return list;
+        } else {
+            return getParents(sn.getParent(), list);
+        }
+
     }
 }

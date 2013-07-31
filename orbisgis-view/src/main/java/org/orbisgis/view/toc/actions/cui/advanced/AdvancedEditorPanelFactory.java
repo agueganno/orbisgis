@@ -1,17 +1,61 @@
 package org.orbisgis.view.toc.actions.cui.advanced;
 
 import org.apache.log4j.Logger;
-import org.orbisgis.core.renderer.se.*;
+import org.orbisgis.core.renderer.se.AreaSymbolizer;
+import org.orbisgis.core.renderer.se.LineSymbolizer;
+import org.orbisgis.core.renderer.se.PointSymbolizer;
+import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.TextSymbolizer;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.OnlineResource;
 import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
-import org.orbisgis.core.renderer.se.fill.*;
-import org.orbisgis.core.renderer.se.graphic.*;
-import org.orbisgis.core.renderer.se.label.*;
-import org.orbisgis.core.renderer.se.parameter.color.*;
+import org.orbisgis.core.renderer.se.fill.DensityFill;
+import org.orbisgis.core.renderer.se.fill.DotMapFill;
+import org.orbisgis.core.renderer.se.fill.Fill;
+import org.orbisgis.core.renderer.se.fill.GraphicFill;
+import org.orbisgis.core.renderer.se.fill.HatchedFill;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.graphic.AxisChart;
+import org.orbisgis.core.renderer.se.graphic.AxisScale;
+import org.orbisgis.core.renderer.se.graphic.Category;
+import org.orbisgis.core.renderer.se.graphic.ExternalGraphic;
+import org.orbisgis.core.renderer.se.graphic.Graphic;
+import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
+import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.renderer.se.graphic.PieChart;
+import org.orbisgis.core.renderer.se.graphic.PointTextGraphic;
+import org.orbisgis.core.renderer.se.graphic.Slice;
+import org.orbisgis.core.renderer.se.graphic.ViewBox;
+import org.orbisgis.core.renderer.se.label.ExclusionRadius;
+import org.orbisgis.core.renderer.se.label.ExclusionRectangle;
+import org.orbisgis.core.renderer.se.label.ExclusionZone;
+import org.orbisgis.core.renderer.se.label.Label;
+import org.orbisgis.core.renderer.se.label.LineLabel;
+import org.orbisgis.core.renderer.se.label.PointLabel;
+import org.orbisgis.core.renderer.se.label.StyledText;
+import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
+import org.orbisgis.core.renderer.se.parameter.color.ColorAttribute;
+import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
+import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
+import org.orbisgis.core.renderer.se.parameter.color.Interpolate2Color;
+import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
-import org.orbisgis.core.renderer.se.parameter.real.*;
-import org.orbisgis.core.renderer.se.parameter.string.*;
+import org.orbisgis.core.renderer.se.parameter.real.Categorize2Real;
+import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
+import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.core.renderer.se.parameter.real.RealFunction;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.Recode2Real;
+import org.orbisgis.core.renderer.se.parameter.string.Categorize2String;
+import org.orbisgis.core.renderer.se.parameter.string.Number2String;
+import org.orbisgis.core.renderer.se.parameter.string.Recode2String;
+import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
+import org.orbisgis.core.renderer.se.parameter.string.StringConcatenate;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.AlternativeStrokeElements;
 import org.orbisgis.core.renderer.se.stroke.CompoundStroke;
 import org.orbisgis.core.renderer.se.stroke.CompoundStrokeElement;
@@ -19,7 +63,12 @@ import org.orbisgis.core.renderer.se.stroke.GraphicStroke;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.stroke.TextStroke;
-import org.orbisgis.core.renderer.se.transform.*;
+import org.orbisgis.core.renderer.se.transform.Matrix;
+import org.orbisgis.core.renderer.se.transform.Rotate;
+import org.orbisgis.core.renderer.se.transform.Scale;
+import org.orbisgis.core.renderer.se.transform.Transform;
+import org.orbisgis.core.renderer.se.transform.Transformation;
+import org.orbisgis.core.renderer.se.transform.Translate;
 import org.orbisgis.sif.common.ContainerItem;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -28,7 +77,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTree;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Constructor;
@@ -47,10 +95,14 @@ public class AdvancedEditorPanelFactory {
 
     private static final I18n I18N = I18nFactory.getI18n(AdvancedEditorPanelFactory.class);
     private static final Logger LOGGER = Logger.getLogger(AdvancedEditorPanelFactory.class);
-    private JTree tree;
+    private AdvancedTreeModel model;
 
-    public AdvancedEditorPanelFactory(JTree link){
-        tree = link;
+    /**
+     * Builds a new panel factory associated to the given model.
+     * @param model The AdvancedTreeModel we are handling.
+     */
+    public AdvancedEditorPanelFactory(AdvancedTreeModel model){
+        this.model = model;
     }
 
     /**
@@ -211,7 +263,7 @@ public class AdvancedEditorPanelFactory {
             try {
                 Constructor<? extends SymbolizerNode> c = key.getConstructor();
                 SymbolizerNode created = c.newInstance();
-                parent.setProperty(property, created);
+                model.setProperty(parent, created, property);
             } catch (NoSuchMethodException e) {
                 LOGGER.error("Can't' find a default constructor for type "+key);
             } catch (InvocationTargetException e) {

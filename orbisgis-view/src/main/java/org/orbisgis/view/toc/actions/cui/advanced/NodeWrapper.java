@@ -36,4 +36,16 @@ public class NodeWrapper{
     public SymbolizerNode getNode(){
         return sn;
     }
+
+    /**
+     * Overrides equals from object. We consider two NodeWrapper two be equals if and only
+     * they wrap the same reference to the same node.
+     * @param other The other wrapper
+     * @return {@code true} if and only if other is an instance of NodeWrapper that embeds the
+     *         same SymbolizerNode instance.
+     */
+    @Override
+    public boolean equals(Object other){
+        return other instanceof NodeWrapper && ((NodeWrapper) other).getNode() == getNode();
+    }
 }

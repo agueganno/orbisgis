@@ -9,6 +9,7 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.beans.EventHandler;
 import java.net.URL;
@@ -36,6 +37,8 @@ public class AdvancedStyleEditor extends JPanel implements UIPanel{
         AdvancedTreeModel atm = new AdvancedTreeModel(tree, st);
         tree.setModel(atm);
         tree.setCellRenderer(new AdvancedTreeCellRenderer(tree));
+        tree.getSelectionModel().setSelectionMode(
+                TreeSelectionModel.SINGLE_TREE_SELECTION);
         TreeSelectionListener tsl = EventHandler.create(TreeSelectionListener.class,this,"treeSelectionChanged");
         tree.addTreeSelectionListener(tsl);
         right = new JPanel();
@@ -45,7 +48,7 @@ public class AdvancedStyleEditor extends JPanel implements UIPanel{
         tree.setMinimumSize(minimumSize);
         add(split);
         this.setPreferredSize(new Dimension(640, 420));
-        factory = new AdvancedEditorPanelFactory(tree);
+        factory = new AdvancedEditorPanelFactory(atm);
     }
 
     /**
@@ -53,12 +56,14 @@ public class AdvancedStyleEditor extends JPanel implements UIPanel{
      */
     public void treeSelectionChanged(){
         TreePath sp = tree.getSelectionPath();
-        Object last = sp.getLastPathComponent();
-        JPanel pan = factory.getPanel(((NodeWrapper) last).getNode());
-        right.removeAll();
-        right.add(pan);
-        right.repaint();
-        right.revalidate();
+        if(sp!=null){
+            Object last = sp.getLastPathComponent();
+            JPanel pan = factory.getPanel(((NodeWrapper) last).getNode());
+            right.removeAll();
+            right.add(pan);
+            right.repaint();
+            right.revalidate();
+        }
     }
 
     @Override
