@@ -70,6 +70,7 @@ import org.orbisgis.core.renderer.se.transform.Transform;
 import org.orbisgis.core.renderer.se.transform.Transformation;
 import org.orbisgis.core.renderer.se.transform.Translate;
 import org.orbisgis.sif.common.ContainerItem;
+import org.orbisgis.sif.common.ContainerItemProperties;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -95,6 +96,7 @@ public class AdvancedEditorPanelFactory {
 
     private static final I18n I18N = I18nFactory.getI18n(AdvancedEditorPanelFactory.class);
     private static final Logger LOGGER = Logger.getLogger(AdvancedEditorPanelFactory.class);
+    public static final String NONE = I18n.marktr("None");
     private AdvancedTreeModel model;
 
     /**
@@ -228,9 +230,6 @@ public class AdvancedEditorPanelFactory {
         } else if(propertyClass.equals(Rule.class)){
             cips.add(new ContainerItem<Class<? extends SymbolizerNode>>(Rule.class, I18N.tr("Rule")));
         }
-        if(optional){
-            cips.add(new ContainerItem<Class<? extends SymbolizerNode>>(SymbolizerNode.class, I18N.tr("None")));
-        }
         JComboBox ret = new JComboBox();
         int ind = -1;
         int c = 0;
@@ -242,8 +241,13 @@ public class AdvancedEditorPanelFactory {
             }
             c++;
         }
+        if(optional){
+            ret.addItem(new ContainerItemProperties(NONE, I18N.tr(NONE)));
+        }
         if(ind>-1){
             ret.setSelectedIndex(ind);
+        } else if(optional){
+            ret.setSelectedIndex(cips.size());
         }
         ActionListener l = new ChildListener(sn, name);
         ret.addActionListener(l);
@@ -261,25 +265,26 @@ public class AdvancedEditorPanelFactory {
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            ContainerItem<Class<? extends SymbolizerNode>> ci =
-                    (ContainerItem<Class<? extends SymbolizerNode>>) ((JComboBox)actionEvent.getSource()).getSelectedItem();
-            Class<? extends SymbolizerNode> key = ci.getKey();
-            try {
-                if(key.equals(SymbolizerNode.class)){
-                    model.setProperty(parent, null, property);
-                } else {
-                    Constructor<? extends SymbolizerNode> c = key.getConstructor();
-                    SymbolizerNode created = c.newInstance();
-                    model.setProperty(parent, created, property);
+            ContainerItem ci =
+                    (ContainerItem) ((JComboBox)actionEvent.getSource()).getSelectedItem();
+            Object key = ci.getKey();
+            if(key instanceof String){
+                model.setProperty(parent, null, property);
+            } else {
+                Class<? extends SymbolizerNode> ke = (Class<? extends SymbolizerNode>)key;
+                try {
+                        Constructor<? extends SymbolizerNode> c = ke.getConstructor();
+                        SymbolizerNode created = c.newInstance();
+                        model.setProperty(parent, created, property);
+                } catch (NoSuchMethodException e) {
+                    LOGGER.error("Can't' find a default constructor for type "+key);
+                } catch (InvocationTargetException e) {
+                    LOGGER.error("Can't' find use the default constructor for type " + key, e);
+                } catch (InstantiationException e) {
+                    LOGGER.error("Can't' find use the default constructor for type " + key, e);
+                } catch (IllegalAccessException e) {
+                    LOGGER.error("Can't' find use the default constructor for type " + key, e);
                 }
-            } catch (NoSuchMethodException e) {
-                LOGGER.error("Can't' find a default constructor for type "+key);
-            } catch (InvocationTargetException e) {
-                LOGGER.error("Can't' find use the default constructor for type " + key, e);
-            } catch (InstantiationException e) {
-                LOGGER.error("Can't' find use the default constructor for type " + key, e);
-            } catch (IllegalAccessException e) {
-                LOGGER.error("Can't' find use the default constructor for type " + key, e);
             }
         }
     }

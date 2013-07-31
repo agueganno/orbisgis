@@ -73,9 +73,6 @@ public class AdvancedTreeModel extends AbstractTreeModel {
     public void setProperty(SymbolizerNode par, SymbolizerNode ch, String property){
         //now null, now not null, never null.
         SymbolizerNode prev = par.getProperty(property);
-        System.out.println("Previous: "+(prev == null ? "null" : prev.getName()));
-        System.out.println("New: "+(ch == null ? "null" : ch.getName()));
-        System.out.println("Number of listeners: ");
         int index;
         if(prev != null){
             index = par.getChildren().indexOf(prev);
