@@ -272,7 +272,7 @@ public final class ViewBox extends  AbstractSymbolizerNode {
             if(value == null || value instanceof RealParameter){
                 if(X.equals(prop)){
                     setWidth((RealParameter) value);
-                } if(Y.equals(prop)){
+                } else if(Y.equals(prop)){
                     setHeight((RealParameter) value);
                 }  else {
                     throw new IllegalArgumentException("Unknown property name: "+prop);
