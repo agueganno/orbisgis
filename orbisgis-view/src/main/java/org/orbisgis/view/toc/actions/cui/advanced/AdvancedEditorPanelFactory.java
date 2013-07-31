@@ -254,10 +254,19 @@ public class AdvancedEditorPanelFactory {
         return ret;
     }
 
+    /**
+     * ActionListener that is used to know if one of the properties managed
+     * for a SymbolizerNode is changed through a selection in a JComboBox.
+     */
     public class ChildListener implements ActionListener{
         private final String property;
         private SymbolizerNode parent;
 
+        /**
+         * Listens for the property {@code property} in order to update {@code parent}.
+         * @param parent The parent node.
+         * @param property The property we're interesting in.
+         */
         public ChildListener(SymbolizerNode parent, String property){
             this.parent = parent;
             this.property = property;
