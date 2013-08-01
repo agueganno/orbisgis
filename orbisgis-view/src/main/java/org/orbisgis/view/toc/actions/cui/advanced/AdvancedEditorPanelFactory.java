@@ -84,7 +84,10 @@ import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -144,19 +147,14 @@ public class AdvancedEditorPanelFactory {
         if(sp instanceof RealLiteral){
             ret.add(new JLabel(I18N.tr("Value")));
             final RealLiteral rl = (RealLiteral) sp;
-            final JFormattedTextField field = new JFormattedTextField(NumberFormat.getNumberInstance());
-            field.setValue(rl.getValue(null));
-            field.addFocusListener(new FocusListener() {
-                @Override
-                public void focusGained(FocusEvent focusEvent) {}
-
-                @Override
-                public void focusLost(FocusEvent focusEvent) {
-                    String t = field.getText();
-                    rl.setValue(Double.valueOf(t != null && !t.isEmpty() ? t : "0"));
-                }
-            });
-            ret.add(field);
+            double min = rl.getContext().getMin() == null ? Double.NEGATIVE_INFINITY : rl.getContext().getMin();
+            double max = rl.getContext().getMax() == null ? Double.POSITIVE_INFINITY : rl.getContext().getMax();
+            Double val = ((RealLiteral) sp).getValue(null);
+            double init = val == null || Double.isInfinite(val) ? 0.0 : val;
+            final JSpinner spin = new JSpinner(new SpinnerNumberModel(init, min, max, 0.1));
+            ChangeListener cl = EventHandler.create(ChangeListener.class, rl, "setValue", "source.value");
+            spin.addChangeListener(cl);
+            ret.add(spin);
         } else if(sp instanceof StringLiteral){
             ret.add(new JLabel(I18N.tr("Value")));
             StringLiteral sl = (StringLiteral) sp;
