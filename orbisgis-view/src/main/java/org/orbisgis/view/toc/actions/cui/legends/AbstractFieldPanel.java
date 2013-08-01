@@ -70,16 +70,15 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
      * Height used for the rectangles that displays the color parameters of the symbols.
      */
     public final static int FILLED_LABEL_HEIGHT = 15;
-    protected static final String UNIT_OF_MEASURE = I18n.marktr("Unit of measure");
-    protected static final String OPACITY = I18n.marktr("Opacity");
-    protected static final String WIDTH = I18n.marktr("Width");
-    protected static final String HEIGHT = I18n.marktr("Height");
-    protected static final String SYMBOL = I18n.marktr("Symbol");
-    protected static final String DASH_ARRAY = I18n.marktr("Dash array");
-    protected static final String FIELD = I18n.marktr("<html><b>Field</b></html>");
-    protected static final String LINE_WIDTH_UNIT = I18n.marktr("Line width unit");
-    protected static final String SYMBOL_SIZE_UNIT = I18n.marktr("Symbol size unit");
-    protected static final String PLACE_SYMBOL_ON = I18n.marktr(
+    public static final String OPACITY = I18n.marktr("Opacity");
+    public static final String WIDTH = I18n.marktr("Width");
+    public static final String HEIGHT = I18n.marktr("Height");
+    public static final String SYMBOL = I18n.marktr("Symbol");
+    public static final String DASH_ARRAY = I18n.marktr("Dash array");
+    public static final String FIELD = I18n.marktr("<html><b>Field</b></html>");
+    public static final String LINE_WIDTH_UNIT = I18n.marktr("Line width unit");
+    public static final String SYMBOL_SIZE_UNIT = I18n.marktr("Symbol size unit");
+    public static final String PLACE_SYMBOL_ON = I18n.marktr(
             "<html><p style=\"text-align:right\">Place symbol<br>on</p></html>");
 
     /**
@@ -89,7 +88,7 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
     /**
      * MigLayout constraints for sizing consistency.
      */
-    protected static final String COLUMN_CONSTRAINTS =
+    public static final String COLUMN_CONSTRAINTS =
             "[align r, 110::][align c, "
             + SECOND_COL_WIDTH + ":" + SECOND_COL_WIDTH + ":]";
     /**
@@ -99,7 +98,7 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
     /**
      * Constraints for ComboBoxes for sizing consistency.
      */
-    protected static final String COMBO_BOX_CONSTRAINTS =
+    public static final String COMBO_BOX_CONSTRAINTS =
             "width " + SECOND_COL_WIDTH + "!";
     protected ContainerItemProperties[] strokeUoms;
     /**
@@ -130,30 +129,6 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
     }
 
     /**
-     * Initialize a {@code JComboBox} whose values are set according to the
-     * not spatial fields of {@code ds}.
-     * @param ds The original DataSource
-     * @return A JComboBox.
-     */
-    public WideComboBox getFieldCombo(DataSource ds){
-        WideComboBox combo = new WideComboBox();
-        if(ds != null){
-            try {
-                Metadata md = ds.getMetadata();
-                int fc = md.getFieldCount();
-                for (int i = 0; i < fc; i++) {
-                    if(!TypeFactory.isSpatial(md.getFieldType(i).getTypeCode())){
-                        combo.addItem(md.getFieldName(i));
-                    }
-                }
-            } catch (DriverException ex) {
-                LOGGER.error(ex);
-            }
-        }
-        return combo;
-    }
-
-    /**
      * Initializes a {@code WideComboBox} whose values are set according to the
      * numeric fields of {@code ds}.
      *
@@ -176,60 +151,6 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
             }
         }
         return combo;
-    }
-
-    /**
-     * Get a JLabel of dimensions {@link PnlUniqueSymbolSE#FILLED_LABEL_WIDTH} and {@link PnlUniqueSymbolSE#FILLED_LABEL_HEIGHT}
-     * opaque and with a background of Color {@code c}.
-     * @param c The background color of the label we want.
-     * @return the label with c as a background colour.
-     */
-    public JLabel getFilledLabel(Color c){
-        JLabel lblFill = new JLabel();
-        lblFill.setBackground(c);
-        lblFill.setBorder(BorderFactory.createLineBorder(Color.black));
-        lblFill.setPreferredSize(new Dimension(FILLED_LABEL_WIDTH, FILLED_LABEL_HEIGHT));
-        lblFill.setMaximumSize(new Dimension(FILLED_LABEL_WIDTH, FILLED_LABEL_HEIGHT));
-        lblFill.setOpaque(true);
-        lblFill.setHorizontalAlignment(JLabel.LEFT);
-        lblFill.addMouseListener(
-                EventHandler.create(MouseListener.class, this, "chooseFillColor", "", "mouseClicked"));
-        return lblFill;
-    }
-
-    /**
-     * This method will let the user choose a color that will be set as the
-     * background of the source of the event.
-     * @param e The input event.
-     */
-    public void chooseFillColor(MouseEvent e) {
-        Component source = (Component)e.getSource();
-        if(source.isEnabled()){
-            JLabel lab = (JLabel) source;
-            ColorPicker picker = new ColorPicker(lab.getBackground());
-            if (UIFactory.showDialog(picker,false, true)) {
-                Color color = picker.getColor();
-                source.setBackground(color);
-            }
-        }
-    }
-
-    /**
-     * ComboBox to configure the unit of measure used to draw th stroke. The generated {@link JComboBox} only updates
-     * the UOM of the given {@code StrokeUom}.
-     * @param input The StrokeUom instance we get the unit from.
-     * @return The JComboBox that can be used to change the UOM of {@code input}.
-     */
-    public UomCombo getLineUomCombo(StrokeUom input){
-        strokeUoms = getUomProperties();
-        // Note: the title is not used in the UI since we extract
-        // the ComboBox.
-        UomCombo puc = new UomCombo(input.getStrokeUom(),
-                strokeUoms,
-                I18N.tr(LINE_WIDTH_UNIT));
-        ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateLUComboBox", "source.selectedIndex");
-        puc.addActionListener(acl2);
-        return puc;
     }
 
     /**
@@ -259,14 +180,5 @@ public abstract class AbstractFieldPanel extends JPanel implements ILegendPanel 
             cips[i] = cip;
         }
         return cips;
-    }
-
-    /**
-     * Sets the underlying graphic to use the ith element of the ComboBox
-     * as its well-known name. Used when changing the ComboBox selection.
-     * @param index The index of the unit of measure.
-     */
-    public void updateLUComboBox(int index){
-        ((StrokeUom)getLegend()).setStrokeUom(Uom.fromString(strokeUoms[index].getKey()));
     }
 }

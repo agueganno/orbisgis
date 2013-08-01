@@ -39,14 +39,18 @@ import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.ConstantFormPoint;
+import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
-import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.orbisgis.view.toc.actions.cui.legends.panels.AreaPanel;
+import org.orbisgis.view.toc.actions.cui.legends.panels.LinePanel;
+import org.orbisgis.view.toc.actions.cui.legends.panels.OnVertexOnCentroidPanel;
+import org.orbisgis.view.toc.actions.cui.legends.panels.PointPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -79,7 +83,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          * and fill configuration panels.
          */
         public PnlUniquePointSE() {
-            this(true, true, true);
+            this(true, true);
         }
 
         /**
@@ -89,18 +93,14 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          *                      symbolizer UOM will be displayed.
          * @param displayStroke If true, the panel used to configure the
          *                      symbol's stroke will be enabled.
-         * @param displayBoxes  If true,  the two boxes that are used to enable
-         *                      and disable the stroke and fill of the symbol
-         *                      will be displayed.
          */
         public PnlUniquePointSE(boolean uom,
-                                boolean displayStroke,
-                                boolean displayBoxes) {
-            super(uom, displayStroke, displayBoxes);
+                                boolean displayStroke) {
+            super(uom, displayStroke);
         }
 
         @Override
-        public Legend getLegend() {
+        public IUniqueSymbolArea getLegend() {
                 return uniquePoint;
         }
 
@@ -178,185 +178,25 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 this.removeAll();
                 JPanel glob = new JPanel(new MigLayout("wrap 2"));
 
-                JPanel lb = getLineBlock(uniquePoint.getPenStroke(),
-                                         I18N.tr(BORDER_SETTINGS));
-                ComponentUtil.setFieldState(isStrokeEnabled(), lb);
-                glob.add(lb);
+                glob.add(new LinePanel(uniquePoint,
+                        getPreview(),
+                        I18N.tr(BORDER_SETTINGS),
+                        true,
+                        isUomEnabled()));
 
-                glob.add(getPointBlock(uniquePoint,
-                                       I18N.tr(MARK_SETTINGS)));
+                glob.add(new PointPanel(uniquePoint,
+                        getPreview(),
+                        I18N.tr("New Mark"),
+                        isUomEnabled(),
+                        geometryType));
 
-                glob.add(getAreaBlock(uniquePoint.getFillLegend(),
-                                      I18N.tr(FILL_SETTINGS)));
+                glob.add(new AreaPanel(uniquePoint,
+                        getPreview(),
+                        I18N.tr(FILL_SETTINGS),
+                        isAreaOptional));
 
                 glob.add(getPreviewPanel(), "growx");
 
                 this.add(glob);
-        }
-
-        /**
-         * Builds the UI block used to configure the fill color of the
-         * symbolizer.
-         * @param point
-         * @param title
-         * @return
-         */
-        public JPanel getPointBlock(UniqueSymbolPoint point, String title) {
-                if(getPreview() == null && getLegend() != null){
-                        initPreview();
-                }
-
-                JPanel jp = new JPanel(new MigLayout("wrap 2", COLUMN_CONSTRAINTS));
-                jp.setBorder(BorderFactory.createTitledBorder(title));
-
-                if(isUomEnabled()){
-                    // If geometryType != POINT, we must let the user choose if
-                    // he wants to draw symbols on centroid or on vertices.
-                    if (geometryType != SimpleGeometryType.POINT) {
-                        jp.add(new JLabel(I18N.tr(PLACE_SYMBOL_ON)), "span 1 2");
-                        jp.add(OnVertexHelper.pnlOnVertex(this, point, I18N), "span 1 2");
-                    }
-                    // Unit of measure - symbol size
-                    jp.add(new JLabel(I18N.tr(SYMBOL_SIZE_UNIT)));
-                    jp.add(getPointUomCombo(), COMBO_BOX_CONSTRAINTS);
-                }
-
-                // Well-known name
-                jp.add(new JLabel(I18N.tr(SYMBOL)));
-                jp.add(getWKNCombo(point), COMBO_BOX_CONSTRAINTS);
-                // Mark width
-                jp.add(new JLabel(I18N.tr(WIDTH)));
-                jp.add(getMarkWidth(point), "growx");
-                // Mark height
-                jp.add(new JLabel(I18N.tr(HEIGHT)));
-                jp.add(getMarkHeight(point), "growx");
-
-                return jp;
-        }
-
-        /**
-         * JSpinner to configure the width of the symbol
-         * @param point
-         * @return
-         */
-
-        private JSpinner getMarkWidth(UniqueSymbolPoint point){
-                double initialValue = (point.getViewBoxWidth() == null)
-                        ? point.getViewBoxHeight()
-                        : point.getViewBoxWidth();
-                SpinnerNumberModel model = new SpinnerNumberModel(
-                        initialValue, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPIN_STEP);
-                final JSpinner jns = new JSpinner(model);
-                jns.addChangeListener(
-                        EventHandler.create(ChangeListener.class, point, "viewBoxWidth", "source.value"));
-                jns.addChangeListener(
-                        EventHandler.create(ChangeListener.class, getPreview(), "imageChanged"));
-                return jns;
-        }
-
-        /**
-         * JSpinner to configure the height of the symbol
-         * @param point
-         * @return
-         */
-        private JSpinner getMarkHeight(UniqueSymbolPoint point){
-                double initialValue = (point.getViewBoxHeight() == null)
-                        ? point.getViewBoxWidth()
-                        : point.getViewBoxHeight();
-                SpinnerNumberModel model = new SpinnerNumberModel(
-                        initialValue, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, SPIN_STEP);
-                final JSpinner jns = new JSpinner(model);
-                jns.addChangeListener(
-                        EventHandler.create(ChangeListener.class, point, "viewBoxHeight", "source.value"));
-                jns.addChangeListener(
-                        EventHandler.create(ChangeListener.class, getPreview(), "imageChanged"));
-                return jns;
-        }
-
-        /**
-         * ComboBox to configure the WKN
-         * @param point
-         * @return
-         */
-        public WideComboBox getWKNCombo(ConstantFormPoint point){
-                CanvasSE prev = getPreview();
-                wkns = getWknProperties();
-                String[] values = new String[wkns.length];
-                for (int i = 0; i < values.length; i++) {
-                        values[i] = wkns[i].getLabel();
-                }
-                final WideComboBox jcc = new WideComboBox(values);
-                ((JLabel)jcc.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
-                ActionListener acl = EventHandler.create(ActionListener.class, prev, "imageChanged");
-                ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateWKNComboBox", "source.selectedIndex");
-                jcc.addActionListener(acl2);
-                jcc.addActionListener(acl);
-                jcc.setSelectedItem(point.getWellKnownName().toUpperCase());
-                return jcc;
-        }
-
-
-        protected ContainerItemProperties[] getWknProperties(){
-                WellKnownName[] us = WellKnownName.values();
-                ContainerItemProperties[] cips = new ContainerItemProperties[us.length];
-                for(int i = 0; i<us.length; i++){
-                        WellKnownName u = us[i];
-                        ContainerItemProperties cip = new ContainerItemProperties(u.name(), u.toLocalizedString());
-                        cips[i] = cip;
-                }
-                return cips;
-        }
-
-    /**
-         * called when the user wants to put the points on the vertices of the geometry.
-         */
-        public void onClickVertex(){
-            OnVertexHelper.changeOnVertex(this, true);
-        }
-
-        /**
-         * called when the user wants to put the points on the centroid of the geometry.
-         */
-        public void onClickCentroid(){
-            OnVertexHelper.changeOnVertex(this, false);
-        }
-
-        /**
-         * Sets the underlying graphic to use the ith element of the combobox
-         * as its well-known name. Used when changing the combobox selection.
-         * @param index
-         */
-        public void updateWKNComboBox(int index){
-                ((ConstantFormPoint)getLegend()).setWellKnownName((wkns[index].getKey()));
-        }
-
-
-        /**
-         * ComboBox to configure the unit of measure used to draw th stroke.
-         * @return
-         */
-        protected WideComboBox getPointUomCombo(){
-                CanvasSE prev = getPreview();
-                uoms = getUomProperties();
-                String[] values = new String[uoms.length];
-                for (int i = 0; i < values.length; i++) {
-                        values[i] = I18N.tr(uoms[i].toString());
-                }
-                final WideComboBox jcc = new WideComboBox(values);
-                ((JLabel)jcc.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
-                ActionListener acl = EventHandler.create(ActionListener.class, prev, "imageChanged");
-                ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex");
-                jcc.addActionListener(acl2);
-                jcc.addActionListener(acl);
-                jcc.setSelectedItem(((ConstantFormPoint)getLegend()).getSymbolUom().toString().toUpperCase());
-                return jcc;
-        }
-        /**
-         * Sets the underlying graphic to use the ith element of the combobox
-         * as its uom. Used when changing the combobox selection.
-         * @param index
-         */
-        public void updateSUComboBox(int index){
-                ((ConstantFormPoint)getLegend()).setSymbolUom(Uom.fromString(uoms[index].getKey()));
         }
 }

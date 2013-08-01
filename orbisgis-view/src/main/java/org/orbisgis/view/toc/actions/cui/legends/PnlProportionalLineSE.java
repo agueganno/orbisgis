@@ -28,7 +28,6 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
-import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
@@ -40,9 +39,7 @@ import javax.swing.*;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.classification.ClassificationUtils;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
@@ -55,8 +52,10 @@ import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
-import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
+import org.orbisgis.view.toc.actions.cui.legends.panels.DashArrayField;
+import org.orbisgis.view.toc.actions.cui.legends.panels.LineOpacitySpinner;
+import org.orbisgis.view.toc.actions.cui.legends.panels.LineUOMComboBox;
+import org.orbisgis.view.toc.actions.cui.legends.panels.ProportionalLinePanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -67,15 +66,13 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class PnlProportionalLineSE extends PnlUniqueLineSE {
 
-        private ProportionalLine legend;
         private static final I18n I18N = I18nFactory.getI18n(PnlProportionalLineSE.class);
         private static final Logger LOGGER = Logger.getLogger("gui."+PnlProportionalLineSE.class);
-        private JPanel lineColor;
-        private JSpinner lineOpacity;
-        private JTextField lineDash;
+
+        private ProportionalLine legend;
 
         @Override
-        public Legend getLegend() {
+        public ProportionalLine getLegend() {
                 return legend;
         }
 
@@ -105,8 +102,8 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
         @Override
         public Legend copyLegend() {
                 ProportionalLine usl = new ProportionalLine();
-                ProportionalStrokeLegend strokeLeg = (ProportionalStrokeLegend) legend.getStrokeLegend();
-                ProportionalStrokeLegend newLeg = (ProportionalStrokeLegend) usl.getStrokeLegend();
+                ProportionalStrokeLegend strokeLeg = legend.getStrokeLegend();
+                ProportionalStrokeLegend newLeg = usl.getStrokeLegend();
                 newLeg.setDashArray(strokeLeg.getDashArray());
                 try{
                         newLeg.setFirstValue(strokeLeg.getFirstValue());
@@ -143,90 +140,13 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
         @Override
         public void initializeLegendFields() {
                 this.removeAll();
-                JPanel glob = new JPanel(new MigLayout());
-                glob.add(getLineBlock());
+                JPanel glob = new JPanel(new MigLayout("wrap 2"));
+                // TODO: Without this call to getFieldComboBox(), I get an
+                // ArrayIndexOutOfBoundsException. Figure out why.
+                getFieldComboBox();
+                glob.add(new ProportionalLinePanel(getLegend(), getPreview(), ds));
                 glob.add(getPreviewPanel());
                 this.add(glob);
-        }
-
-        /**
-         * Gets a panel containing all the fields to edit a unique line.
-         * @return
-         */
-        public JPanel getLineBlock(){
-                if(getPreview() == null && getLegend() != null){
-                        initPreview();
-                }
-
-                ProportionalStrokeLegend strokeLeg = (ProportionalStrokeLegend) legend.getStrokeLegend();
-                ConstantSolidFill csf = (ConstantSolidFill)strokeLeg.getFillAnalysis();
-
-                JPanel jp = new JPanel(new MigLayout("wrap 2", COLUMN_CONSTRAINTS));
-
-                // Field
-                jp.add(new JLabel(I18N.tr(FIELD)));
-                jp.add(getFieldComboBox(), COMBO_BOX_CONSTRAINTS);
-                // Color
-                jp.add(new JLabel(I18N.tr("Color")));
-                lineColor = getColorField(csf);
-                jp.add(lineColor);
-                // Unit of Measure - line width
-                jp.add(new JLabel(I18N.tr(LINE_WIDTH_UNIT)));
-                UomCombo lineUom = getLineUomCombo(legend);
-                lineUom.addActionListener(
-                        EventHandler.create(ActionListener.class, getPreview(), "imageChanged"));
-                jp.add(lineUom.getCombo(), COMBO_BOX_CONSTRAINTS);
-                // Max width
-                jp.add(new JLabel(I18N.tr("Max width")));
-                jp.add(getSecondConf(legend), "growx");
-                // Min width
-                jp.add(new JLabel(I18N.tr("Min width")));
-                jp.add(getFirstConf(legend), "growx");
-                // Opacity
-                jp.add(new JLabel(I18N.tr(OPACITY)));
-                lineOpacity = getLineOpacitySpinner(csf);
-                jp.add(lineOpacity, "growx");
-                // Dash array
-                jp.add(new JLabel(I18N.tr(DASH_ARRAY)));
-                lineDash = getDashArrayField(strokeLeg);
-                jp.add(lineDash, "growx");
-                jp.setBorder(BorderFactory.createTitledBorder(
-                        I18N.tr(LINE_SETTINGS)));
-                return jp;
-        }
-
-        private JFormattedTextField getSecondConf(ProportionalLine prop){
-                CanvasSE prev = getPreview();
-                JFormattedTextField jftf = new JFormattedTextField(new DecimalFormat());
-                try {
-                        jftf.setValue(prop.getSecondValue());
-                } catch (ParameterException ex) {
-                        LOGGER.error(I18N.tr("Can't retrieve the maximum value of"
-                                + " the symbol"), ex);
-                }
-                jftf.addPropertyChangeListener(
-                        "value",
-                        EventHandler.create(PropertyChangeListener.class, prop, "secondValue", "source.value"));
-                jftf.addPropertyChangeListener(
-                        "value",
-                        EventHandler.create(PropertyChangeListener.class, prev, "imageChanged"));
-                jftf.setHorizontalAlignment(SwingConstants.RIGHT);
-                return jftf;
-        }
-
-        private JFormattedTextField getFirstConf(ProportionalLine prop){
-                JFormattedTextField jftf = new JFormattedTextField(new DecimalFormat());
-                try {
-                        jftf.setValue(prop.getFirstValue());
-                } catch (ParameterException ex) {
-                        LOGGER.error(I18N.tr("Can't retrieve the minimum value of"
-                                + " the symbol"), ex);
-                }
-                jftf.addPropertyChangeListener(
-                        "value",
-                        EventHandler.create(PropertyChangeListener.class, prop, "firstValue", "source.value"));
-                jftf.setHorizontalAlignment(SwingConstants.RIGHT);
-                return jftf;
         }
 
         /**
@@ -245,7 +165,6 @@ public class PnlProportionalLineSE extends PnlUniqueLineSE {
                         }
                         jcc.addActionListener(acl2);
                         updateField((String)jcc.getSelectedItem());
-                        ((JLabel)jcc.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
                         return jcc;
                 } else {
                         return new WideComboBox();
