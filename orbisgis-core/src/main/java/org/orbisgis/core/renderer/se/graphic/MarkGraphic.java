@@ -32,8 +32,11 @@ import net.opengis.se._2_0.core.MarkGraphicType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.*;
+import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.ViewBoxNode;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
@@ -52,7 +55,8 @@ import org.orbisgis.core.renderer.se.transform.Transform;
 import org.xnap.commons.i18n.I18n;
 
 import javax.xml.bind.JAXBElement;
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Rectangle2D;
@@ -87,7 +91,7 @@ import java.util.Map;
  * @author Maxence Laurent, Alexis Guéganno
  */
 public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
-        ViewBoxNode, UomNode, TransformNode {
+        ViewBoxNode, TransformNode {
 
     public static final String TRANSFORM = I18n.marktr("Transform");
     public static final String STROKE = I18n.marktr("Stroke");
@@ -103,7 +107,6 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
          */
     public static final double DEFAULT_SIZE = 3;
     //private MarkGraphicSource source;
-    private Uom uom;
     private Transform transform;
     private StringParameter wkn;
     private VariableOnlineResource onlineResource;
@@ -195,27 +198,6 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
 
             this.mimeType = t.getFormat();
         }
-    }
-
-    @Override
-    public Uom getUom() {
-        if (uom != null) {
-            return uom;
-        } else if(getParent() instanceof UomNode){
-            return ((UomNode)getParent()).getUom();
-        } else {
-            return Uom.PX;
-        }
-    }
-
-    @Override
-    public Uom getOwnUom() {
-        return uom;
-    }
-
-    @Override
-    public void setUom(Uom uom) {
-        this.uom = uom;
     }
 
     @Override
@@ -571,8 +553,8 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
             onlineResource.setJAXBSource(m);
         }
 
-        if (uom != null) {
-            m.setUom(uom.toURN());
+        if (getOwnUom() != null) {
+            m.setUom(getOwnUom().toURN());
         }
 
         if (markIndex != null) {

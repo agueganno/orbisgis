@@ -28,13 +28,6 @@
  */
 package org.orbisgis.core.renderer.se.label;
 
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.LabelType;
 import net.opengis.se._2_0.core.LineLabelType;
 import net.opengis.se._2_0.core.ParameterValueType;
@@ -42,7 +35,7 @@ import net.opengis.se._2_0.core.PointLabelType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
-import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.AbstractUomNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
@@ -51,6 +44,14 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.xnap.commons.i18n.I18n;
 
+import javax.xml.bind.JAXBElement;
+import java.awt.Graphics2D;
+import java.awt.Shape;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Labels are used to provide text-label contents. A textSymbolizer must contain
  * a label - If not it won't be displayed.</p>
@@ -58,9 +59,8 @@ import org.xnap.commons.i18n.I18n;
  * about its alignment, vertical or horizontal.
  * @author Maxence Laurent, Alexis Guéganno
  */
-public abstract class Label extends AbstractSymbolizerNode implements UomNode {
+public abstract class Label extends AbstractUomNode {
     public static final String LABEL = I18n.marktr("Label");
-    private Uom uom;
     private StyledText label;
     private HorizontalAlignment hAlign;
     private VerticalAlignment vAlign;
@@ -195,7 +195,7 @@ public abstract class Label extends AbstractSymbolizerNode implements UomNode {
      */
     protected Label(LabelType t) throws InvalidStyle {
         if (t.getUom() != null) {
-            this.uom = Uom.fromOgcURN(t.getUom());
+            this.setUom(Uom.fromOgcURN(t.getUom()));
         }
 
         if (t.getStyledText() != null) {
@@ -224,27 +224,6 @@ public abstract class Label extends AbstractSymbolizerNode implements UomNode {
      */
     protected Label(JAXBElement<? extends LabelType> l) throws InvalidStyle {
         this(l.getValue());
-    }
-
-    @Override
-    public Uom getOwnUom() {
-        return uom;
-    }
-    
-    @Override
-    public Uom getUom() {
-        if (uom != null) {
-            return uom;
-        } else if(getParent() instanceof UomNode){
-            return ((UomNode)getParent()).getUom();
-        } else {
-                return Uom.PX;
-        }
-    }
-
-    @Override
-    public void setUom(Uom uom) {
-        this.uom = uom;
     }
 
     /**
@@ -310,8 +289,8 @@ public abstract class Label extends AbstractSymbolizerNode implements UomNode {
      * @param lt
      */
     protected void setJAXBProperties(LabelType lt) {
-        if (uom != null) {
-            lt.setUom(uom.toString());
+        if (getOwnUom() != null) {
+            lt.setUom(getOwnUom().toString());
         }
 
         if (label != null){

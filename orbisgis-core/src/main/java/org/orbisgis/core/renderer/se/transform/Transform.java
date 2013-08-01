@@ -28,16 +28,14 @@
  */
 package org.orbisgis.core.renderer.se.transform;
 
-import java.awt.geom.AffineTransform;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import net.opengis.se._2_0.core.*;
+import net.opengis.se._2_0.core.MatrixType;
+import net.opengis.se._2_0.core.RotateType;
+import net.opengis.se._2_0.core.ScaleType;
+import net.opengis.se._2_0.core.TransformType;
+import net.opengis.se._2_0.core.TranslateType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.AbstractUomNode;
 import org.orbisgis.core.renderer.se.PropertiesCollectionNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -46,17 +44,23 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.xnap.commons.i18n.I18n;
 
+import java.awt.geom.AffineTransform;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 /**
  *
  * This class contains a collection of {@code Transformation}s.
  *
  * @author Maxence Laurent, Alexis Guéganno
  */
-public class Transform extends AbstractSymbolizerNode implements UomNode, PropertiesCollectionNode {
+public class Transform extends AbstractUomNode implements PropertiesCollectionNode {
 
         public static final String TRANSFORMATIONS = I18n.marktr("Transformations");
 
-        private Uom uom;
         private AffineTransform consolidated;
         private ArrayList<Transformation> transformations;
 
@@ -295,27 +299,6 @@ public class Transform extends AbstractSymbolizerNode implements UomNode, Proper
     public Class<? extends SymbolizerNode> getPropertyClass(String name) {
         return null;
     }
-
-    @Override
-        public Uom getUom() {
-                if (uom != null) {
-                        return uom;
-                } else if(getParent() instanceof UomNode){
-                        return ((UomNode)getParent()).getUom();
-                } else {
-                        return Uom.PX;
-                }
-        }
-
-        @Override
-        public Uom getOwnUom() {
-                return uom;
-        }
-
-        @Override
-        public void setUom(Uom uom) {
-                this.uom = uom;
-        }
 
     @Override
     public List<String> getPropertiesNames() {

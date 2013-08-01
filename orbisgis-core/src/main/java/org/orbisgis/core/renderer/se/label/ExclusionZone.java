@@ -31,7 +31,7 @@ package org.orbisgis.core.renderer.se.label;
 import net.opengis.se._2_0.core.ExclusionRadiusType;
 import net.opengis.se._2_0.core.ExclusionRectangleType;
 import net.opengis.se._2_0.core.ExclusionZoneType;
-import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.AbstractUomNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -43,8 +43,7 @@ import javax.xml.bind.JAXBElement;
  * labels' displaying will be forbidden.
  * @author Alexis Guéganno, Maxence Laurent
  */
-public abstract class ExclusionZone extends AbstractSymbolizerNode implements UomNode {
-        private Uom uom;
+public abstract class ExclusionZone extends AbstractUomNode {
 
         /**
          * Gets a JAXB representation of this {@code ExclusionZone}
@@ -67,26 +66,5 @@ public abstract class ExclusionZone extends AbstractSymbolizerNode implements Uo
                 } else {
                         return null;
                 }
-        }
-
-        @Override
-        public Uom getUom() {
-                if (uom != null) {
-                        return uom;
-                } else if(getParent() instanceof UomNode){
-                        return ((UomNode)getParent()).getUom();
-                } else {
-                        return Uom.PX;
-                }
-        }
-
-        @Override
-        public Uom getOwnUom() {
-                return uom;
-        }
-
-        @Override
-        public void setUom(Uom uom) {
-                this.uom = uom;
         }
 }

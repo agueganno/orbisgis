@@ -43,6 +43,7 @@ import org.apache.log4j.Logger;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.AbstractUomNode;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -63,7 +64,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * It is mainly used to improve the readability of text labels on the map.
  * @author Alexis Guéganno
  */
-public final class Halo extends AbstractSymbolizerNode implements  UomNode, FillNode {
+public final class Halo extends AbstractUomNode implements FillNode {
     public static final String FILL = I18n.marktr("Fill");
     public static final String RADIUS = I18n.marktr("Radius");
 
@@ -75,7 +76,6 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
          */
     public static final double DEFAULT_RADIUS = 1.0;
 
-    private Uom uom;
     private RealParameter radius;
     private Fill fill;
     
@@ -118,25 +118,6 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
         if (halo.getUom() != null) {
             this.setUom(Uom.fromOgcURN(halo.getUom()));
         }
-    }
-
-    @Override
-    public Uom getUom() {
-        if (uom == null) {
-            return ((UomNode)getParent()).getUom();
-        } else {
-            return uom;
-        }
-    }
-
-    @Override
-    public Uom getOwnUom() {
-        return uom;
-    }
-
-    @Override
-    public void setUom(Uom uom) {
-        this.uom = uom;
     }
 
     @Override
@@ -274,24 +255,20 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
     }
 
     /**
-     * Get a JAXB rperesentation of this object.
+     * Get a JaXB representation of this object.
      * @return 
      */
     public HaloType getJAXBType() {
         HaloType h = new HaloType();
-
         if (fill != null) {
             h.setFill(fill.getJAXBElement());
         }
-
         if (radius != null) {
             h.setRadius(radius.getJAXBParameterValueType());
         }
-
-        if (uom != null) {
-            h.setUom(uom.toURN());
+        if (getOwnUom() != null) {
+            h.setUom(getOwnUom().toURN());
         }
-
         return h;
     }
 

@@ -28,12 +28,6 @@
  */
 package org.orbisgis.core.renderer.se.fill;
 
-import java.awt.Graphics2D;
-import java.awt.Paint;
-import java.awt.Shape;
-import java.io.IOException;
-import java.util.Map;
-import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.FillType;
 import net.opengis.se._2_0.core.GraphicFillType;
 import net.opengis.se._2_0.core.HatchedFillType;
@@ -42,11 +36,18 @@ import net.opengis.se._2_0.thematic.DensityFillType;
 import net.opengis.se._2_0.thematic.DotMapFillType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.AbstractUomNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+
+import javax.xml.bind.JAXBElement;
+import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.Shape;
+import java.io.IOException;
+import java.util.Map;
 
 
 /**
@@ -55,12 +56,12 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  * @todo create subclasse FillReference
  *
  * @author Maxence Laurent
+ * @author Alexis Guéganno
  */
-public abstract class Fill extends AbstractSymbolizerNode implements UomNode {
+public abstract class Fill extends AbstractUomNode {
 
-    private Uom uom;
     /**
-     * Create a new fill based on the jaxbelement
+     * Create a new fill based on the JAXBElement
      *
      * @param f XML Fill
      * @return Java SE Fill
@@ -86,29 +87,14 @@ public abstract class Fill extends AbstractSymbolizerNode implements UomNode {
         }
 
     }
-    
-    @Override
-    public void setUom(Uom u){
-            uom = u;
-    }
-
-    @Override
-    public Uom getOwnUom(){
-            return uom;
-    }
-
-    @Override
-    public Uom getUom(){
-        return uom == null ? ((UomNode)getParent()).getUom() : uom;
-    }
 
     /**
      *
      * Fill the shape according to this SE Fill
      *
-     * @param g2 draw within this graphics2d
+     * @param g2 draw within this Graphics2D
+     * @param map feature which contains potential used attributes
      * @param shp fill this shape
-     * @param feat feature which contains potential used attributes
      * @throws ParameterException
      * @throws IOException
      */
@@ -120,8 +106,7 @@ public abstract class Fill extends AbstractSymbolizerNode implements UomNode {
      * Return a Paint that correspond to the SE Fill type.
      * If the fill type cannot be converted into a Painter, null is returned
      *
-     * @param fid current feature id
-     * @param sds data source
+     * @param map The map of attributes.
      * @param selected is the feature selected ?
      * @param mt the map transform
      * @return the paint that correspond to the SE Fill or null if inconvertible (e.g hatched fill, dot map fill, etc)

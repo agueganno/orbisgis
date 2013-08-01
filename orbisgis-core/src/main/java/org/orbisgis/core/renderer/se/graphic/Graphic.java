@@ -28,13 +28,6 @@
  */
 package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Map;
-import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ExternalGraphicType;
 import net.opengis.se._2_0.core.GraphicType;
 import net.opengis.se._2_0.core.MarkGraphicType;
@@ -43,16 +36,24 @@ import net.opengis.se._2_0.thematic.AxisChartType;
 import net.opengis.se._2_0.thematic.PieChartType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.AbstractUomNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+
+import javax.xml.bind.JAXBElement;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Map;
 
 /**
  * Generic class to represent graphic symbols as defined in SE.
  * @todo create subclasses: AlternativeGraphic, GraphicReference
  * @author Maxence Laurent
  */
-public abstract class Graphic extends AbstractSymbolizerNode {
+public abstract class Graphic extends AbstractUomNode {
 
     /**
      * This static method is a convenience to create a new {@code Graphic}
@@ -102,9 +103,7 @@ public abstract class Graphic extends AbstractSymbolizerNode {
     /**
      * Return graphic bounds. Bounds center point shall match CRS origin !
      * @param map
-     * @param selected
      * @param mt
-     * @param at
      * @return
      * @throws ParameterException
      * @throws IOException

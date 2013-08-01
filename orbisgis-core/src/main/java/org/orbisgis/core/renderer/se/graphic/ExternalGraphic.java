@@ -28,6 +28,24 @@
  */
 package org.orbisgis.core.renderer.se.graphic;
 
+import net.opengis.se._2_0.core.ExternalGraphicType;
+import net.opengis.se._2_0.core.ObjectFactory;
+import org.gdms.data.values.Value;
+import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.ViewBoxNode;
+import org.orbisgis.core.renderer.se.common.Halo;
+import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.orbisgis.core.renderer.se.transform.Transform;
+import org.xnap.commons.i18n.I18n;
+
+import javax.xml.bind.JAXBElement;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
@@ -35,27 +53,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.xml.bind.JAXBElement;
-
-import antlr.NoViableAltException;
-import net.opengis.se._2_0.core.ExternalGraphicType;
-import net.opengis.se._2_0.core.ObjectFactory;
-import org.gdms.data.values.Value;
-import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.UomNode;
-import org.orbisgis.core.renderer.se.ViewBoxNode;
-import org.orbisgis.core.renderer.se.common.Halo;
-import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
-import org.orbisgis.core.renderer.se.fill.Fill;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
-import org.orbisgis.core.renderer.se.transform.Transform;
-import org.xnap.commons.i18n.I18n;
 
 /**
  * An external graphic is an image such as JPG, PNG, SVG.
@@ -80,7 +77,7 @@ import org.xnap.commons.i18n.I18n;
  * @see MarkGraphic, Graphic, ViewBox
  * @author Maxence Laurent, Alexis Guéganno
  */
-public final class ExternalGraphic extends Graphic implements UomNode, TransformNode,
+public final class ExternalGraphic extends Graphic implements TransformNode,
         ViewBoxNode {
     public static final String SOURCE = I18n.marktr("Source");
     public static final String VIEWBOX = I18n.marktr("ViewBox");
@@ -94,7 +91,6 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     private Halo halo;
     private Transform transform;
     //private PlanarImage graphic;
-    private Uom uom;
     private String mimeType;
 
     public ExternalGraphic() {
@@ -138,27 +134,6 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
         //}
 
         this.mimeType = t.getFormat();
-    }
-
-    @Override
-    public Uom getUom() {
-        if (uom != null) {
-            return uom;
-        } else if(getParent() instanceof UomNode){
-            return ((UomNode)getParent()).getUom();
-        } else {
-            return Uom.PX;
-        }
-    }
-
-    @Override
-    public Uom getOwnUom() {
-        return uom;
-    }
-
-    @Override
-    public void setUom(Uom uom) {
-        this.uom = uom;
     }
 
     @Override
@@ -459,8 +434,8 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
             e.setTransform(transform.getJAXBType());
         }
 
-        if (uom != null) {
-            e.setUom(uom.toURN());
+        if (getOwnUom() != null) {
+            e.setUom(getOwnUom().toURN());
         }
 
         if (viewBox != null) {

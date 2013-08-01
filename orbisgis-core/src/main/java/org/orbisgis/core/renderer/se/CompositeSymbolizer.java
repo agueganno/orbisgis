@@ -45,7 +45,7 @@ import org.xnap.commons.i18n.I18n;
  * and that is not directly associated to any rendering or representation hint.
  * @author Maxence Laurent
  */
-public final class CompositeSymbolizer extends AbstractSymbolizerNode implements UomNode, PropertiesCollectionNode {
+public final class CompositeSymbolizer extends AbstractSymbolizerNode implements PropertiesCollectionNode {
         public static final String SYMBOLS = I18n.marktr("Symbols");
 
         private ArrayList<Symbolizer> symbolizers;
@@ -179,26 +179,6 @@ public final class CompositeSymbolizer extends AbstractSymbolizerNode implements
         public void removeSymbolizer(Symbolizer s) {
                 symbolizers.remove(s);
         }
-
-        /**
-         * As a collection of <code>Symbolizer</code>s, a <code>CompositeSymbolize</code>
-         * is not associated to any Uom. Returns always <code>null</code>
-         * @return 
-         *      null
-         */
-        @Override
-        public Uom getUom() {
-                return null;
-        }
-
-        @Override
-        public Uom getOwnUom() {
-                return null;
-        }
-
-        @Override
-        public void setUom(Uom unit){}
-
 
         @Override
         public List<SymbolizerNode> getChildren() {

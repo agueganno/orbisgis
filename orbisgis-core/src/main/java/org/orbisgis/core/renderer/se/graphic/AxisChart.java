@@ -28,6 +28,30 @@
  */
 package org.orbisgis.core.renderer.se.graphic;
 
+import net.opengis.se._2_0.thematic.AxisChartSubtypeType;
+import net.opengis.se._2_0.thematic.AxisChartType;
+import net.opengis.se._2_0.thematic.CategoryType;
+import net.opengis.se._2_0.thematic.ObjectFactory;
+import org.gdms.data.values.Value;
+import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.FillNode;
+import org.orbisgis.core.renderer.se.PropertiesCollectionNode;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.UomNode;
+import org.orbisgis.core.renderer.se.common.ShapeHelper;
+import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.fill.Fill;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.orbisgis.core.renderer.se.transform.Transform;
+import org.xnap.commons.i18n.I18n;
+
+import javax.xml.bind.JAXBElement;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -41,25 +65,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import javax.xml.bind.JAXBElement;
-import net.opengis.se._2_0.thematic.AxisChartSubtypeType;
-import net.opengis.se._2_0.thematic.AxisChartType;
-import net.opengis.se._2_0.thematic.CategoryType;
-import net.opengis.se._2_0.thematic.ObjectFactory;
-import org.gdms.data.values.Value;
-import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.*;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.common.ShapeHelper;
-import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.fill.Fill;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
-import org.orbisgis.core.renderer.se.stroke.Stroke;
-import org.orbisgis.core.renderer.se.transform.Transform;
-import org.xnap.commons.i18n.I18n;
 
 /**
  * {@code AxisChart} references all the supported types of chart that uses axis
@@ -81,7 +86,7 @@ import org.xnap.commons.i18n.I18n;
  * @author Maxence Laurent
  * @todo Implements drawGraphic
  */
-public final class AxisChart extends Graphic implements UomNode, FillNode,
+public final class AxisChart extends Graphic implements FillNode,
         StrokeNode, TransformNode, PropertiesCollectionNode {
     public static final String NORMALIZE = I18n.marktr("Normalize to");
     public static final String AXIS_SCALE = I18n.marktr("Axis scale");
@@ -93,7 +98,6 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
     public static final String CATEGORIES = I18n.marktr("Categories");
 
         private List<CategoryListener> listeners;
-        private Uom uom;
         private RealParameter normalizeTo;
         //private boolean isPolarChart;
         private AxisScale axisScale;
@@ -194,27 +198,6 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                 for (CategoryType ct : t.getCategory()) {
                         addCategory(new Category(ct));
                 }
-        }
-
-        @Override
-        public Uom getUom() {
-                if (uom != null) {
-                        return uom;
-                } else if(getParent() instanceof UomNode){
-                        return ((UomNode)getParent()).getUom();
-                } else {
-                        return Uom.PX;
-                }
-        }
-
-        @Override
-        public Uom getOwnUom() {
-                return uom;
-        }
-
-        @Override
-        public void setUom(Uom uom) {
-                this.uom = uom;
         }
 
         @Override
@@ -900,8 +883,8 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                         a.setTransform(transform.getJAXBType());
                 }
 
-                if (uom != null) {
-                        a.setUom(uom.toString());
+                if (getOwnUom() != null) {
+                        a.setUom(getOwnUom().toString());
                 }
 
                 switch (subtype) {

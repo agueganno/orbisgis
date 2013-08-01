@@ -28,18 +28,6 @@
  */
 package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Arc2D;
-import java.awt.geom.Area;
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.thematic.ObjectFactory;
 import net.opengis.se._2_0.thematic.PieChartType;
 import net.opengis.se._2_0.thematic.PieSubtypeType;
@@ -50,7 +38,6 @@ import org.orbisgis.core.renderer.se.PropertiesCollectionNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.label.StyledText;
@@ -63,6 +50,19 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
 import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
 import org.xnap.commons.i18n.I18n;
+
+import javax.xml.bind.JAXBElement;
+import java.awt.Graphics2D;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Area;
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A PieChart is a way to render statistical informations directly in the map.
@@ -87,7 +87,7 @@ import org.xnap.commons.i18n.I18n;
  * change their display order
  * @author Alexis Guéganno, Maxence Laurent
  */
-public final class PieChart extends Graphic implements StrokeNode, UomNode,
+public final class PieChart extends Graphic implements StrokeNode,
         TransformNode, PropertiesCollectionNode {
     public static final String HOLE_RADIUS = I18n.marktr("Radius of the hole");
     public static final String RADIUS = I18n.marktr("Radius");
@@ -97,7 +97,6 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
 
     private ArrayList<SliceListener> listeners;
     private static final double DEFAULT_RADIUS_PX = 30;
-    private Uom uom;
     private PieChartSubType type;
     private RealParameter radius;
     private RealParameter holeRadius;
@@ -207,27 +206,6 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
         for (SliceListener l : listeners) {
             l.sliceRemoved(i);
         }
-    }
-
-    @Override
-    public Uom getUom() {
-        if (uom != null) {
-            return uom;
-        } else if(getParent() instanceof UomNode){
-            return ((UomNode)getParent()).getUom();
-        } else {
-            return Uom.PX;
-        }
-    }
-
-    @Override
-    public Uom getOwnUom() {
-        return uom;
-    }
-
-    @Override
-    public void setUom(Uom uom) {
-        this.uom = uom;
     }
 
     /**
@@ -618,8 +596,8 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
             }
         }
 
-        if (uom != null) {
-            p.setUom(uom.toURN());
+        if (getOwnUom() != null) {
+            p.setUom(getOwnUom().toURN());
         }
 
         if (transform != null) {

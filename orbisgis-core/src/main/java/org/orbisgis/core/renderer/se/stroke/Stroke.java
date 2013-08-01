@@ -37,6 +37,7 @@ import net.opengis.se._2_0.core.*;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.AbstractUomNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -47,9 +48,8 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  *
  * @author Maxence Laurent, Alexis Guéganno.
  */
-public abstract class Stroke extends AbstractSymbolizerNode implements UomNode {
+public abstract class Stroke extends AbstractUomNode {
 
-    private Uom uom;
     private boolean linearRapport;
     private boolean offsetRapport;
 
@@ -173,7 +173,7 @@ public abstract class Stroke extends AbstractSymbolizerNode implements UomNode {
     /**
      * Fill the {@code LabelType} given in argument with this {@code Label}'s
      * properties.
-     * @param lt
+     * @param s The input JaXB object
      */
     protected final void setJAXBProperties(StrokeType s) {
 
@@ -234,27 +234,6 @@ public abstract class Stroke extends AbstractSymbolizerNode implements UomNode {
     public Double getNaturalLengthForCompound(Map<String,Value> map,
             Shape shp, MapTransform mt) throws ParameterException, IOException {
         return getNaturalLength(map, shp, mt);
-    }
-
-    @Override
-    public Uom getUom() {
-        if (uom != null) {
-            return uom;
-        } else if(getParent() instanceof UomNode){
-            return ((UomNode)getParent()).getUom();
-        } else {
-                return Uom.PX;
-        }
-    }
-
-    @Override
-    public void setUom(Uom u) {
-        uom = u;
-    }
-
-    @Override
-    public Uom getOwnUom() {
-        return uom;
     }
     
 }

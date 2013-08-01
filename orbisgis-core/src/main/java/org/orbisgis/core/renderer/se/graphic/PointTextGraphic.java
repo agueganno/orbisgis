@@ -28,6 +28,22 @@
  */
 package org.orbisgis.core.renderer.se.graphic;
 
+import net.opengis.se._2_0.core.ObjectFactory;
+import net.opengis.se._2_0.core.PointTextGraphicType;
+import net.opengis.se._2_0.core.TranslateType;
+import org.gdms.data.values.Value;
+import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.label.PointLabel;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.xnap.commons.i18n.I18n;
+
+import javax.xml.bind.JAXBElement;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
@@ -36,22 +52,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.xml.bind.JAXBElement;
-import net.opengis.se._2_0.core.ObjectFactory;
-import net.opengis.se._2_0.core.PointTextGraphicType;
-import net.opengis.se._2_0.core.TranslateType;
-import org.gdms.data.values.Value;
-import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.UomNode;
-import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.label.PointLabel;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
-import org.xnap.commons.i18n.I18n;
 
 /**
  * A {@code PointTextGraphic} is used to paint a text label using a given translation. It is consequently
@@ -61,12 +61,11 @@ import org.xnap.commons.i18n.I18n;
  * <li>A {@code PointLabel}</li></ul>
  * @author Alexis Guéganno
  */
-public final class PointTextGraphic extends Graphic implements UomNode {
+public final class PointTextGraphic extends Graphic {
         public static final String Y = I18n.marktr("Y");
         public static final String X = I18n.marktr("X");
         public static final String POINT_LABEL = I18n.marktr("Point label");
 
-        private Uom uom;
         private PointLabel pointLabel;
         private RealParameter x;
         private RealParameter y;
@@ -99,27 +98,6 @@ public final class PointTextGraphic extends Graphic implements UomNode {
                                 setY(SeParameterFactory.createRealParameter(pp.getY()));
                         }
                 }
-        }
-
-        @Override
-        public Uom getUom() {
-                if (uom != null) {
-                          return uom;
-                } else if(getParent() instanceof UomNode){
-                          return ((UomNode)getParent()).getUom();
-                } else {
-                        return Uom.PX;
-                }
-        }
-
-        @Override
-        public Uom getOwnUom() {
-                return uom;
-        }
-
-        @Override
-        public void setUom(Uom uom) {
-                this.uom = uom;
         }
 
         /**
