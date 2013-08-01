@@ -1,5 +1,6 @@
 package org.orbisgis.view.toc.actions.cui.advanced;
 
+import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
@@ -8,8 +9,10 @@ import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.TextSymbolizer;
+import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.OnlineResource;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
 import org.orbisgis.core.renderer.se.fill.DensityFill;
 import org.orbisgis.core.renderer.se.fill.DotMapFill;
@@ -71,6 +74,7 @@ import org.orbisgis.core.renderer.se.transform.Transformation;
 import org.orbisgis.core.renderer.se.transform.Translate;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.sif.common.ContainerItemProperties;
+import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -80,6 +84,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.EventHandler;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -93,6 +98,8 @@ import java.util.List;
  * @author Alexis Guéganno
  */
 public class AdvancedEditorPanelFactory {
+    private static final ContainerItemProperties[] UOMS = getUomProperties();
+    public static final String UNIT_OF_MEASURE = I18n.marktr("Unit of measure");
 
     private static final I18n I18N = I18nFactory.getI18n(AdvancedEditorPanelFactory.class);
     private static final Logger LOGGER = Logger.getLogger(AdvancedEditorPanelFactory.class);
@@ -113,28 +120,45 @@ public class AdvancedEditorPanelFactory {
      * @return The needed JPanel.
      */
     public JPanel getPanel(SymbolizerNode sn){
-        List<JPanel> req = getCombos(sn);
-        JPanel ret = new JPanel();
-        BoxLayout bl = new BoxLayout(ret, BoxLayout.Y_AXIS);
-        ret.setLayout(bl);
-        for(JPanel cb : req){
-            ret.add(cb);
-        }
+        JPanel ret = new JPanel(new MigLayout("wrap 2"));
+        getCombos(sn, ret);
         return ret;
     }
 
-    private List<JPanel> getCombos(SymbolizerNode sn) {
+    /**
+     * Builds and fill JComboBox instances from the properties
+     * advertised by {@code sn}. Changing the selected elements in
+     * these JComboBox updates {@code sn}.
+     * @param sn The input SymbolizerNode
+     */
+    private void getCombos(SymbolizerNode sn, JPanel dest) {
         List<String> req = sn.getPropertyNames();
         List<String> optional = sn.getOptionalPropertyNames();
-        List<JPanel> ret = new LinkedList<JPanel>();
+        if(sn instanceof UomNode){
+            JComboBox cu = getUomComboBox((UomNode)sn);
+            dest.add(new JLabel(I18N.tr(UNIT_OF_MEASURE)));
+            dest.add(cu);
+        }
         for(int i=0; i<req.size(); i++){
             String name = req.get(i);
             JComboBox combo = getComboForProperty(sn, name, optional.contains(name));
-            JPanel jp = new JPanel();
-            jp.add(new JLabel(I18N.tr(name)));
-            jp.add(combo);
-            ret.add(jp);
+            dest.add(new JLabel(I18N.tr(name)));
+            dest.add(combo);
         }
+    }
+
+    private JComboBox getUomComboBox(final UomNode sn) {
+        final UomCombo uc = new UomCombo(sn.getUom(), UOMS, I18N.tr(UNIT_OF_MEASURE));
+        final JComboBox ret = uc.getCombo();
+        ActionListener al = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                JComboBox source = (JComboBox) actionEvent.getSource();
+                int selectedIndex = source.getSelectedIndex();
+                sn.setUom(Uom.fromString(UOMS[selectedIndex].getKey()));
+            }
+        };
+        ret.addActionListener(al);
         return ret;
     }
 
@@ -251,6 +275,23 @@ public class AdvancedEditorPanelFactory {
         }
         ActionListener l = new ChildListener(sn, name);
         ret.addActionListener(l);
+        return ret;
+    }
+
+    /**
+     * Gets the value contained in the {@code Uom} enum with their
+     * internationalized representation in a {@code
+     * ContainerItemProperties} array.
+     * @return Uoms in an array of containers.
+     */
+    public static ContainerItemProperties[] getUomProperties(){
+        Uom[] us = Uom.values();
+        ContainerItemProperties[] ret = new ContainerItemProperties[us.length];
+        for(int i = 0; i<us.length; i++){
+            Uom u = us[i];
+            ContainerItemProperties cip = new ContainerItemProperties(u.toString(), u.toLocalizedString());
+            ret[i] = cip;
+        }
         return ret;
     }
 
