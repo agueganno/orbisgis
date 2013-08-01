@@ -38,6 +38,8 @@ import org.orbisgis.core.renderer.se.label.Label;
 import org.orbisgis.core.renderer.se.label.LineLabel;
 import org.orbisgis.core.renderer.se.label.PointLabel;
 import org.orbisgis.core.renderer.se.label.StyledText;
+import org.orbisgis.core.renderer.se.parameter.Literal;
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
 import org.orbisgis.core.renderer.se.parameter.color.ColorAttribute;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
@@ -78,17 +80,20 @@ import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.beans.EventHandler;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -120,8 +125,50 @@ public class AdvancedEditorPanelFactory {
      * @return The needed JPanel.
      */
     public JPanel getPanel(SymbolizerNode sn){
-        JPanel ret = new JPanel(new MigLayout("wrap 2"));
-        getCombos(sn, ret);
+        if(sn instanceof Literal){
+            return getPanel((SeParameter)sn);
+        } else {
+            JPanel ret = new JPanel(new MigLayout("wrap 2"));
+            getCombos(sn, ret);
+            return ret;
+        }
+    }
+
+    /**
+     * getPanel dedicated to SeParameter instances.
+     * @param sp The input SeParameter
+     * @return The JPanel that can be used to edit sp.
+     */
+    public JPanel getPanel(SeParameter sp){
+        JPanel ret = new JPanel();
+        if(sp instanceof RealLiteral){
+            ret.add(new JLabel(I18N.tr("Value")));
+            final RealLiteral rl = (RealLiteral) sp;
+            final JFormattedTextField field = new JFormattedTextField(NumberFormat.getNumberInstance());
+            field.setValue(rl.getValue(null));
+            field.addFocusListener(new FocusListener() {
+                @Override
+                public void focusGained(FocusEvent focusEvent) {}
+
+                @Override
+                public void focusLost(FocusEvent focusEvent) {
+                    String t = field.getText();
+                    rl.setValue(Double.valueOf(t != null && !t.isEmpty() ? t : "0"));
+                }
+            });
+            ret.add(field);
+        } else if(sp instanceof StringLiteral){
+            ret.add(new JLabel(I18N.tr("Value")));
+            StringLiteral sl = (StringLiteral) sp;
+            JTextField field = new JTextField(sl.getValue(null), 25);
+            FocusListener fl = EventHandler.create(FocusListener.class, sl, "setValue", "source.text", "focusLost");
+            field.addFocusListener(fl);
+            ret.add(field);
+        } else if(sp instanceof ColorLiteral){
+            ret.add(new JLabel(I18N.tr("Value")));
+            ret.add(new JLabel(((ColorLiteral) sp).getColor(null).toString()));
+
+        }
         return ret;
     }
 
