@@ -143,7 +143,7 @@ public class AdvancedEditorPanelFactory {
      * @return The JPanel that can be used to edit sp.
      */
     public JPanel getPanel(SeParameter sp){
-        JPanel ret = new JPanel();
+        JPanel ret = new JPanel(new MigLayout("wrap 2","[::][100::]",""));
         if(sp instanceof RealLiteral){
             ret.add(new JLabel(I18N.tr("Value")));
             final RealLiteral rl = (RealLiteral) sp;
@@ -154,7 +154,7 @@ public class AdvancedEditorPanelFactory {
             final JSpinner spin = new JSpinner(new SpinnerNumberModel(init, min, max, 0.1));
             ChangeListener cl = EventHandler.create(ChangeListener.class, rl, "setValue", "source.value");
             spin.addChangeListener(cl);
-            ret.add(spin);
+            ret.add(spin, "growx");
         } else if(sp instanceof StringLiteral){
             ret.add(new JLabel(I18N.tr("Value")));
             StringLiteral sl = (StringLiteral) sp;
@@ -182,13 +182,13 @@ public class AdvancedEditorPanelFactory {
         if(sn instanceof UomNode){
             JComboBox cu = getUomComboBox((UomNode)sn);
             dest.add(new JLabel(I18N.tr(UNIT_OF_MEASURE)));
-            dest.add(cu);
+            dest.add(cu,"growx");
         }
         for(int i=0; i<req.size(); i++){
             String name = req.get(i);
             JComboBox combo = getComboForProperty(sn, name, optional.contains(name));
             dest.add(new JLabel(I18N.tr(name)));
-            dest.add(combo);
+            dest.add(combo,"growx");
         }
     }
 
