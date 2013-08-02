@@ -680,7 +680,7 @@ public final class CompoundStroke extends Stroke implements UomNode, PropertiesC
     }
 
     @Override
-    public Collection<SymbolizerNode> getProperties(String name) {
+    public List<SymbolizerNode> getProperties(String name) {
         if(ELEMENTS.equals(name)){
             ArrayList<SymbolizerNode> ret = new ArrayList<SymbolizerNode>();
             ret.addAll(getElements());
@@ -690,7 +690,7 @@ public final class CompoundStroke extends Stroke implements UomNode, PropertiesC
     }
 
     @Override
-    public void setProperties(String name, Collection<SymbolizerNode> properties) {
+    public void setProperties(String name, List<SymbolizerNode> properties) {
         if(ELEMENTS.equals(name)){
             elements = new ArrayList<CompoundStrokeElement>(properties.size());
             for(SymbolizerNode sn : properties){

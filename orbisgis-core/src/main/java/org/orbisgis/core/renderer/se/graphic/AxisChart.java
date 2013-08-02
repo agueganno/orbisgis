@@ -1017,7 +1017,7 @@ public final class AxisChart extends Graphic implements FillNode,
         }
 
         @Override
-        public Collection<SymbolizerNode> getProperties(String name) {
+        public List<SymbolizerNode> getProperties(String name) {
             if(CATEGORIES.equals(name)){
                 return new ArrayList<SymbolizerNode>(categories);
             }
@@ -1025,7 +1025,7 @@ public final class AxisChart extends Graphic implements FillNode,
         }
 
         @Override
-        public void setProperties(String name, Collection<SymbolizerNode> properties) {
+        public void setProperties(String name, List<SymbolizerNode> properties) {
             if(CATEGORIES.equals(name)){
                 categories = new ArrayList<Category>();
                 for(SymbolizerNode sn : properties){

@@ -690,7 +690,7 @@ public final class PieChart extends Graphic implements StrokeNode,
     }
 
     @Override
-    public Collection<SymbolizerNode> getProperties(String name) {
+    public List<SymbolizerNode> getProperties(String name) {
         if(SLICES.equals(name)){
             return new ArrayList<SymbolizerNode>(slices);
         }
@@ -698,7 +698,7 @@ public final class PieChart extends Graphic implements StrokeNode,
     }
 
     @Override
-    public void setProperties(String name, Collection<SymbolizerNode> properties) {
+    public void setProperties(String name, List<SymbolizerNode> properties) {
         if(SLICES.equals(name)){
             slices = new ArrayList<Slice>();
             for(SymbolizerNode sn : properties){

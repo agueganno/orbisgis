@@ -548,7 +548,7 @@ public final class Style extends AbstractSymbolizerNode implements PropertiesCol
     }
 
     @Override
-    public Collection<SymbolizerNode> getProperties(String name) {
+    public List<SymbolizerNode> getProperties(String name) {
         List<SymbolizerNode> ret = new ArrayList<SymbolizerNode>();
         if(RULES.equals(name)){
             ret.addAll(getRules());
@@ -557,7 +557,7 @@ public final class Style extends AbstractSymbolizerNode implements PropertiesCol
     }
 
     @Override
-    public void setProperties(String name, Collection<SymbolizerNode> properties) {
+    public void setProperties(String name, List<SymbolizerNode> properties) {
         if(RULES.equals(name)){
             rules = new ArrayList<Rule>(properties.size());
             for(SymbolizerNode sn : properties){

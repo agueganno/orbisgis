@@ -306,7 +306,7 @@ public class StringConcatenate extends AbstractSymbolizerNode implements SeParam
     }
 
     @Override
-    public Collection<SymbolizerNode> getProperties(String name) {
+    public List<SymbolizerNode> getProperties(String name) {
         if(INPUTS.equals(name)){
             return new ArrayList<SymbolizerNode>(inputStrings);
         }
@@ -314,7 +314,7 @@ public class StringConcatenate extends AbstractSymbolizerNode implements SeParam
     }
 
     @Override
-    public void setProperties(String name, Collection<SymbolizerNode> properties) {
+    public void setProperties(String name, List<SymbolizerNode> properties) {
         if(INPUTS.equals(name)){
             inputStrings = new ArrayList<StringParameter>(properties.size());
             for(SymbolizerNode sn : properties){

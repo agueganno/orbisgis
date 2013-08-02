@@ -132,7 +132,7 @@ public class AlternativeStrokeElements extends CompoundStrokeElement implements 
         }
 
         @Override
-        public void setProperties(String prop, Collection<SymbolizerNode> value) {
+        public void setProperties(String prop, List<SymbolizerNode> value) {
             if(ELEMENTS.equals(prop)){
                 ArrayList<StrokeElement> elements = new ArrayList<StrokeElement>();
                 for(SymbolizerNode sn : value){
@@ -155,7 +155,7 @@ public class AlternativeStrokeElements extends CompoundStrokeElement implements 
         }
 
         @Override
-        public Collection<SymbolizerNode> getProperties(String name) {
+        public List<SymbolizerNode> getProperties(String name) {
             if(ELEMENTS.equals(name)){
                 return new ArrayList<SymbolizerNode>(getElements());
             }

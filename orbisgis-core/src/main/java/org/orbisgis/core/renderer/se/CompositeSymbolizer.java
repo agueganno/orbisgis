@@ -219,7 +219,7 @@ public final class CompositeSymbolizer extends AbstractSymbolizerNode implements
         }
 
         @Override
-        public Collection<SymbolizerNode> getProperties(String name) {
+        public List<SymbolizerNode> getProperties(String name) {
             if(SYMBOLS.equals(name)){
                 List<SymbolizerNode> sns = new ArrayList<SymbolizerNode>();
                 sns.addAll(getSymbolizerList());
@@ -229,7 +229,7 @@ public final class CompositeSymbolizer extends AbstractSymbolizerNode implements
         }
 
         @Override
-        public void setProperties(String name, Collection<SymbolizerNode> properties) {
+        public void setProperties(String name, List<SymbolizerNode> properties) {
             if(SYMBOLS.equals(name)){
                 symbolizers = new ArrayList<Symbolizer>();
                 for(SymbolizerNode sn : properties){

@@ -308,7 +308,7 @@ public class Transform extends AbstractUomNode implements PropertiesCollectionNo
     }
 
     @Override
-    public Collection<SymbolizerNode> getProperties(String name) {
+    public List<SymbolizerNode> getProperties(String name) {
         if(TRANSFORMATIONS.equals(name)){
             ArrayList<SymbolizerNode> ret = new ArrayList<SymbolizerNode>();
             ret.addAll(transformations);
@@ -317,7 +317,7 @@ public class Transform extends AbstractUomNode implements PropertiesCollectionNo
     }
 
     @Override
-    public void setProperties(String name, Collection<SymbolizerNode> properties) {
+    public void setProperties(String name, List<SymbolizerNode> properties) {
         throw new UnsupportedOperationException("setProperties not implemented yet in Transform");
     }
 

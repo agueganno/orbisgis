@@ -347,7 +347,7 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
     }
 
     @Override
-    public Collection<SymbolizerNode> getProperties(String name) {
+    public List<SymbolizerNode> getProperties(String name) {
         if(POINTS.equals(name)){
             return new ArrayList<SymbolizerNode>(iPoints);
         }
@@ -355,7 +355,7 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
     }
 
     @Override
-    public void setProperties(String name, Collection<SymbolizerNode> properties) {
+    public void setProperties(String name, List<SymbolizerNode> properties) {
         if(POINTS.equals(name)){
             iPoints = new ArrayList<InterpolationPoint<ToType>>();
             for(SymbolizerNode sn : properties){

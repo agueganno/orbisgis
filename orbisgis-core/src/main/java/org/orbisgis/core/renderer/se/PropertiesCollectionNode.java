@@ -1,6 +1,5 @@
 package org.orbisgis.core.renderer.se;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -8,7 +7,7 @@ import java.util.List;
  * collection of nodes like we handle single properties in SymbolizerNode.
  * @author Alexis Guéganno
  */
-public interface PropertiesCollectionNode {
+public interface PropertiesCollectionNode extends SymbolizerNode {
 
     /**
      * Gets the names of properties that gather collections of SymbolizerNode.
@@ -21,7 +20,7 @@ public interface PropertiesCollectionNode {
      * @param name The name of the collection of properties.
      * @return The properties
      */
-    Collection<SymbolizerNode> getProperties(String name);
+    List<SymbolizerNode> getProperties(String name);
 
     /**
      * Set the collection of properties associated to name.
@@ -30,7 +29,7 @@ public interface PropertiesCollectionNode {
      * @throws IllegalArgumentException if {@code properties} is empty or if at least one of the given
      *          {@code SymbolizerNode} can't be used for the collection associated to {@code name}.
      */
-    void setProperties(String name, Collection<SymbolizerNode> properties);
+    void setProperties(String name, List<SymbolizerNode> properties);
 
     /**
      * Gets the expected class for nodes stored in the collection associated to {@code name}.

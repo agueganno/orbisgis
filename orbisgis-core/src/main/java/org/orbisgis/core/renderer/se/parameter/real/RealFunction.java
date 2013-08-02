@@ -335,7 +335,7 @@ public class RealFunction extends AbstractSymbolizerNode implements SeParameter,
     }
 
     @Override
-    public Collection<SymbolizerNode> getProperties(String name) {
+    public List<SymbolizerNode> getProperties(String name) {
         if(OPERANDS.equals(name)){
             return new ArrayList<SymbolizerNode>(operands);
         }
@@ -343,7 +343,7 @@ public class RealFunction extends AbstractSymbolizerNode implements SeParameter,
     }
 
     @Override
-    public void setProperties(String name, Collection<SymbolizerNode> properties) {
+    public void setProperties(String name, List<SymbolizerNode> properties) {
         if(OPERANDS.equals(name)){
             operands = new ArrayList<RealParameter>();
             for(SymbolizerNode sn : properties){

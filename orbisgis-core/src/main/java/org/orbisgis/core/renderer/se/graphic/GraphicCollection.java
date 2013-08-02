@@ -380,7 +380,7 @@ public final class GraphicCollection extends AbstractSymbolizerNode implements U
     }
 
     @Override
-    public Collection<SymbolizerNode> getProperties(String name) {
+    public List<SymbolizerNode> getProperties(String name) {
         if(COLLECTION.equals(name)){
             return new ArrayList<SymbolizerNode>(graphics);
         }
@@ -388,7 +388,7 @@ public final class GraphicCollection extends AbstractSymbolizerNode implements U
     }
 
     @Override
-    public void setProperties(String name, Collection<SymbolizerNode> properties) {
+    public void setProperties(String name, List<SymbolizerNode> properties) {
         if(COLLECTION.equals(name)){
             graphics = new ArrayList<Graphic>(properties.size());
             for(SymbolizerNode sn : properties){
