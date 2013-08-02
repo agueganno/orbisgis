@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
+import org.orbisgis.core.renderer.se.PropertiesCollectionNode;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -123,18 +124,33 @@ public class AdvancedEditorPanelFactory {
     }
 
     /**
+     * Gets the associated AdvancedTreeModel
+     * @return The associated tree model.
+     */
+    public AdvancedTreeModel getModel(){
+        return model;
+    }
+
+    /**
      * Gets the {@link JPanel} used to edit {@code sn}.
      * @param sn The input {@link SymbolizerNode}.
      * @return The needed JPanel.
      */
     public JPanel getPanel(SymbolizerNode sn){
+        JPanel ret;
         if(sn instanceof Literal){
-            return getPanel((SeParameter)sn);
+            ret = getPanel((Literal)sn);
         } else {
-            JPanel ret = new JPanel(new MigLayout("wrap 2"));
+            ret = new JPanel(new MigLayout("wrap 2"));
             getCombos(sn, ret);
-            return ret;
         }
+        if(sn instanceof PropertiesCollectionNode){
+            for(String prop : ((PropertiesCollectionNode) sn).getPropertiesNames()){
+                JPanel col = new PropertiesPanel((PropertiesCollectionNode) sn, prop, this, model);
+                ret.add(col, "span 2");
+            }
+        }
+        return ret;
     }
 
     /**
@@ -142,7 +158,7 @@ public class AdvancedEditorPanelFactory {
      * @param sp The input SeParameter
      * @return The JPanel that can be used to edit sp.
      */
-    public JPanel getPanel(SeParameter sp){
+    public JPanel getPanel(Literal sp){
         JPanel ret = new JPanel(new MigLayout("wrap 2","[::][100::]",""));
         if(sp instanceof RealLiteral){
             ret.add(new JLabel(I18N.tr("Value")));
@@ -168,6 +184,10 @@ public class AdvancedEditorPanelFactory {
 
         }
         return ret;
+    }
+
+    public JPanel getPanel(RealFunction rf){
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -207,8 +227,33 @@ public class AdvancedEditorPanelFactory {
         return ret;
     }
 
-    private JComboBox getComboForProperty(SymbolizerNode sn, String name, boolean optional) {
-        Class<? extends SymbolizerNode> propertyClass = sn.getPropertyClass(name);
+    /**
+     * Builds a JComboBox containing all the SymbolizerNode types that can
+     * be put in {@code sn} for property {@code name}.
+     * @param sn The parent {@link SymbolizerNode}.
+     * @param name The name of the property we're handling
+     * @param optional If true, the property can be set to null, so a "None" entry
+     *                 is added in the combo box.
+     * @return The wanted JComboBox.
+     */
+    public JComboBox getComboForProperty(SymbolizerNode sn, String name, boolean optional) {
+        JComboBox ret = getComboForClass(sn.getPropertyClass(name), optional, sn.getProperty(name));
+        ActionListener l = new ChildListener(sn, name, this);
+        ret.addActionListener(l);
+        return ret;
+    }
+
+    /**
+     * Builds a JComboBox for the given class.
+     * @param propertyClass The class of the symbolizer node we want to manage.
+     * @param optional If true, the combo will contain an additional entry in order
+     *                 to set the property to null
+     * @param current The currently set node. If null, the first entry will be selected.
+     * @return The wanted JComboBox.
+     */
+    public JComboBox getComboForClass(Class<?extends SymbolizerNode> propertyClass,
+                                      boolean optional,
+                                      SymbolizerNode current){
         List<ContainerItem<Class<? extends SymbolizerNode>>> cips =
                 new ArrayList<ContainerItem<Class<? extends SymbolizerNode>>>();
         if(propertyClass.equals(Rule.class)){
@@ -302,10 +347,9 @@ public class AdvancedEditorPanelFactory {
         JComboBox ret = new JComboBox();
         int ind = -1;
         int c = 0;
-        SymbolizerNode property = sn.getProperty(name);
         for(ContainerItem<Class<? extends SymbolizerNode>> ci : cips){
             ret.addItem(ci);
-            if(property != null && property.getClass().equals(ci.getKey())){
+            if(current != null && current.getClass().equals(ci.getKey())){
                 ind = c;
             }
             c++;
@@ -317,9 +361,9 @@ public class AdvancedEditorPanelFactory {
             ret.setSelectedIndex(ind);
         } else if(optional){
             ret.setSelectedIndex(cips.size());
+        } else if(ret.getItemCount() > 0){
+            ret.setSelectedIndex(0);
         }
-        ActionListener l = new ChildListener(sn, name);
-        ret.addActionListener(l);
         return ret;
     }
 
@@ -341,11 +385,34 @@ public class AdvancedEditorPanelFactory {
     }
 
     /**
+     * Tries to build an instance of the given class using the default constructor.
+     * @param input A SymbolizerNode class.
+     * @return The instance created by the class' default constructor,
+     *         null if a problem is encountered.
+     */
+    public SymbolizerNode getInstance(Class<? extends SymbolizerNode> input){
+        try {
+                Constructor<? extends SymbolizerNode> c = input.getConstructor();
+                return c.newInstance();
+        } catch (NoSuchMethodException e) {
+            LOGGER.error("Can't' find a default constructor for type "+input);
+        } catch (InvocationTargetException e) {
+            LOGGER.error("Can't' find use the default constructor for type " + input, e);
+        } catch (InstantiationException e) {
+            LOGGER.error("Can't' find use the default constructor for type " + input, e);
+        } catch (IllegalAccessException e) {
+            LOGGER.error("Can't' find use the default constructor for type " + input, e);
+        }
+        return null;
+    }
+
+    /**
      * ActionListener that is used to know if one of the properties managed
      * for a SymbolizerNode is changed through a selection in a JComboBox.
      */
-    public class ChildListener implements ActionListener{
+    public static class ChildListener implements ActionListener{
         private final String property;
+        private final AdvancedEditorPanelFactory factory;
         private SymbolizerNode parent;
 
         /**
@@ -353,13 +420,15 @@ public class AdvancedEditorPanelFactory {
          * @param parent The parent node.
          * @param property The property we're interesting in.
          */
-        public ChildListener(SymbolizerNode parent, String property){
+        public ChildListener(SymbolizerNode parent, String property, AdvancedEditorPanelFactory factory){
             this.parent = parent;
             this.property = property;
+            this.factory = factory;
         }
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
+            AdvancedTreeModel model = factory.getModel();
             ContainerItem ci =
                     (ContainerItem) ((JComboBox)actionEvent.getSource()).getSelectedItem();
             Object key = ci.getKey();
@@ -367,18 +436,9 @@ public class AdvancedEditorPanelFactory {
                 model.setProperty(parent, null, property);
             } else {
                 Class<? extends SymbolizerNode> ke = (Class<? extends SymbolizerNode>)key;
-                try {
-                        Constructor<? extends SymbolizerNode> c = ke.getConstructor();
-                        SymbolizerNode created = c.newInstance();
-                        model.setProperty(parent, created, property);
-                } catch (NoSuchMethodException e) {
-                    LOGGER.error("Can't' find a default constructor for type "+key);
-                } catch (InvocationTargetException e) {
-                    LOGGER.error("Can't' find use the default constructor for type " + key, e);
-                } catch (InstantiationException e) {
-                    LOGGER.error("Can't' find use the default constructor for type " + key, e);
-                } catch (IllegalAccessException e) {
-                    LOGGER.error("Can't' find use the default constructor for type " + key, e);
+                SymbolizerNode inst = factory.getInstance(ke);
+                if(inst != null){
+                    model.setProperty(parent, inst, property);
                 }
             }
         }

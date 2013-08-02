@@ -1,5 +1,6 @@
 package org.orbisgis.view.toc.actions.cui.advanced;
 
+import org.orbisgis.core.renderer.se.PropertiesCollectionNode;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.view.components.resourceTree.AbstractTreeModel;
@@ -136,5 +137,72 @@ public class AdvancedTreeModel extends AbstractTreeModel {
             return getParents(sn.getParent(), list);
         }
 
+    }
+
+    /**
+     * Add a new property in a PropertiesCollectionNode at the given index.
+     * @param parent The parent node.
+     * @param property The property we want to handle
+     * @param created The new node.
+     * @param index The insertion index
+     */
+    public void addPropertyInCollection(PropertiesCollectionNode parent, String property, SymbolizerNode created, int index) {
+        List<SymbolizerNode> properties = parent.getProperties(property);
+        properties.add(index, created);
+        parent.setProperties(property, properties);
+        TreeModelEvent tme = new TreeModelEvent(
+                this,
+                getPathForNode(parent),
+                new int[]{index},
+                new Object[]{new NodeWrapper(created)}
+        );
+        fireNodeInserted(tme);
+        fireEvent();
+    }
+
+
+    /**
+     * Removes a new property in a PropertiesCollectionNode at the given index.
+     * @param parent The parent node.
+     * @param property The property we want to handle
+     * @param index The deletion index
+     */
+    public void removePropertyFromCollection(PropertiesCollectionNode parent,
+                                             String property,
+                                             int index) {
+        List<SymbolizerNode> props = parent.getProperties(property);
+        SymbolizerNode child = props.get(index);
+        props.remove(index);
+        parent.setProperties(property, props);
+        TreeModelEvent tme = new TreeModelEvent(
+                this,
+                getPathForNode(parent),
+                new int[]{index},
+                new Object[]{new NodeWrapper(child)}
+        );
+        fireNodeRemoved(tme);
+        fireEvent();
+    }
+
+    /**
+     * Replace property at {@code index} with the given instance of SymbolizerNode in the property collection
+     * defined by {@code property} in {@code parent}.
+     * @param parent The parent node.
+     * @param inst The node that will replace what is at {@code index} int the {@code property} collection.
+     * @param property The property collection name.
+     * @param index The index.
+     */
+    public void setPropertyInCollection(PropertiesCollectionNode parent, SymbolizerNode inst, String property, int index) {
+        List<SymbolizerNode> props = parent.getProperties(property);
+        props.set(index, inst);
+        parent.setProperties(property, props);
+        TreeModelEvent tme = new TreeModelEvent(
+                this,
+                getPathForNode(parent),
+                new int[]{index},
+                new Object[]{new NodeWrapper(inst)}
+        );
+        fireStructureChanged(tme);
+        fireEvent();
     }
 }
