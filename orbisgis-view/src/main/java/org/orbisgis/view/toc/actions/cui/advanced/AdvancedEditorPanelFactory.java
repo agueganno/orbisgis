@@ -40,7 +40,6 @@ import org.orbisgis.core.renderer.se.label.LineLabel;
 import org.orbisgis.core.renderer.se.label.PointLabel;
 import org.orbisgis.core.renderer.se.label.StyledText;
 import org.orbisgis.core.renderer.se.parameter.Literal;
-import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
 import org.orbisgis.core.renderer.se.parameter.color.ColorAttribute;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
@@ -77,12 +76,11 @@ import org.orbisgis.core.renderer.se.transform.Transformation;
 import org.orbisgis.core.renderer.se.transform.Translate;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.sif.common.ContainerItemProperties;
-import org.orbisgis.view.toc.actions.cui.legends.panels.UomCombo;
+import org.orbisgis.sif.components.WideComboBox;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.JComboBox;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -92,12 +90,10 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.beans.EventHandler;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -232,14 +228,13 @@ public class AdvancedEditorPanelFactory {
     }
 
     private JComboBox getUomComboBox(final UomNode sn) {
-        final UomCombo uc = new UomCombo(sn.getUom(), UOMS, I18N.tr(UNIT_OF_MEASURE));
-        final JComboBox ret = uc.getCombo();
+        final WideComboBox ret = new WideComboBox(Uom.getStrings());
+        ret.setSelectedItem(sn.getUom().toString());
         ActionListener al = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 JComboBox source = (JComboBox) actionEvent.getSource();
-                int selectedIndex = source.getSelectedIndex();
-                sn.setUom(Uom.fromString(UOMS[selectedIndex].getKey()));
+                sn.setUom(Uom.fromString((String) source.getSelectedItem()));
             }
         };
         ret.addActionListener(al);
