@@ -144,7 +144,7 @@ public class AdvancedEditorPanelFactory {
         if(sn instanceof Literal){
             ret = getPanel((Literal)sn);
         } else {
-            ret = new JPanel(new MigLayout("wrap 2"));
+            ret = new JPanel(new MigLayout("wrap 3"));
             getCombos(sn, ret);
         }
         if(sn instanceof PropertiesCollectionNode){
@@ -205,13 +205,14 @@ public class AdvancedEditorPanelFactory {
         if(sn instanceof UomNode){
             JComboBox cu = getUomComboBox((UomNode)sn);
             dest.add(new JLabel(I18N.tr(UNIT_OF_MEASURE)));
-            dest.add(cu,"growx");
+            dest.add(cu,"growx, wrap");
         }
         for(int i=0; i<req.size(); i++){
             String name = req.get(i);
             JComboBox combo = getComboForProperty(sn, name, optional.contains(name));
             dest.add(new JLabel(I18N.tr(name)));
-            dest.add(combo,"growx");
+            dest.add(combo, "growx");
+            dest.add(new GoToNodeButton(tree, sn.getProperty(name)));
         }
     }
 

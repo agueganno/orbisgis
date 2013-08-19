@@ -88,15 +88,13 @@ public class PropertiesPanel extends JPanel {
             add = new JButton(OrbisGISIcon.getIcon("add"));
             remove = new JButton(OrbisGISIcon.getIcon("delete"));
             combo = factory.getComboForClass(parent.getPropertiesClass(property), false, this.child);
-            go = new JButton(OrbisGISIcon.getIcon("execute"));
+            go = new GoToNodeButton(tree, child);
             ActionListener alAdd = EventHandler.create(ActionListener.class, this, "add");
             add.addActionListener(alAdd);
             ActionListener alRemove = EventHandler.create(ActionListener.class, this, "remove");
             remove.addActionListener(alRemove);
             ActionListener alCombo = EventHandler.create(ActionListener.class, this, "replaceChild","source.selectedItem");
             combo.addActionListener(alCombo);
-            ActionListener alGo = EventHandler.create(ActionListener.class, this, "goToNode");
-            go.addActionListener(alGo);
         }
 
         /**
@@ -173,16 +171,6 @@ public class PropertiesPanel extends JPanel {
                     model.setPropertyInCollection(parent, inst, property, index);
                 }
             }
-        }
-
-        /**
-         * Jump to the node associated to this line.
-         */
-        public void goToNode(){
-            NodeWrapper[] pathForNode = model.getPathForNode(child);
-            TreePath tp = new TreePath(pathForNode);
-            tree.expandPath(tp);
-            tree.setSelectionPath(tp);
         }
     }
 
