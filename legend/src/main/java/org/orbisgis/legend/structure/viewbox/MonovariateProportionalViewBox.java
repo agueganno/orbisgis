@@ -50,7 +50,7 @@ import org.orbisgis.legend.structure.interpolation.SqrtInterpolationLegend;
  * @author Alexis Guéganno
  */
 public class MonovariateProportionalViewBox extends DefaultViewBox
-        implements LookupFieldName, IInterpolationLegend {
+        implements IInterpolationLegend {
         
         private boolean onH;
 
@@ -138,34 +138,22 @@ public class MonovariateProportionalViewBox extends DefaultViewBox
                 return onH;
         }
 
-        /**
-         * Gets the data associated to the first interpolation point.
-         * @return
-         */
+        @Override
         public double getFirstData() {
             return getInterpolation().getFirstData();
         }
 
-        /**
-         * Sets the data associated to the first interpolation point.
-         * @return
-         */
+        @Override
         public void setFirstData(double d) {
             getInterpolation().setFirstData(d);
         }
 
-        /**
-         * Gets the data associated to the second interpolation point.
-         * @return
-         */
+        @Override
         public double getSecondData() {
             return getInterpolation().getSecondData();
         }
 
-        /**
-         * Sets the data associated to the second interpolation point.
-         * @return
-         */
+        @Override
         public void setSecondData(double d) {
             getInterpolation().setSecondData(d);
         }

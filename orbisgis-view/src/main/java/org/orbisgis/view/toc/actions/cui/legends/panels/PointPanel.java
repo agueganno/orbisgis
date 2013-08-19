@@ -31,34 +31,45 @@ package org.orbisgis.view.toc.actions.cui.legends.panels;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legends.AbstractFieldPanel;
+import org.orbisgis.view.toc.actions.cui.legends.components.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 
 /**
- * Point panel for unique symbols.
+ * "Unique Symbol - Point" settings panel.
+ *
+ * @author Adam Gouge
  */
-public class PointPanel extends UniqueSymbolPanel {
+public class PointPanel extends AbsPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(PointPanel.class);
 
     private final boolean displayUOM;
     private final int geometryType;
 
-    private OnVertexOnCentroidPanel onVertexOnCentroidPanel;
+    private OnVertexOnCentroidButtonGroup onVertexOnCentroidButtonGroup;
     private SymbolUOMComboBox symbolUOMComboBox;
     private WKNComboBox wknComboBox;
     private SymbolWidthSpinner symbolWidthSpinner;
     private SymbolHeightSpinner symbolHeightSpinner;
 
+    /**
+     * Constructor
+     *
+     * @param legend       Legend
+     * @param preview      Preview
+     * @param title        Title
+     * @param displayUOM   Whether the symbol UOM combo box should be displayed
+     * @param geometryType The type of geometry linked to this legend
+     */
     public PointPanel(UniqueSymbolPoint legend,
                       CanvasSE preview,
                       String title,
                       boolean displayUOM,
                       int geometryType) {
-        super(legend, preview, title, false);
+        super(legend, preview, title);
         this.displayUOM = displayUOM;
         this.geometryType = geometryType;
         init();
@@ -74,8 +85,8 @@ public class PointPanel extends UniqueSymbolPanel {
     protected void init() {
         if (displayUOM) {
             if (geometryType != SimpleGeometryType.POINT) {
-                onVertexOnCentroidPanel =
-                        new OnVertexOnCentroidPanel(getLegend(), preview);
+                onVertexOnCentroidButtonGroup =
+                        new OnVertexOnCentroidButtonGroup(getLegend(), preview);
             }
             symbolUOMComboBox = new SymbolUOMComboBox(getLegend(), preview);
         }
@@ -90,31 +101,21 @@ public class PointPanel extends UniqueSymbolPanel {
             // If geometryType != POINT, we must let the user choose if
             // he wants to draw symbols on centroid or on vertices.
             if (geometryType != SimpleGeometryType.POINT) {
-                add(new JLabel(I18N.tr(AbstractFieldPanel.PLACE_SYMBOL_ON)), "span 1 2");
-                add(onVertexOnCentroidPanel, "span 1 2");
+                add(new JLabel(I18N.tr(PLACE_SYMBOL_ON)), "span 1 2");
+                add(onVertexOnCentroidButtonGroup, "span 1 2");
             }
             // Unit of measure - symbol size
-            add(new JLabel(I18N.tr(AbstractFieldPanel.SYMBOL_SIZE_UNIT)));
-            add(symbolUOMComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
+            add(new JLabel(I18N.tr(SYMBOL_SIZE_UNIT)));
+            add(symbolUOMComboBox, COMBO_BOX_CONSTRAINTS);
         }
         // Well-known name
-        add(new JLabel(I18N.tr(AbstractFieldPanel.SYMBOL)));
-        add(wknComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
+        add(new JLabel(I18N.tr(SYMBOL)));
+        add(wknComboBox, COMBO_BOX_CONSTRAINTS);
         // Symbol width
-        add(new JLabel(I18N.tr(AbstractFieldPanel.WIDTH)));
+        add(new JLabel(I18N.tr(WIDTH)));
         add(symbolWidthSpinner, "growx");
         // Mark height
-        add(new JLabel(I18N.tr(AbstractFieldPanel.HEIGHT)));
+        add(new JLabel(I18N.tr(HEIGHT)));
         add(symbolHeightSpinner, "growx");
-    }
-
-    @Override
-    protected void onClickOptionalCheckBox() {
-        // Never optional.
-    }
-
-    @Override
-    protected void setFieldsState(boolean enable) {
-        // No need since never optional.
     }
 }

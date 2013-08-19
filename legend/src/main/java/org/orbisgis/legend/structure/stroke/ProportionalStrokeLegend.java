@@ -53,7 +53,7 @@ import org.orbisgis.legend.structure.parameter.NumericLegend;
  * @author Alexis Guéganno
  */
 public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend
-        implements LookupFieldName, IInterpolationLegend {
+        implements IInterpolationLegend {
 
         /**
          * Builds an empty {@code ProportionalStrokeLegend}. It will change 0 to
@@ -99,34 +99,22 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend
                 super(penStroke, width, fill, dashes);
         }
 
-        /**
-         * Get the data of the second interpolation point
-         * @return
-         */
+        @Override
         public double getFirstData() {
             return ((LinearInterpolationLegend)getLineWidthLegend()).getFirstData();
         }
 
-        /**
-         * Get the data of the first interpolation point
-         * @return
-         */
+        @Override
         public double getSecondData() {
             return ((LinearInterpolationLegend)getLineWidthLegend()).getSecondData();
         }
 
-        /**
-         * Set the data of the second interpolation point
-         * @param d
-         */
+        @Override
         public void setFirstData(double d) {
             ((LinearInterpolationLegend)getLineWidthLegend()).setFirstData(d);
         }
 
-        /**
-         * Set the data of the first interpolation point
-         * @param d
-         */
+        @Override
         public void setSecondData(double d){
             ((LinearInterpolationLegend)getLineWidthLegend()).setSecondData(d);
         }

@@ -42,18 +42,16 @@ import org.orbisgis.legend.thematic.recode.RecodedLine;
 import org.orbisgis.legend.thematic.recode.RecodedPoint;
 import org.orbisgis.legend.thematic.uom.SymbolUom;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legends.AbstractFieldPanel;
+import org.orbisgis.view.toc.actions.cui.legends.components.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 25/07/13
- * Time: 15:49
- * To change this template use File | Settings | File Templates.
+ * Value and Interval Classification settings panel.
+ *
+ * @author Adam Gouge
  */
 public class SettingsPanel<K, U extends LineParameters> extends JPanel {
 
@@ -63,23 +61,23 @@ public class SettingsPanel<K, U extends LineParameters> extends JPanel {
     private CanvasSE preview;
     private TablePanel<K, U> tablePanel;
 
-    private FieldComboBox fieldComboBox;
+    private AbsFieldsComboBox fieldComboBox;
     private LineUOMComboBox<K, U> lineUOMComboBox;
 
     public SettingsPanel(MappedLegend<K, U> legend,
                          DataSource dataSource,
                          CanvasSE preview,
                          TablePanel<K, U> tablePanel) {
-        super(new MigLayout("wrap 2", AbstractFieldPanel.COLUMN_CONSTRAINTS));
+        super(new MigLayout("wrap 2", AbsPanel.COLUMN_CONSTRAINTS));
         this.legend = legend;
         this.preview = preview;
         this.tablePanel = tablePanel;
         if (legend instanceof AbstractCategorizedLegend) {
-            this.fieldComboBox = new NumericalFieldsComboBox(
+            this.fieldComboBox = NumericalFieldsComboBox.createInstance(
                     dataSource,
                     (AbstractCategorizedLegend) legend);
         } else if (legend instanceof AbstractRecodedLegend) {
-            this.fieldComboBox = new NonSpatialFieldsComboBox(
+            this.fieldComboBox = NonSpatialFieldsComboBox.createInstance(
                     dataSource,
                     (AbstractRecodedLegend) legend);
         } else {
@@ -97,13 +95,19 @@ public class SettingsPanel<K, U extends LineParameters> extends JPanel {
         setBorder(BorderFactory.createTitledBorder(I18N.tr("General settings")));
 
         // Field chooser
-        add(new JLabel(I18N.tr(AbstractFieldPanel.FIELD)));
-
-        add(fieldComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
+        if (legend instanceof AbstractCategorizedLegend) {
+            add(new JLabel(I18N.tr(AbsPanel.NUMERIC_FIELD)));
+        } else if (legend instanceof AbstractRecodedLegend) {
+            add(new JLabel(I18N.tr(AbsPanel.NONSPATIAL_FIELD)));
+        } else {
+            throw new IllegalStateException("Settings panels are only available" +
+                    " for Classifications for now.");
+        }
+        add(fieldComboBox, AbsPanel.COMBO_BOX_CONSTRAINTS);
 
         // Unit of measure - line width
-        add(new JLabel(I18N.tr(AbstractFieldPanel.LINE_WIDTH_UNIT)));
-        add(lineUOMComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
+        add(new JLabel(I18N.tr(AbsPanel.LINE_WIDTH_UNIT)));
+        add(lineUOMComboBox, AbsPanel.COMBO_BOX_CONSTRAINTS);
 
         beforeFallbackSymbol();
 
@@ -114,12 +118,12 @@ public class SettingsPanel<K, U extends LineParameters> extends JPanel {
 
     private void beforeFallbackSymbol() {
         if (point()) {
-            add(new JLabel(I18N.tr(AbstractFieldPanel.SYMBOL_SIZE_UNIT)));
+            add(new JLabel(I18N.tr(AbsPanel.SYMBOL_SIZE_UNIT)));
             add(new SymbolUOMComboBox<K, U>((SymbolUom) legend, preview, tablePanel),
-                    AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
+                    AbsPanel.COMBO_BOX_CONSTRAINTS);
 
-            add(new JLabel(I18N.tr(AbstractFieldPanel.PLACE_SYMBOL_ON)), "span 1 2");
-            add(new OnVertexOnCentroidPanel((OnVertexOnCentroid) legend, preview, tablePanel),
+            add(new JLabel(I18N.tr(AbsPanel.PLACE_SYMBOL_ON)), "span 1 2");
+            add(new OnVertexOnCentroidButtonGroup((OnVertexOnCentroid) legend, preview, tablePanel),
                     "span 1 2");
         }
         if (!line()) {

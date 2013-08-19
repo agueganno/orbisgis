@@ -35,20 +35,18 @@ import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolLine;
 import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legends.AbstractFieldPanel;
+import org.orbisgis.view.toc.actions.cui.legends.components.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 29/07/13
- * Time: 16:40
- * To change this template use File | Settings | File Templates.
+ * "Unique Symbol - Line" settings panel.
+ *
+ * @author Adam Gouge
  */
-public class LinePanel extends UniqueSymbolPanel {
+public class LinePanel extends AbsOptionalPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(LinePanel.class);
 
@@ -62,6 +60,14 @@ public class LinePanel extends UniqueSymbolPanel {
     private LineOpacitySpinner lineOpacitySpinner;
     private DashArrayField dashArrayField;
 
+    /**
+     * Constructor
+     *
+     * @param legend         Legend
+     * @param preview        Preview
+     * @param title          Title
+     * @param isLineOptional Whether the enable line checkbox should be created.
+     */
     public LinePanel(IUniqueSymbolLine legend,
                      CanvasSE preview,
                      String title,
@@ -114,17 +120,17 @@ public class LinePanel extends UniqueSymbolPanel {
         add(colorLabel);
         // Unit of measure - line width
         if (displayUom) {
-            add(new JLabel(I18N.tr(AbstractFieldPanel.LINE_WIDTH_UNIT)));
-            add(lineUOMComboBox, AbstractFieldPanel.COMBO_BOX_CONSTRAINTS);
+            add(new JLabel(I18N.tr(LINE_WIDTH_UNIT)));
+            add(lineUOMComboBox, COMBO_BOX_CONSTRAINTS);
         }
         // Line width
-        add(new JLabel(I18N.tr(AbstractFieldPanel.WIDTH)));
+        add(new JLabel(I18N.tr(WIDTH)));
         add(lineWidthSpinner, "growx");
         // Line opacity
-        add(new JLabel(I18N.tr(AbstractFieldPanel.OPACITY)));
+        add(new JLabel(I18N.tr(OPACITY)));
         add(lineOpacitySpinner, "growx");
         // Dash array
-        add(new JLabel(I18N.tr(AbstractFieldPanel.DASH_ARRAY)));
+        add(new JLabel(I18N.tr(DASH_ARRAY)));
         add(dashArrayField, "growx");
     }
 

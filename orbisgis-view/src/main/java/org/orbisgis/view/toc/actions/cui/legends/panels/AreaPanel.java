@@ -33,20 +33,19 @@ import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
 import org.orbisgis.sif.ComponentUtil;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.legends.AbstractFieldPanel;
+import org.orbisgis.view.toc.actions.cui.legends.components.ColorLabel;
+import org.orbisgis.view.toc.actions.cui.legends.components.LineOpacitySpinner;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 
 /**
- * Created with IntelliJ IDEA.
- * User: adam
- * Date: 30/07/13
- * Time: 11:18
- * To change this template use File | Settings | File Templates.
+ * "Unique Symbol - Area" settings panel.
+ *
+ * @author Adam Gouge
  */
-public class AreaPanel extends UniqueSymbolPanel {
+public class AreaPanel extends AbsOptionalPanel {
 
     private static final I18n I18N = I18nFactory.getI18n(AreaPanel.class);
 
@@ -55,6 +54,14 @@ public class AreaPanel extends UniqueSymbolPanel {
     private ColorLabel colorLabel;
     private LineOpacitySpinner fillOpacitySpinner;
 
+    /**
+     * Constructor
+     *
+     * @param legend         Legend
+     * @param preview        Preview
+     * @param title          Title
+     * @param isAreaOptional Whether the enable area checkbox should be created.
+     */
     public AreaPanel(IUniqueSymbolArea legend,
                      CanvasSE preview,
                      String title,
@@ -87,7 +94,7 @@ public class AreaPanel extends UniqueSymbolPanel {
         // Color
         add(colorLabel);
         // Opacity
-        add(new JLabel(I18N.tr(AbstractFieldPanel.OPACITY)));
+        add(new JLabel(I18N.tr(OPACITY)));
         add(fillOpacitySpinner, "growx");
     }
 

@@ -50,8 +50,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Alexis Guéganno
  */
 public class ProportionalPoint extends ConstantFormPoint
-        implements IUniqueSymbolArea, LookupFieldName,
-        IInterpolationLegend {
+        implements IUniqueSymbolArea, IInterpolationLegend {
 
     private ProportionalWKNLegend markGraphic;
     private static final I18n I18N = I18nFactory.getI18n(ProportionalPoint.class);
@@ -152,34 +151,22 @@ public class ProportionalPoint extends ConstantFormPoint
             markGraphic.setLookupFieldName(name);
     }
 
-    /**
-     * Gets the data associated to the first interpolation point.
-     * @return
-     */
+    @Override
     public double getFirstData() {
         return markGraphic.getFirstData();
     }
 
-    /**
-     * Sets the data associated to the first interpolation point.
-     * @return
-     */
+    @Override
     public void setFirstData(double d) {
         markGraphic.setFirstData(d);
     }
 
-    /**
-     * Gets the data associated to the second interpolation point.
-     * @return
-     */
+    @Override
     public double getSecondData() {
         return markGraphic.getSecondData();
     }
 
-    /**
-     * Sets the data associated to the second interpolation point.
-     * @return
-     */
+    @Override
     public void setSecondData(double d) {
         markGraphic.setSecondData(d);
     }
