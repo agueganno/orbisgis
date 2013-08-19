@@ -209,10 +209,25 @@ public class AdvancedEditorPanelFactory {
         }
         for(int i=0; i<req.size(); i++){
             String name = req.get(i);
-            JComboBox combo = getComboForProperty(sn, name, optional.contains(name));
+            boolean opt = optional.contains(name);
+            final JComboBox combo = getComboForProperty(sn, name, opt);
             dest.add(new JLabel(I18N.tr(name)));
             dest.add(combo, "growx");
-            dest.add(new GoToNodeButton(tree, sn.getProperty(name)));
+            final GoToNodeButton but = new GoToNodeButton(tree, sn.getProperty(name));
+            dest.add(but);
+            if(opt){
+                ContainerItem ci = (ContainerItem) combo.getSelectedItem();
+                but.setEnabled(!NONE.equals(ci.getKey()));
+                combo.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        ContainerItem ci = (ContainerItem) combo.getSelectedItem();
+                        System.out.println(ci.getKey());
+                        System.out.println(ci.getLabel());
+                        but.setEnabled(!NONE.equals(ci.getKey()));
+                    }
+                });
+            }
         }
     }
 

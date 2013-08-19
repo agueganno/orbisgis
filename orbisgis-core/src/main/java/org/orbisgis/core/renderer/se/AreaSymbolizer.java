@@ -326,7 +326,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
             } else if(FILL.equals(name)){
                 return getFill();
             } else if(TRANSLATE.equals(name)){
-                return getFill();
+                return getTranslate();
             }
             return null;
         }
