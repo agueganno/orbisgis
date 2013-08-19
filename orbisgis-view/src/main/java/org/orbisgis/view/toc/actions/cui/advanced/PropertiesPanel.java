@@ -175,12 +175,14 @@ public class PropertiesPanel extends JPanel {
             }
         }
 
+        /**
+         * Jump to the node associated to this line.
+         */
         public void goToNode(){
             NodeWrapper[] pathForNode = model.getPathForNode(child);
             TreePath tp = new TreePath(pathForNode);
             tree.expandPath(tp);
             tree.setSelectionPath(tp);
-            tree.makeVisible(tp);
         }
     }
 
