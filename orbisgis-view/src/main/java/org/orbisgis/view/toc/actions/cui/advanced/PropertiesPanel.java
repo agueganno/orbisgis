@@ -9,6 +9,8 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.JTree;
+import javax.swing.tree.TreePath;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.Collection;
@@ -21,6 +23,7 @@ import java.util.List;
  * @author Alexis Guéganno
  */
 public class PropertiesPanel extends JPanel {
+    private final JTree tree;
     private PropertiesCollectionNode parent;
     private String property;
     private AdvancedEditorPanelFactory factory;
@@ -33,17 +36,18 @@ public class PropertiesPanel extends JPanel {
      * @param parent The parent node.
      * @param property The property we want to manage
      * @param factory The factory that builds UI for SymbolizerNodes.
-     * @param model The TreeModel we're working with.
+     * @param tree The JTree we're working with.
      */
     public PropertiesPanel(PropertiesCollectionNode parent,
                            String property,
                            AdvancedEditorPanelFactory factory,
-                           AdvancedTreeModel model){
+                           JTree tree){
         super(new MigLayout("wrap 4"));
         this.parent = parent;
         this.property = property;
         this.factory = factory;
-        this.model = model;
+        this.model = (AdvancedTreeModel) tree.getModel();
+        this.tree = tree;
         refill();
     }
 
@@ -91,6 +95,8 @@ public class PropertiesPanel extends JPanel {
             remove.addActionListener(alRemove);
             ActionListener alCombo = EventHandler.create(ActionListener.class, this, "replaceChild","source.selectedItem");
             combo.addActionListener(alCombo);
+            ActionListener alGo = EventHandler.create(ActionListener.class, this, "goToNode");
+            go.addActionListener(alGo);
         }
 
         /**
@@ -167,6 +173,14 @@ public class PropertiesPanel extends JPanel {
                     model.setPropertyInCollection(parent, inst, property, index);
                 }
             }
+        }
+
+        public void goToNode(){
+            NodeWrapper[] pathForNode = model.getPathForNode(child);
+            TreePath tp = new TreePath(pathForNode);
+            tree.expandPath(tp);
+            tree.setSelectionPath(tp);
+            tree.makeVisible(tp);
         }
     }
 

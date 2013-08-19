@@ -48,4 +48,16 @@ public class NodeWrapper{
     public boolean equals(Object other){
         return other instanceof NodeWrapper && ((NodeWrapper) other).getNode() == getNode();
     }
+
+    /**
+     * Overrides hashCode from Object. Two NodeWrapper containing the same {@link SymbolizerNode}
+     * must have the same hashCode value. It is expected as they are equal, and it is
+     * really important for JTree to work properly.
+     * @return The hashCode of this object based on, but different from, the hashCode of the
+     * inner SymbolizerNode.
+     */
+    @Override
+    public int hashCode(){
+        return 29*sn.hashCode();
+    }
 }

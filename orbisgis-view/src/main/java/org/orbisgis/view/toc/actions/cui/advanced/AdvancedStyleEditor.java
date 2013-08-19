@@ -36,6 +36,7 @@ public class AdvancedStyleEditor extends JPanel implements UIPanel{
         tree = new JTree();
         AdvancedTreeModel atm = new AdvancedTreeModel(tree, st);
         tree.setModel(atm);
+        tree.setExpandsSelectedPaths(true);
         tree.setCellRenderer(new AdvancedTreeCellRenderer(tree));
         tree.getSelectionModel().setSelectionMode(
                 TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -48,7 +49,7 @@ public class AdvancedStyleEditor extends JPanel implements UIPanel{
         tree.setMinimumSize(minimumSize);
         add(split);
         this.setPreferredSize(new Dimension(640, 420));
-        factory = new AdvancedEditorPanelFactory(atm);
+        factory = new AdvancedEditorPanelFactory(tree);
     }
 
     /**

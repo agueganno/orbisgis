@@ -87,6 +87,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.JTree;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
@@ -113,14 +114,16 @@ public class AdvancedEditorPanelFactory {
     private static final I18n I18N = I18nFactory.getI18n(AdvancedEditorPanelFactory.class);
     private static final Logger LOGGER = Logger.getLogger(AdvancedEditorPanelFactory.class);
     public static final String NONE = I18n.marktr("None");
+    private final JTree tree;
     private AdvancedTreeModel model;
 
     /**
      * Builds a new panel factory associated to the given model.
-     * @param model The AdvancedTreeModel we are handling.
+     * @param tree The JTree we are handling. Must be defined with an AdvancedTreeModel.
      */
-    public AdvancedEditorPanelFactory(AdvancedTreeModel model){
-        this.model = model;
+    public AdvancedEditorPanelFactory(JTree tree){
+        this.tree = tree;
+        this.model = (AdvancedTreeModel) tree.getModel();
     }
 
     /**
@@ -146,7 +149,7 @@ public class AdvancedEditorPanelFactory {
         }
         if(sn instanceof PropertiesCollectionNode){
             for(String prop : ((PropertiesCollectionNode) sn).getPropertiesNames()){
-                JPanel col = new PropertiesPanel((PropertiesCollectionNode) sn, prop, this, model);
+                JPanel col = new PropertiesPanel((PropertiesCollectionNode) sn, prop, this, tree);
                 ret.add(col, "span 2");
             }
         }
