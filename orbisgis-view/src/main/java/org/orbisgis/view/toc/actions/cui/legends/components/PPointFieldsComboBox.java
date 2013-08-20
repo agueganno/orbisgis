@@ -37,44 +37,28 @@ import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
  *
  * @author Adam Gouge
  */
-public class PPointFieldsComboBox extends ProportionalFieldsComboBox {
+public final class PPointFieldsComboBox extends ProportionalFieldsComboBox {
 
     /**
-     * This constructor is private so that we use the {@link #createInstance}
-     * method to initialize the combo box properly.
+     * Constructor
      *
      * @param ds      DataSource
      * @param legend  Legend
      * @param preview Preview
      */
-    private PPointFieldsComboBox(DataSource ds,
-                                 ProportionalPoint legend,
-                                 CanvasSE preview) {
+    public PPointFieldsComboBox(DataSource ds,
+                                ProportionalPoint legend,
+                                CanvasSE preview) {
         super(ds, legend, preview);
-    }
-
-    /**
-     * Create and initialize a new {@link PPointFieldsComboBox}.
-     *
-     * @param ds      DataSource
-     * @param legend  Legend
-     * @param preview Preview
-     * @return A newly initialized field combo box for proportional points
-     */
-    public static PPointFieldsComboBox createInstance(
-            DataSource ds,
-            ProportionalPoint legend,
-            CanvasSE preview) {
-        PPointFieldsComboBox box =
-                new PPointFieldsComboBox(ds, legend, preview);
-        box.init();
-        return box;
+        init();
     }
 
     @Override
     protected void setFirstAndSecondValues(double[] minAndMax) {
-        // TODO: Why do we have to use Math.sqrt? (Otherwise the preview is
-        // too small.)
+        // We use sqrt because of the definition of a proportional symbol.
+        // We want the area to grow proportionally to the value, not the
+        // width/height. If we used the raw values, the area would be
+        // proportional to the square of the input values.
         getLegend().setFirstData(Math.sqrt(minAndMax[0]));
         getLegend().setSecondData(Math.sqrt(minAndMax[1]));
     }
