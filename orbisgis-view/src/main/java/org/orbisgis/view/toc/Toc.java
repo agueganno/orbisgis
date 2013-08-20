@@ -1010,7 +1010,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                     }
 
                                     AdvancedStyleEditor ase = new AdvancedStyleEditor(style);
-
 //                                    LegendUIController controller = new LegendUIController(style);
 //
                                     if (UIFactory.showDialog(ase)) {
