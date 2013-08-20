@@ -26,6 +26,7 @@ public class AdvancedStyleEditor extends JPanel implements UIPanel{
     private JPanel right;
     private JTree tree;
     private AdvancedEditorPanelFactory factory;
+    private Style style;
 
     /**
      * Builds an advanced editor that will handle {@code st}.
@@ -33,6 +34,7 @@ public class AdvancedStyleEditor extends JPanel implements UIPanel{
      */
     public AdvancedStyleEditor(Style st){
         super(new BorderLayout());
+        style = st;
         tree = new JTree();
         AdvancedTreeModel atm = new AdvancedTreeModel(tree, st);
         tree.setModel(atm);
@@ -85,5 +87,13 @@ public class AdvancedStyleEditor extends JPanel implements UIPanel{
     @Override
     public Component getComponent() {
         return this;
+    }
+
+    /**
+     * Gets the style that is being edited.
+     * @return The inner style.
+     */
+    public Style getStyle(){
+        return style;
     }
 }

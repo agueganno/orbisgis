@@ -1008,12 +1008,18 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                     if (mt == null) {
                                             JOptionPane.showMessageDialog(null,I18N.tr("Advanced Editor can't be loaded"));
                                     }
+                                    try {
+                                        Style tmpStyle = new Style(style.getJAXBElement(),style.getLayer());
 
-                                    AdvancedStyleEditor ase = new AdvancedStyleEditor(style);
-//                                    LegendUIController controller = new LegendUIController(style);
+                                        AdvancedStyleEditor ase = new AdvancedStyleEditor(tmpStyle);
+//                                      LegendUIController controller = new LegendUIController(style);
 //
-                                    if (UIFactory.showDialog(ase)) {
-//                                            layer.setStyle(index,controller.getEditedFeatureTypeStyle());
+                                        if (UIFactory.showDialog(ase)) {
+                                            layer.setStyle(index,ase.getStyle());
+                                        }
+                                    } catch (SeExceptions.InvalidStyle invalidStyle) {
+                                        I18N.tr("We just failed at loading a style from a valid one. " +
+                                                "Something goes really wrong.");
                                     }
                                 }else{
                                    LOGGER.info("This functionality is not supported."); 
