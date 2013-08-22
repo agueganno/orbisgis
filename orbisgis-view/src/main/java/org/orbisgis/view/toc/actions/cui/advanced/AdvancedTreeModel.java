@@ -156,6 +156,7 @@ public class AdvancedTreeModel extends AbstractTreeModel {
                 new int[]{index},
                 new Object[]{new NodeWrapper(created)}
         );
+        created.setParent(parent);
         fireNodeInserted(tme);
         fireEvent();
     }
