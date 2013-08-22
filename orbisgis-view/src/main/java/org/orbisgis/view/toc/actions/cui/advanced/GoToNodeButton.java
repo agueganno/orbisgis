@@ -30,7 +30,7 @@ public class GoToNodeButton extends JButton {
     public GoToNodeButton(JTree tr, SymbolizerNode sn){
         super(OrbisGISIcon.getIcon("execute"));
         this.setToolTipText(I18N.tr("Go to this node"));
-        model = (AdvancedTreeModel) tr.getModel();;
+        model = (AdvancedTreeModel) tr.getModel();
         tree = tr;
         child = sn;
         ActionListener alGo = EventHandler.create(ActionListener.class, this, "goToNode");

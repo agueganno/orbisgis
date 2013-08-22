@@ -81,6 +81,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -104,7 +105,6 @@ import java.util.List;
  * @author Alexis Guéganno
  */
 public class AdvancedEditorPanelFactory {
-    private static final ContainerItemProperties[] UOMS = getUomProperties();
     public static final String UNIT_OF_MEASURE = I18n.marktr("Unit of measure");
 
     private static final I18n I18N = I18nFactory.getI18n(AdvancedEditorPanelFactory.class);
@@ -159,8 +159,18 @@ public class AdvancedEditorPanelFactory {
      */
     public JPanel getPanel(Literal sp){
         JPanel ret = new JPanel(new MigLayout("wrap 2","[::][100::]",""));
+        ret.add(new JLabel(I18N.tr("Value")));
+        ret.add(getLiteralField(sp), "growx");
+        return ret;
+    }
+
+    /**
+     * Gets the JComponent that can be used to edit the input SE Literal value.
+     * @param sp The input Literal
+     * @return A JComponent that can be used to edit sp.
+     */
+    public JComponent getLiteralField(Literal sp){
         if(sp instanceof RealLiteral){
-            ret.add(new JLabel(I18N.tr("Value")));
             final RealLiteral rl = (RealLiteral) sp;
             double min = rl.getContext().getMin() == null ? Double.NEGATIVE_INFINITY : rl.getContext().getMin();
             double max = rl.getContext().getMax() == null ? Double.POSITIVE_INFINITY : rl.getContext().getMax();
@@ -169,20 +179,17 @@ public class AdvancedEditorPanelFactory {
             final JSpinner spin = new JSpinner(new SpinnerNumberModel(init, min, max, 0.1));
             ChangeListener cl = EventHandler.create(ChangeListener.class, rl, "setValue", "source.value");
             spin.addChangeListener(cl);
-            ret.add(spin, "growx");
+            return spin;
         } else if(sp instanceof StringLiteral){
-            ret.add(new JLabel(I18N.tr("Value")));
             StringLiteral sl = (StringLiteral) sp;
             JTextField field = new JTextField(sl.getValue(null), 25);
             FocusListener fl = EventHandler.create(FocusListener.class, sl, "setValue", "source.text", "focusLost");
             field.addFocusListener(fl);
-            ret.add(field);
+            return field;
         } else if(sp instanceof ColorLiteral){
-            ret.add(new JLabel(I18N.tr("Value")));
-            ret.add(new JLabel(((ColorLiteral) sp).getColor(null).toString()));
-
+            return new JLabel(((ColorLiteral) sp).getColor(null).toString());
         }
-        return ret;
+        throw new IllegalArgumentException(I18N.tr("you're using an unknown literal type"));
     }
 
     public JPanel getPanel(RealFunction rf){
@@ -209,22 +216,46 @@ public class AdvancedEditorPanelFactory {
             final JComboBox combo = getComboForProperty(sn, name, opt);
             dest.add(new JLabel(I18N.tr(name)));
             dest.add(combo, "growx");
-            final GoToNodeButton but = new GoToNodeButton(tree, sn.getProperty(name));
-            dest.add(but);
-            if(opt){
-                ContainerItem ci = (ContainerItem) combo.getSelectedItem();
-                but.setEnabled(!NONE.equals(ci.getKey()));
-                combo.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent actionEvent) {
-                        ContainerItem ci = (ContainerItem) combo.getSelectedItem();
-                        but.setEnabled(!NONE.equals(ci.getKey()));
-                    }
-                });
+            if(sn.getProperty(name) instanceof Literal){
+                dest.add(getLiteralField((Literal)sn.getProperty(name)), "growx, wmax 50");
+            } else {
+                dest.add(getGoToNodeButton(sn, name, opt, combo));
             }
         }
     }
 
+    /**
+     * Gets the JButton that can be used to jump to the configuration panel of property {@code name} of
+     * {@code sn}. If it is optional, the button may be disabled according to the selected element of
+     * combo.
+     * @param sn The parent SymbolizerNode
+     * @param name The name of the property
+     * @param opt To know if the property is optional. If it is and if the selected element of {@code combo} is
+     *            NONE, the returned button will be disabled.
+     * @param combo The input JComboBox
+     * @return The needed GoToNodeButton instance.
+     */
+    private GoToNodeButton getGoToNodeButton(SymbolizerNode sn, String name, boolean opt, final JComboBox combo){
+        final GoToNodeButton but = new GoToNodeButton(tree, sn.getProperty(name));
+        if(opt){
+            ContainerItem ci = (ContainerItem) combo.getSelectedItem();
+            but.setEnabled(!NONE.equals(ci.getKey()));
+            combo.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent actionEvent) {
+                    ContainerItem ci = (ContainerItem) combo.getSelectedItem();
+                    but.setEnabled(!NONE.equals(ci.getKey()));
+                }
+            });
+        }
+        return but;
+    }
+
+    /**
+     * Gets a ComboBox that can be used to configure the UOM of an UomNode.
+     * @param sn The input UomNode
+     * @return The configuration JComboBox
+     */
     private JComboBox getUomComboBox(final UomNode sn) {
         final WideComboBox ret = new WideComboBox(Uom.getStrings());
         ret.setSelectedItem(sn.getUom().toString());
