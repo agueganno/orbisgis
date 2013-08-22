@@ -218,8 +218,6 @@ public class AdvancedEditorPanelFactory {
                     @Override
                     public void actionPerformed(ActionEvent actionEvent) {
                         ContainerItem ci = (ContainerItem) combo.getSelectedItem();
-                        System.out.println(ci.getKey());
-                        System.out.println(ci.getLabel());
                         but.setEnabled(!NONE.equals(ci.getKey()));
                     }
                 });
