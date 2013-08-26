@@ -33,9 +33,12 @@ import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.classification.ClassificationUtils;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.legend.IInterpolationLegend;
-import org.orbisgis.legend.LookupFieldName;
+import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.orbisgis.view.toc.actions.cui.components.NumericalFieldsComboBox;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,6 +53,7 @@ public abstract class ProportionalFieldsComboBox extends NumericalFieldsComboBox
             Logger.getLogger(ProportionalFieldsComboBox.class);
 
     protected CanvasSE preview;
+    protected IInterpolationLegend legend;
 
     /**
      * Constructor
@@ -61,8 +65,9 @@ public abstract class ProportionalFieldsComboBox extends NumericalFieldsComboBox
     protected ProportionalFieldsComboBox(DataSource ds,
                                          IInterpolationLegend legend,
                                          CanvasSE preview) {
-        super(ds, legend);
+        super(ds, legend.getLookupFieldName());
         this.preview = preview;
+        this.legend = legend;
     }
 
     /**
@@ -71,13 +76,24 @@ public abstract class ProportionalFieldsComboBox extends NumericalFieldsComboBox
      * @return The legend
      */
     protected IInterpolationLegend getLegend() {
-        return (IInterpolationLegend) legend;
+        return legend;
     }
 
-    @Override
+    protected void init(){
+        addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateField((String) ((WideComboBox) e.getSource())
+                        .getSelectedItem());
+            }
+        });
+        updateField((String) getSelectedItem());
+    }
+
+//    @Override
     protected void updateField(String name) {
         // Set the lookup field name.
-        ((LookupFieldName) legend).setLookupFieldName(name);
+        legend.setLookupFieldName(name);
         try {
             // Set the first and second data
             double[] minAndMax = ClassificationUtils

@@ -26,43 +26,40 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends.components;
+package org.orbisgis.view.toc.actions.cui.components;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
-import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 
 /**
- * A JComboBox containing the non-spatial fields of the given {@link DataSource}.
+ * A JComboBox containing the numerical fields of the given {@link DataSource}.
  *
  * @author Adam Gouge
  */
-public final class NonSpatialFieldsComboBox extends AbsFieldsComboBox {
+public class NumericalFieldsComboBox extends AbsFieldsComboBox {
 
-    private static final Logger LOGGER = Logger.getLogger(NonSpatialFieldsComboBox.class);
+    private static final Logger LOGGER = Logger.getLogger(NumericalFieldsComboBox.class);
 
     /**
-     * Constructor
-     *
-     * @param ds     DataSource
-     * @param legend Legend
+     * Builds a new ComboBox that gathers numerical fields from {@code ds}.
+     * @param ds The input DataSource.
+     * @param field The value that must be selected after creation.
      */
-    public NonSpatialFieldsComboBox(DataSource ds,
-                                    AbstractRecodedLegend legend) {
-        super(ds, legend);
-        init();
+    public NumericalFieldsComboBox(DataSource ds,
+                                      final String field) {
+        super(ds, field);
     }
 
     @Override
     protected boolean canAddField(int index) {
         try {
-            return !TypeFactory.isSpatial(
+            return TypeFactory.isNumerical(
                     ds.getMetadata().getFieldType(index).getTypeCode());
         } catch (DriverException ex) {
             LOGGER.error("Cannot at field at position " + index
-                    + " to the NonSpatialFieldsComboBox because the metadata " +
+                    + " to the NumericalFieldsComboBox because the metadata " +
                     "could not be recovered.");
             return false;
         }

@@ -26,66 +26,43 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends.components;
+package org.orbisgis.view.toc.actions.cui.components;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
 import org.gdms.driver.DriverException;
-import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.LookupFieldName;
 import org.orbisgis.sif.components.WideComboBox;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Root class for combo boxes containing field names.
  *
  * @author Adam Gouge
  */
-public abstract class AbsFieldsComboBox extends AbsComboBox {
+public abstract class AbsFieldsComboBox extends WideComboBox {
 
     private static final Logger LOGGER = Logger.getLogger(AbsFieldsComboBox.class);
 
     protected DataSource ds;
 
     /**
-     * Constructor
+     * Constructor that feeds the ComboBox with the fields of ds that match the condition
+     * implemented in canAddField.
      *
      * @param ds     DataSource
-     * @param legend Legend
+     * @param current The value that must be selected at the beginning.
      */
-    public AbsFieldsComboBox(DataSource ds, final LookupFieldName legend) {
-        super((Legend) legend);
+    public AbsFieldsComboBox(DataSource ds, final String current) {
+        super();
         if (ds == null) {
             throw new IllegalStateException("A FieldsComboBox requires " +
                     "a non-null DataSource.");
         }
         this.ds = ds;
-    }
-
-    private LookupFieldName getLegend() {
-        return (LookupFieldName) legend;
-    }
-
-    /**
-     * Initializes the combo box.
-     */
-    protected void init() {
         addFields();
-        addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updateField((String) ((WideComboBox) e.getSource())
-                        .getSelectedItem());
-            }
-        });
-        String field = getLegend().getLookupFieldName();
-        if (field != null && !field.isEmpty()) {
-            setSelectedItem(field);
+        if (current != null && !current.isEmpty()) {
+            setSelectedItem(current);
         }
-        updateField((String) getSelectedItem());
     }
 
     /**
@@ -107,15 +84,8 @@ public abstract class AbsFieldsComboBox extends AbsComboBox {
 
     /**
      * Determine which kind of fields to add.
+     * @return true if the field at position index in the inner DataSource
+     *         should be added to the ComboBox.
      */
     protected abstract boolean canAddField(int index);
-
-    /**
-     * Used when the field against which the analysis is made changes.
-     *
-     * @param name The new field.
-     */
-    protected void updateField(String name) {
-        getLegend().setLookupFieldName(name);
-    }
 }

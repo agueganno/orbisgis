@@ -29,6 +29,7 @@
 package org.orbisgis.view.toc.actions.cui.legends.components;
 
 import org.orbisgis.legend.Legend;
+import org.orbisgis.sif.components.WideComboBox;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 
 import java.awt.event.ActionEvent;
@@ -39,9 +40,10 @@ import java.awt.event.ActionListener;
  *
  * @author Adam Gouge
  */
-public abstract class PreviewComboBox extends AbsComboBox {
+public abstract class PreviewComboBox extends WideComboBox {
 
     protected CanvasSE preview;
+    protected Legend legend;
 
     /**
      * Constructor

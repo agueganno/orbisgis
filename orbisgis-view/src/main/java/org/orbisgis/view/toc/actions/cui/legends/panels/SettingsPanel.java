@@ -41,12 +41,17 @@ import org.orbisgis.legend.thematic.recode.AbstractRecodedLegend;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
 import org.orbisgis.legend.thematic.recode.RecodedPoint;
 import org.orbisgis.legend.thematic.uom.SymbolUom;
+import org.orbisgis.view.toc.actions.cui.components.AbsFieldsComboBox;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.orbisgis.view.toc.actions.cui.components.NonSpatialFieldsComboBox;
+import org.orbisgis.view.toc.actions.cui.components.NumericalFieldsComboBox;
 import org.orbisgis.view.toc.actions.cui.legends.components.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
 
 /**
  * Value and Interval Classification settings panel.
@@ -80,20 +85,34 @@ public final class SettingsPanel<K, U extends LineParameters> extends JPanel {
         this.legend = legend;
         this.preview = preview;
         this.tablePanel = tablePanel;
+        String current = legend.getLookupFieldName();
         if (legend instanceof AbstractCategorizedLegend) {
-            this.fieldComboBox = NumericalFieldsComboBox.createInstance(
+            this.fieldComboBox = new NumericalFieldsComboBox(
                     dataSource,
-                    (AbstractCategorizedLegend) legend);
+                    legend.getLookupFieldName()
+            );
         } else if (legend instanceof AbstractRecodedLegend) {
             this.fieldComboBox = new NonSpatialFieldsComboBox(
                     dataSource,
-                    (AbstractRecodedLegend) legend);
+                    legend.getLookupFieldName()
+            );
         } else {
             throw new IllegalStateException("Settings panels are only available" +
                     " for Classifications for now.");
         }
+        fieldComboBox.addActionListener(getFieldNameListener());
+        if(current == null || current.isEmpty()){
+            legend.setLookupFieldName((String) fieldComboBox.getSelectedItem());
+        }
         this.lineUOMComboBox = new LineUOMComboBox<K, U>(legend, preview, tablePanel);
         init();
+    }
+
+    private ActionListener getFieldNameListener(){
+        return EventHandler.create( ActionListener.class,
+                legend,
+                "setLookupFieldName",
+                "source.selectedItem");
     }
 
     /**

@@ -26,36 +26,43 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.actions.cui.legends.components;
+package org.orbisgis.view.toc.actions.cui.components;
 
-import org.orbisgis.legend.Legend;
-import org.orbisgis.sif.components.WideComboBox;
+import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
+import org.gdms.data.types.TypeFactory;
+import org.gdms.driver.DriverException;
 
 /**
- * Root class for combo boxes.
+ * A JComboBox containing the non-spatial fields of the given {@link DataSource}.
  *
  * @author Adam Gouge
  */
-public abstract class AbsComboBox extends WideComboBox {
+public final class NonSpatialFieldsComboBox extends AbsFieldsComboBox {
 
-    protected Legend legend;
+    private static final Logger LOGGER = Logger.getLogger(NonSpatialFieldsComboBox.class);
 
     /**
      * Constructor
      *
-     * @param legend Legend
+     * @param ds     DataSource
+     * @param expected The value we want to be set after the creation of the ComboBox.
      */
-    public AbsComboBox(Legend legend) {
-        super();
-        this.legend = legend;
+    public NonSpatialFieldsComboBox(DataSource ds,
+                                    String expected) {
+        super(ds, expected);
     }
 
-    /**
-     * Constructor
-     *
-     * @param items Items to add, represented as Strings.
-     */
-    public AbsComboBox(String[] items) {
-        super(items);
+    @Override
+    protected boolean canAddField(int index) {
+        try {
+            return !TypeFactory.isSpatial(
+                    ds.getMetadata().getFieldType(index).getTypeCode());
+        } catch (DriverException ex) {
+            LOGGER.error("Cannot add field at position " + index
+                    + " to the NonSpatialFieldsComboBox because the metadata " +
+                    "could not be recovered.");
+            return false;
+        }
     }
 }
