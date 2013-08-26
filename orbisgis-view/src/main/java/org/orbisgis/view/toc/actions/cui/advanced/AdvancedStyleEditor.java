@@ -51,7 +51,7 @@ public class AdvancedStyleEditor extends JPanel implements UIPanel{
         tree.setMinimumSize(minimumSize);
         add(split);
         this.setPreferredSize(new Dimension(640, 420));
-        factory = new AdvancedEditorPanelFactory(tree);
+        factory = new AdvancedEditorPanelFactory(tree, st.getLayer().getDataSource());
     }
 
     /**

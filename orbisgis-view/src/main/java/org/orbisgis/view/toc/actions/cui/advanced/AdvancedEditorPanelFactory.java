@@ -2,6 +2,7 @@ package org.orbisgis.view.toc.actions.cui.advanced;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
@@ -40,6 +41,7 @@ import org.orbisgis.core.renderer.se.label.LineLabel;
 import org.orbisgis.core.renderer.se.label.PointLabel;
 import org.orbisgis.core.renderer.se.label.StyledText;
 import org.orbisgis.core.renderer.se.parameter.Literal;
+import org.orbisgis.core.renderer.se.parameter.ValueReference;
 import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
 import org.orbisgis.core.renderer.se.parameter.color.ColorAttribute;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
@@ -77,6 +79,10 @@ import org.orbisgis.core.renderer.se.transform.Translate;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.WideComboBox;
+import org.orbisgis.view.toc.actions.cui.components.NonSpatialFieldsComboBox;
+import org.orbisgis.view.toc.actions.cui.components.NumericalFieldsComboBox;
+import org.orbisgis.view.toc.actions.cui.components.SpatialFieldsComboBox;
+import org.orbisgis.view.toc.actions.cui.components.StringFieldsComboBox;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -112,14 +118,17 @@ public class AdvancedEditorPanelFactory {
     public static final String NONE = I18n.marktr("None");
     private final JTree tree;
     private AdvancedTreeModel model;
+    private DataSource dataSource;
 
     /**
      * Builds a new panel factory associated to the given model.
      * @param tree The JTree we are handling. Must be defined with an AdvancedTreeModel.
+     * @param ds the DataSource linked to the style we're handling.
      */
-    public AdvancedEditorPanelFactory(JTree tree){
+    public AdvancedEditorPanelFactory(JTree tree, DataSource ds){
         this.tree = tree;
         this.model = (AdvancedTreeModel) tree.getModel();
+        this.dataSource = ds;
     }
 
     /**
@@ -139,6 +148,8 @@ public class AdvancedEditorPanelFactory {
         JPanel ret;
         if(sn instanceof Literal){
             ret = getPanel((Literal)sn);
+        } else if(sn instanceof  ValueReference) {
+            ret = getPanel((ValueReference)sn);
         } else {
             ret = new JPanel(new MigLayout("wrap 3"));
             getCombos(sn, ret);
@@ -151,6 +162,8 @@ public class AdvancedEditorPanelFactory {
         }
         return ret;
     }
+
+    /********* Literal **********/
 
     /**
      * getPanel dedicated to SeParameter instances.
@@ -190,6 +203,48 @@ public class AdvancedEditorPanelFactory {
             return new JLabel(((ColorLiteral) sp).getColor(null).toString());
         }
         throw new IllegalArgumentException(I18N.tr("you're using an unknown literal type"));
+    }
+
+    /********* ValueReference **********/
+
+    /**
+     * Gets the Panel used to configure ValueReferenceNodes.
+     * @param vr The ValueReference we want to handle.
+     * @return The needed JPanel, with a label and a combo box.
+     */
+    public JPanel getPanel(ValueReference vr){
+        JPanel ret = new JPanel(new MigLayout("wrap 2","[::][100::]",""));
+        ret.add(new JLabel(I18N.tr("Attribute")));
+        ret.add(getAttributeCombo(vr), "growx");
+        return ret;
+
+    }
+
+    /**
+     * Gets a JComboBox gathering the fields from the inner DataSource that may be
+     * used for the given ValueReference
+     * @param ref The input ValueReference
+     * @return The needed JComboBox
+     */
+    public JComboBox getAttributeCombo(ValueReference ref){
+        JComboBox ret = null;
+        if(ref instanceof RealAttribute){
+            ret = new NumericalFieldsComboBox(dataSource, ref.getColumnName());
+        } else if(ref instanceof StringAttribute){
+            ret = new NonSpatialFieldsComboBox(dataSource, ref.getColumnName());
+        } else if(ref instanceof GeometryAttribute){
+            ret = new SpatialFieldsComboBox(dataSource, ref.getColumnName());
+        } else if(ref instanceof ColorAttribute){
+            ret = new StringFieldsComboBox(dataSource, ref.getColumnName());
+        }
+        if(ret != null){
+            ActionListener al = EventHandler.create(ActionListener.class, ref, "setColumnName","source.selectedItem");
+            ret.addActionListener(al);
+            if(ref.getColumnName() == null){
+                ref.setColumnName((String) ret.getSelectedItem());
+            }
+        }
+        return ret;
     }
 
     public JPanel getPanel(RealFunction rf){
