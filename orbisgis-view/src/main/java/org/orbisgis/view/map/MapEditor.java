@@ -43,6 +43,7 @@ import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
@@ -57,6 +58,7 @@ import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
@@ -392,10 +394,10 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         actions.addAction(new DefaultAction(MapEditorAction.A_ZOOM_SELECTION, I18N.tr("Zoom to selection"),
                 OrbisGISIcon.getIcon("zoom_selected"),EventHandler.create(ActionListener.class,this,"onZoomToSelection"))
                 .setToolTipText(I18N.tr("Zoom to visible selected geometries")).setLogicalGroup("selection"));
-        actions.addAction(new DefaultAction(MapEditorAction.A_DATA_SOURCE_FROM_SELECTION, I18N.tr("Create a datasource"),
+        actions.addAction(new DefaultAction(MapEditorAction.A_DATA_SOURCE_FROM_SELECTION, I18N.tr("Create datasource from selection"),
                 OrbisGISIcon.getIcon("table_go"),
                 EventHandler.create(ActionListener.class,this,"onCreateDataSourceFromSelection"))
-                .setToolTipText(I18N.tr("Create a datasource from a selection")).setLogicalGroup("selection"));
+                .setToolTipText(I18N.tr("Create a datasource from the current selection")).setLogicalGroup("selection"));
 
         // Measure tools
         actions.addAction(new DefaultAction(MapEditorAction.A_MEASURE_GROUP,I18N.tr("Mesure tools")).setMenuGroup(true));
@@ -482,20 +484,49 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     }
 
 
-     /**
+    /**
      * The user can export the selected features into a new datasource
      */
     public void onCreateDataSourceFromSelection() {
-            ILayer[] layers = mapContext.getSelectedLayers();
-            if(layers!=null && layers.length>0){
-                for (ILayer layer : layers) {
-                    Set<Integer> selection = layer.getSelection();
-                    if(!selection.isEmpty()){
-                        BackgroundManager bm = Services.getService(BackgroundManager.class);
-                        bm.backgroundOperation(new CreateSourceFromSelection(layer.getDataSource(), selection));
+        // Get the selected layer(s)
+        ILayer[] selectedLayers = mapContext.getSelectedLayers();
+        // If no layers are selected, but one or more styles are selected, then
+        // set the selected layers to the layers of those styles.
+        // See #514 (as well as #124, #359).
+        if (selectedLayers.length == 0) {
+            ArrayList<ILayer> selectedLayerList = new ArrayList<ILayer>();
+            for (Style style : mapContext.getSelectedStyles()) {
+                selectedLayerList.add(style.getLayer());
+            }
+            selectedLayers = selectedLayerList.toArray(new ILayer[1]);
+        }
+        // Loop through all selected layers.
+        if (selectedLayers == null || selectedLayers.length == 0) {
+            GUILOGGER.warn(I18N.tr("No layers are selected."));
+        } else {
+            for (ILayer layer : selectedLayers) {
+                Set<Integer> selection = layer.getSelection();
+                // If there is a nonempty selection, then ask the user to name it.
+                if (!selection.isEmpty()) {
+                    String newName = CreateSourceFromSelection.showNewNameDialog(
+                            this, layer.getDataSource());
+                    // If newName is not null, then the user clicked OK and
+                    // entered a valid name.
+                    if (newName != null) {
+                        BackgroundManager bm = Services.getService(
+                                BackgroundManager.class);
+                        bm.backgroundOperation(
+                                new CreateSourceFromSelection(
+                                        layer.getDataSource(),
+                                        selection, newName));
                     }
+                } else {
+                    GUILOGGER.warn(
+                            I18N.tr("Layer {0} has no selected geometries.",
+                                    layer.getName()));
                 }
             }
+        }
     }
 
     /**
